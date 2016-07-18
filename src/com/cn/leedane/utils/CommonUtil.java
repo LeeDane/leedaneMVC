@@ -120,7 +120,7 @@ public class CommonUtil {
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {  
             ip = request.getRemoteAddr();  
         }  
-        return ip;  
+        return StringUtil.isNull(ip)? "无法解析客户端IP": ip;  
 		//return request.getRemoteAddr();
 	}
 

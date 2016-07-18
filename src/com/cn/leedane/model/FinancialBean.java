@@ -17,6 +17,12 @@ public class FinancialBean extends RecordTimeBean{
 	//记账的状态,1：正常，0:禁用，2、删除
 	
 	/**
+	 * 上传设备上记录的id，目前只做返回客户端的表示用
+	 */
+	@JSONField(name="local_id")
+	private int localId;
+	
+	/**
 	 * 模块，1:收入；2：支出
 	 */
 	private int model;
@@ -149,6 +155,14 @@ public class FinancialBean extends RecordTimeBean{
 
 	public void setAdditionTime(String additionTime) {
 		this.additionTime = additionTime;
+	}
+
+	public int getLocalId() {
+		return localId;
+	}
+
+	public void setLocalId(int localId) {
+		this.localId = localId;
 	}
     
 }

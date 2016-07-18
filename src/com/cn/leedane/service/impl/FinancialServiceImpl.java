@@ -60,11 +60,19 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 			message.put("isSuccess", true);
 			return message;
 		}
+		boolean result = false;
+		if(financialBean.getId() > 0){//说明是更新
+			result = financialMapper.update(financialBean) > 0;
+		}else{
+			result = financialMapper.save(financialBean) > 0;
+		}
 		
-		boolean result = financialMapper.save(financialBean) > 0;
 		if(result){
+			Map<String, Integer> r = new HashMap<String, Integer>();
+			r.put("local_id", financialBean.getLocalId());
+			r.put("id", financialBean.getId());
 			message.put("isSuccess", true);
-			message.put("message", financialBean.getId());
+			message.put("message", r);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库保存失败.value));
 			message.put("responseCode", EnumUtil.ResponseCode.数据库保存失败.value);

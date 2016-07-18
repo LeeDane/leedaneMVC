@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+
 import com.cn.leedane.model.MoodBean;
 import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.utils.BeanUtil;
@@ -229,8 +231,19 @@ public class MainTest {
 		/*Double double1 = 0.5667355888261354d;
 		int i = (int)(double1 * 100);
 		System.out.println(i);*/
-		RedisUtil redisUtil = new RedisUtil();
-		redisUtil.clearAll();
+		/*RedisUtil redisUtil = new RedisUtil();
+		redisUtil.clearAll();*/
+		/*Map<String, String[]> map = new HashMap<String, String[]>();
+		String[] strs = new String[2];
+		strs[0] = "11";
+		strs[1] = "22";
+		map.put("lee1", strs);
+		JSONObject object = JSONObject.fromObject(map);
+		System.out.println(object.toString());*/
+		String date = "2017-09-01 11:11:11";
+		System.out.println(date.substring(0, 10));
+		System.out.println(date.substring(11, date.length()));
+		
 	}	
 	
 	

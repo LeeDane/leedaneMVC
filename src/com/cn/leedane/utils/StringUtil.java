@@ -2,7 +2,9 @@ package com.cn.leedane.utils;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -565,6 +567,22 @@ public class StringUtil {
 		}
 		
 		return buffer.toString();
+	}
+	
+	/**
+	 * 用正则表达式解析获取()里面的内容
+	 * @param source
+	 * @return
+	 */
+	public static List<String> getBracket(String source){
+		List<String> r = new ArrayList<String>();
+		String regex = "\\((.*?)\\)";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(source);
+		while (m.find()) {
+			r.add(m.group(1));
+		}
+		return r;
 	}
 	
 	public static void main(String[] args) {

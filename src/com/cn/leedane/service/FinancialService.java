@@ -22,7 +22,7 @@ public interface FinancialService<T extends IDBean>{
 	 * @param jo
 	 * @param user
 	 * @param request
-	 * @return 返回服务器保存成功的ID
+	 * @return 返回服务器保存成功的ID以及设备本地保存的local_id
 	 */
 	public Map<String, Object> save(JSONObject jsonObject, UserBean user, HttpServletRequest request);
 	

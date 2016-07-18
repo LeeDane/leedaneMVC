@@ -14,12 +14,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cn.leedane.utils.CommonUtil;
-import com.cn.leedane.utils.ConstantsUtil;
-import com.cn.leedane.utils.DateUtil;
-import com.cn.leedane.utils.EnumUtil.DataTableType;
-import com.cn.leedane.utils.JsonUtil;
-import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.mapper.OperateLogMapper;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.UserBean;
@@ -27,7 +21,12 @@ import com.cn.leedane.rabbitmq.SendMessage;
 import com.cn.leedane.rabbitmq.send.ISend;
 import com.cn.leedane.rabbitmq.send.LogSend;
 import com.cn.leedane.service.OperateLogService;
-import com.sun.istack.internal.FinalArrayList;
+import com.cn.leedane.utils.CommonUtil;
+import com.cn.leedane.utils.ConstantsUtil;
+import com.cn.leedane.utils.DateUtil;
+import com.cn.leedane.utils.EnumUtil.DataTableType;
+import com.cn.leedane.utils.JsonUtil;
+import com.cn.leedane.utils.StringUtil;
 /**
  * 操作日志service的实现类
  * @author LeeDane

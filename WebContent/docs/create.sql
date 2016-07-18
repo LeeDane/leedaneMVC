@@ -5,10 +5,11 @@
 DROP TABLE IF EXISTS `t_financial`;
 CREATE TABLE `t_financial` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `local_id` int(11) COMMENT '客户端本地存储的ID',
   `status` int(11) NOT NULL,
   `create_time` datetime DEFAULT NULL,
   `modify_time` datetime DEFAULT NULL,
-  `addition_time` datetime DEFAULT NULL COMMENT '很重要，添加时间，用于今后的统计时间，必须',
+  `addition_time` datetime DEFAULT NULL   '很重要，添加时间，用于今后的统计时间，必须',
   `create_user_id` int(11) DEFAULT NULL,
   `modify_user_id` int(11) DEFAULT NULL,
   `model` int(11) DEFAULT '0' COMMENT '模块，1:收入；2：支出',
