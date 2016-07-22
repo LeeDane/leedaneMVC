@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,7 +19,6 @@ import com.cn.leedane.model.UploadBean;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.FilePathService;
 import com.cn.leedane.service.UploadService;
-import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.ResponseCode;
@@ -38,9 +36,6 @@ public class AppFileUploadController extends BaseController{
   	
 	@Autowired
   	private UploadService<UploadBean> uploadService;
-  	
-	@Autowired
-  	private UserService<UserBean> userService;
   	
     /**
      * 上传文件（建议断点上传每次的文件不要超过1M）

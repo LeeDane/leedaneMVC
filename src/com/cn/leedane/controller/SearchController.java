@@ -24,10 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cn.leedane.lucene.solr.SolrHandler;
 import com.cn.leedane.model.BlogBean;
 import com.cn.leedane.model.MoodBean;
-import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.BlogService;
 import com.cn.leedane.service.MoodService;
-import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.JsonUtil;
@@ -38,8 +36,6 @@ import com.cn.leedane.utils.StringUtil;
 public class SearchController extends BaseController{
 
 	protected final Log log = LogFactory.getLog(getClass());
-	@Autowired
-	private UserService<UserBean> userService;
 	
 	@Autowired
 	private MoodService<MoodBean> moodService;

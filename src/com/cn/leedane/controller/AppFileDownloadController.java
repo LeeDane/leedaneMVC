@@ -34,9 +34,6 @@ public class AppFileDownloadController extends BaseController{
 	@Autowired
   	private FilePathService<FilePathBean> filePathService;
   	
-  	@Autowired
-  	private UserService<UserBean> userService;
-  	
     /**
      * 下载文件（只提供下载file文件夹下面的文件，建议断点下载每次的文件不要超过1M）
      * 注意app要保证编号的正确性和顺序，到时合并的时候将按照大小进行合并

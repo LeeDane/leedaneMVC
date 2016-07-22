@@ -12,12 +12,10 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cn.leedane.model.UserBean;
-import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.EmailUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.JsonUtil;
@@ -29,8 +27,6 @@ import com.cn.leedane.wechat.util.HttpRequestUtil;
 public class ToolController extends BaseController{
 
 	protected final Log log = LogFactory.getLog(getClass());
-	@Autowired
-	private UserService<UserBean> userService;
 	
 	/**
 	 * 翻译

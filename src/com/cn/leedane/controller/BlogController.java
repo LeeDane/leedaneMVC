@@ -49,9 +49,6 @@ public class BlogController extends BaseController{
 		
 	@Autowired
 	private BlogService<BlogBean> blogService;
-	
-	@Autowired
-	private UserService<UserBean> userService;
 
 
 	/**

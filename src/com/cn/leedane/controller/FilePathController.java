@@ -46,8 +46,6 @@ public class FilePathController extends BaseController{
 	@Autowired
 	private UploadService<UploadBean> uploadService;
 	
-	@Autowired
-	private UserHandler userHandler;
 
 	/**
 	 * 分页获取指定的图片列表

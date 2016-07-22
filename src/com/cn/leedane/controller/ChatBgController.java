@@ -21,7 +21,7 @@ import com.cn.leedane.utils.EnumUtil;
 public class ChatBgController extends BaseController{
 
 	protected final Log log = LogFactory.getLog(getClass());
-private ChatBgService<ChatBgBean> chatBgService;
+	private ChatBgService<ChatBgBean> chatBgService;
 	
 	@Resource
 	public void setChatBgService(ChatBgService<ChatBgBean> chatBgService) {

@@ -1,7 +1,12 @@
 package com.cn.leedane.test;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.cn.leedane.financial.Category;
+import com.cn.leedane.financial.ParentGategory;
+import com.cn.leedane.financial.SubCategory;
 
 /**
  * main方法相关的测试类
@@ -56,10 +61,160 @@ public class MainTest {
 		String test2 = new String("123");
 		System.out.println(test1 == test2);*/
 		
-		File f = new File("d://work");
-		System.out.println(f.getCanonicalPath());
-		System.out.println(f.getAbsolutePath());
-		System.out.println(f.getPath());
+		//支出大类
+		Category categorySpend = new Category();
+		List<ParentGategory> parentGategories = new ArrayList<ParentGategory>();
+		
+		ParentGategory parentGategory1 = new ParentGategory();
+		parentGategory1.setId(101);
+		parentGategory1.setValue("食品酒水");
+		parentGategories.add(parentGategory1);
+		List<SubCategory> subCategories1 = new ArrayList<SubCategory>();
+		parentGategory1.setSubCategories(subCategories1);
+		subCategories1.add(new SubCategory("早午晚餐", 1));
+		subCategories1.add(new SubCategory("烟酒茶", 2));
+		subCategories1.add(new SubCategory("水果零食", 3));
+		
+		ParentGategory parentGategory2 = new ParentGategory();
+		parentGategory2.setId(102);
+		parentGategory2.setValue("衣服饰品");
+		parentGategories.add(parentGategory2);
+		List<SubCategory> subCategories2 = new ArrayList<SubCategory>();
+		parentGategory2.setSubCategories(subCategories2);
+		subCategories2.add(new SubCategory("衣服裤子", 4));
+		subCategories2.add(new SubCategory("鞋帽包包", 5));
+		subCategories2.add(new SubCategory("化妆饰品", 6));
+		
+		ParentGategory parentGategory3 = new ParentGategory();
+		parentGategory3.setId(103);
+		parentGategory3.setValue("居家物业");
+		parentGategories.add(parentGategory3);
+		List<SubCategory> subCategories3 = new ArrayList<SubCategory>();
+		parentGategory3.setSubCategories(subCategories3);
+		subCategories3.add(new SubCategory("日常用品", 7));
+		subCategories3.add(new SubCategory("水电煤气", 8));
+		subCategories3.add(new SubCategory("房租", 9));
+		subCategories3.add(new SubCategory("物业管理", 10));
+		subCategories3.add(new SubCategory("维修保养", 11));
+		
+		ParentGategory parentGategory4 = new ParentGategory();
+		parentGategory4.setId(104);
+		parentGategory4.setValue("行车交通");
+		parentGategories.add(parentGategory4);
+		List<SubCategory> subCategories4 = new ArrayList<SubCategory>();
+		parentGategory4.setSubCategories(subCategories4);
+		subCategories4.add(new SubCategory("公共地铁", 12));
+		subCategories4.add(new SubCategory("打车租车", 13));
+		subCategories4.add(new SubCategory("私家车费用", 14));
+		
+		ParentGategory parentGategory5 = new ParentGategory();
+		parentGategory5.setId(105);
+		parentGategory5.setValue("交流通讯");
+		parentGategories.add(parentGategory5);
+		List<SubCategory> subCategories5 = new ArrayList<SubCategory>();
+		parentGategory5.setSubCategories(subCategories5);
+		subCategories5.add(new SubCategory("座机费", 15));
+		subCategories5.add(new SubCategory("手机话费", 16));
+		subCategories5.add(new SubCategory("上网费", 17));
+		subCategories5.add(new SubCategory("邮寄费", 18));
+		
+		ParentGategory parentGategory6 = new ParentGategory();
+		parentGategory6.setId(106);
+		parentGategory6.setValue("休闲娱乐");
+		parentGategories.add(parentGategory6);
+		List<SubCategory> subCategories6 = new ArrayList<SubCategory>();
+		parentGategory6.setSubCategories(subCategories6);
+		subCategories6.add(new SubCategory("运动健身", 19));
+		subCategories6.add(new SubCategory("腐败聚会", 20));
+		subCategories6.add(new SubCategory("休闲玩乐", 21));
+		subCategories6.add(new SubCategory("宠物宝贝", 22));
+		subCategories6.add(new SubCategory("旅游度假", 23));
+		
+		ParentGategory parentGategory7 = new ParentGategory();
+		parentGategory7.setId(107);
+		parentGategory7.setValue("学习进修");
+		parentGategories.add(parentGategory7);
+		List<SubCategory> subCategories7 = new ArrayList<SubCategory>();
+		parentGategory7.setSubCategories(subCategories7);
+		subCategories7.add(new SubCategory("书报杂志", 24));
+		subCategories7.add(new SubCategory("培训进修", 25));
+		subCategories7.add(new SubCategory("数码装备", 26));
+		
+		ParentGategory parentGategory8 = new ParentGategory();
+		parentGategory8.setId(108);
+		parentGategory8.setValue("人情往来");
+		parentGategories.add(parentGategory8);
+		List<SubCategory> subCategories8 = new ArrayList<SubCategory>();
+		parentGategory8.setSubCategories(subCategories8);
+		subCategories8.add(new SubCategory("送礼请客", 27));
+		subCategories8.add(new SubCategory("孝敬长辈", 28));
+		subCategories8.add(new SubCategory("还人钱物", 29));
+		subCategories8.add(new SubCategory("慈善捐助", 30));
+		
+		ParentGategory parentGategory9 = new ParentGategory();
+		parentGategory9.setId(109);
+		parentGategory9.setValue("医疗保健");
+		parentGategories.add(parentGategory9);
+		List<SubCategory> subCategories9 = new ArrayList<SubCategory>();
+		parentGategory9.setSubCategories(subCategories9);
+		subCategories9.add(new SubCategory("药品费", 31));
+		subCategories9.add(new SubCategory("保健费", 32));
+		subCategories9.add(new SubCategory("美容费", 33));
+		subCategories9.add(new SubCategory("治疗费", 34));
+		
+		ParentGategory parentGategory10 = new ParentGategory();
+		parentGategory10.setId(110);
+		parentGategory10.setValue("金融保险");
+		parentGategories.add(parentGategory10);
+		List<SubCategory> subCategories10 = new ArrayList<SubCategory>();
+		parentGategory10.setSubCategories(subCategories10);
+		subCategories10.add(new SubCategory("银行手续", 35));
+		subCategories10.add(new SubCategory("投资亏损", 36));
+		subCategories10.add(new SubCategory("按揭还款", 37));
+		subCategories10.add(new SubCategory("消费税收", 38));
+		subCategories10.add(new SubCategory("利息支出", 39));
+		subCategories10.add(new SubCategory("赔偿罚款", 40));
+		
+		ParentGategory parentGategory11 = new ParentGategory();
+		parentGategory11.setId(111);
+		parentGategory11.setValue("其他杂项");
+		parentGategories.add(parentGategory11);
+		List<SubCategory> subCategories11 = new ArrayList<SubCategory>();
+		parentGategory11.setSubCategories(subCategories11);
+		subCategories11.add(new SubCategory("其他支出", 41));
+		subCategories11.add(new SubCategory("意外丢失", 42));
+		subCategories11.add(new SubCategory("烂账丢失", 43));
+		
+		categorySpend.setParentGategories(parentGategories);
+		
+		//收入大类
+		Category categoryIncome = new Category();
+		List<ParentGategory> parentGategories2 = new ArrayList<ParentGategory>();
+		
+		ParentGategory parentGategory12 = new ParentGategory();
+		parentGategory12.setId(112);
+		parentGategory12.setValue("职业收入");
+		parentGategories2.add(parentGategory12);
+		List<SubCategory> subCategories12 = new ArrayList<SubCategory>();
+		parentGategory12.setSubCategories(subCategories12);
+		subCategories12.add(new SubCategory("工资收入", 44));
+		subCategories12.add(new SubCategory("利息收入", 45));
+		subCategories12.add(new SubCategory("加班收入", 46));
+		subCategories12.add(new SubCategory("奖金收入", 47));
+		subCategories12.add(new SubCategory("投资收入", 48));
+		subCategories12.add(new SubCategory("兼职收入", 49));
+		
+		ParentGategory parentGategory13 = new ParentGategory();
+		parentGategory13.setId(113);
+		parentGategory13.setValue("其他收入");
+		parentGategories2.add(parentGategory13);
+		List<SubCategory> subCategories13 = new ArrayList<SubCategory>();
+		parentGategory13.setSubCategories(subCategories13);
+		subCategories13.add(new SubCategory("礼金收入", 50));
+		subCategories13.add(new SubCategory("中奖收入", 51));
+		subCategories13.add(new SubCategory("意外来钱", 52));
+		subCategories13.add(new SubCategory("经营所得", 53));
+		categoryIncome.setParentGategories(parentGategories2);
 	}	
 	
 	

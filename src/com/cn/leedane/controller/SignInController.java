@@ -21,7 +21,6 @@ import com.cn.leedane.model.SignInBean;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.OperateLogService;
 import com.cn.leedane.service.SignInService;
-import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.JsonUtil;
@@ -34,9 +33,6 @@ public class SignInController extends BaseController{
 	
 	@Autowired
 	private SignInService<SignInBean> signInService;
-	
-	@Autowired
-	private UserService<UserBean> userService;
 	
 	// 操作日志
 	@Autowired

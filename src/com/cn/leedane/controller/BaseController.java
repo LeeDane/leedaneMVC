@@ -24,10 +24,10 @@ import com.cn.leedane.utils.StringUtil;
 public class BaseController {
 	
 	@Resource
-	private UserService<UserBean> userService;
+	protected UserService<UserBean> userService;
 	
 	@Resource
-	private UserHandler userHandler;
+	protected UserHandler userHandler;
 	
 	/**
 	 * 通过原先servlet方式输出json对象。

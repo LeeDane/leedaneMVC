@@ -20,7 +20,6 @@ import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.FriendService;
 import com.cn.leedane.service.OperateLogService;
-import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.EnumUtil;
 
 @Controller
@@ -31,10 +30,6 @@ public class FriendController extends BaseController{
 	
 	@Autowired
 	private FriendService<FriendBean> friendService;
-	
-	//用户信息
-	@Autowired
-	private UserService<UserBean> userService;
 
 	// 操作日志
 	@Autowired

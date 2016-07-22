@@ -18,14 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cn.leedane.cache.SystemCache;
 import com.cn.leedane.enums.LoginType;
-import com.cn.leedane.handler.UserHandler;
 import com.cn.leedane.handler.WechatHandler;
 import com.cn.leedane.model.FriendBean;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.FriendService;
 import com.cn.leedane.service.OperateLogService;
-import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EnumUtil;
@@ -36,17 +34,10 @@ import com.cn.leedane.utils.SpringUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.wechat.bean.WeixinCacheBean;
 import com.cn.leedane.wechat.util.WeixinUtil;
-import com.opensymphony.xwork2.ActionContext;
 
 @Controller
 @RequestMapping("/leedane/user")
 public class UserController extends BaseController{
-
-	@Autowired
-	private UserService<UserBean> userService;
-	
-	@Autowired
-	private UserHandler userHandler;
 	
 	@Autowired
 	private WechatHandler wechatHandler;
