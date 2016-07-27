@@ -1,12 +1,11 @@
 package com.cn.leedane.test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.cn.leedane.financial.Category;
-import com.cn.leedane.financial.ParentGategory;
-import com.cn.leedane.financial.SubCategory;
+import com.cn.leedane.model.MoodBean;
+import com.cn.leedane.utils.BeanUtil;
 
 /**
  * main方法相关的测试类
@@ -62,7 +61,7 @@ public class MainTest {
 		System.out.println(test1 == test2);*/
 		
 		//支出大类
-		Category categorySpend = new Category();
+		/*Category categorySpend = new Category();
 		List<ParentGategory> parentGategories = new ArrayList<ParentGategory>();
 		
 		ParentGategory parentGategory1 = new ParentGategory();
@@ -185,10 +184,10 @@ public class MainTest {
 		subCategories11.add(new SubCategory("意外丢失", 42));
 		subCategories11.add(new SubCategory("烂账丢失", 43));
 		
-		categorySpend.setParentGategories(parentGategories);
+		categorySpend.setParentGategories(parentGategories);*/
 		
 		//收入大类
-		Category categoryIncome = new Category();
+		/*Category categoryIncome = new Category();
 		List<ParentGategory> parentGategories2 = new ArrayList<ParentGategory>();
 		
 		ParentGategory parentGategory12 = new ParentGategory();
@@ -214,7 +213,21 @@ public class MainTest {
 		subCategories13.add(new SubCategory("中奖收入", 51));
 		subCategories13.add(new SubCategory("意外来钱", 52));
 		subCategories13.add(new SubCategory("经营所得", 53));
-		categoryIncome.setParentGategories(parentGategories2);
+		categoryIncome.setParentGategories(parentGategories2);*/
+		
+		/*String text = "酒水";
+		int i = text.indexOf(" ");
+		String s = text.substring(0, i);
+		System.out.println(s);*/
+		/*MoodBean moodBean = new MoodBean();
+		moodBean.setCanComment(true);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		BeanUtil.convertBeanToMap(moodBean, map);
+		System.out.println(1);*/
+		Double double1 = 0.5667355888261354d;
+		int i = (int)(double1 * 100);
+		System.out.println(i);
 	}	
 	
 	

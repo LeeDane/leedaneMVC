@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.crypto.Mac;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,12 +16,14 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cn.leedane.handler.CloudStoreHandler;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.utils.EmailUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.wechat.util.HttpRequestUtil;
+import com.qiniu.util.Auth;
 
 @Controller
 @RequestMapping("/leedane/tool")
@@ -118,4 +121,39 @@ public class ToolController extends BaseController{
 		printWriter(message, response);
 		return null;
 	}
+	
+	/**
+	 * 获取七牛服务器的token凭证
+	 * @return
+	 */
+	@RequestMapping("/getQiNiuToken")
+	public String getQiNiuToken(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.put("isSuccess", true);
+			message.put("message", getToken());
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
+     * 获取token 本地生成
+     * 
+     * @return
+     */
+    private String getToken() {
+    	Auth auth = Auth.create(CloudStoreHandler.ACCESSKEY, CloudStoreHandler.SECRETKEY);
+    	return auth.uploadToken(CloudStoreHandler.BUCKETNAME);
+    }
 }

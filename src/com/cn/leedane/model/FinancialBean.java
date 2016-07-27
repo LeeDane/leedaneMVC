@@ -1,5 +1,7 @@
 package com.cn.leedane.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 
 
 /**
@@ -27,16 +29,19 @@ public class FinancialBean extends RecordTimeBean{
 	/**
 	 * 一级分类
 	 */
+	@JSONField(name="one_level")
 	private String oneLevel;
 	
 	/**
 	 * 二级分类
 	 */
+	@JSONField(name="two_level")
 	private String twoLevel;
 	
 	/**
 	 * 是否有图片
 	 */
+	@JSONField(name="has_img")
 	private boolean hasImg;
 	
 	/**
@@ -57,7 +62,14 @@ public class FinancialBean extends RecordTimeBean{
     /**
      * 备注信息
      */
+    @JSONField(name="financial_desc")
     private String financialDesc;
+    
+    /**
+	 * 很重要，添加时间，用于今后的统计时间，必须
+	 */
+    @JSONField(name="addition_time")
+	private String additionTime;
 
 	public int getModel() {
 		return model;
@@ -130,6 +142,13 @@ public class FinancialBean extends RecordTimeBean{
 	public void setFinancialDesc(String financialDesc) {
 		this.financialDesc = financialDesc;
 	}
-    
+
+	public String getAdditionTime() {
+		return additionTime;
+	}
+
+	public void setAdditionTime(String additionTime) {
+		this.additionTime = additionTime;
+	}
     
 }

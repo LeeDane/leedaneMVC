@@ -37,15 +37,15 @@ import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingExcepti
  */
 @Component
 public class CloudStoreHandler {
-	private final static String ACCESSKEY = "aMgOWQCqz6CPIzjKbfLbQDbD0Jf9CD0P7DBA060W";
-	private final static String SECRETKEY = "4TlTuQqE5s8r1bn3M82-3EQmNw22KzV6oIRBL3Pr";
-	private final static String BUCKETNAME = "leedane";
+	public final static String ACCESSKEY = "aMgOWQCqz6CPIzjKbfLbQDbD0Jf9CD0P7DBA060W";
+	public final static String SECRETKEY = "4TlTuQqE5s8r1bn3M82-3EQmNw22KzV6oIRBL3Pr";
+	public final static String BUCKETNAME = "leedane";
 	final String returnBody = "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"fsize\":\"$(fsize)\""
             + ",\"fname\":\"$(fname)\",\"mimeType\":\"$(mimeType)\"}";
 	static Auth auth = Auth.create(ACCESSKEY, SECRETKEY);
 	//重用 uploadManager。一般地，只需要创建一个 uploadManager 对象
 	private static UploadManager uploadManager;
-    static String token;
+	public static String token;
     
     static{
    		token = auth.uploadToken(BUCKETNAME);

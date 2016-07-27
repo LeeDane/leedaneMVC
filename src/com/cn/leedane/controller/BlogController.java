@@ -177,10 +177,8 @@ public class BlogController extends BaseController{
 	public String paging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
 		try{
-			if(!checkParams(message, request)){
-				printWriter(message, response);
-				return null;
-			}
+			checkParams(message, request);
+			
 			JSONObject json = getJsonFromMessage(message);
 			int pageSize = JsonUtil.getIntValue(json, "pageSize"); //每页的大小
 			int lastId = JsonUtil.getIntValue(json, "last_id");

@@ -1,5 +1,7 @@
 package com.cn.leedane.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 
 /**
  * 状态的抽象类
@@ -14,6 +16,7 @@ public abstract class StatusBean extends IDBean{
 	 * -1：表示草稿，1：表示正常，0表示禁用，(其他在自身的类中注明)
 	 */
 	//@Column(columnDefinition="SMALLINT default 1", length=2, nullable=true)  //设置默认值是1，表示正常
+	@JSONField(name="create_user_id")
 	protected int status; 
 
 	

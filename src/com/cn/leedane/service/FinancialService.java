@@ -18,13 +18,40 @@ import com.cn.leedane.model.UserBean;
 public interface FinancialService<T extends IDBean>{
 	
 	/**
+	 * 保存数据
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return 返回服务器保存成功的ID
+	 */
+	public Map<String, Object> save(JSONObject jsonObject, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 更新数据
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return 
+	 */
+	public Map<String, Object> update(JSONObject jsonObject, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 删除数据
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return 
+	 */
+	public Map<String, Object> delete(JSONObject jsonObject, UserBean user, HttpServletRequest request);
+	
+	/**
 	 * 客户端数据同步
 	 * @param jo
 	 * @param user
 	 * @param request
 	 * @return 返回成功同步的数量和有冲突的数据ID数组
 	 */
-	public Map<String, Object> synchronous(JSONObject jo, UserBean user, HttpServletRequest request);
+	public Map<String, Object> synchronous(JSONObject jsonObject, UserBean user, HttpServletRequest request);
 	
 	/**
 	 * 客户端强制更新数据(
@@ -38,5 +65,23 @@ public interface FinancialService<T extends IDBean>{
 	 * @param request
 	 * @return 
 	 */
-	public Map<String, Object> force(JSONObject jo, UserBean user, HttpServletRequest request);
+	public Map<String, Object> force(JSONObject jsonObject, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 获取指定年份的数据
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return 返回该年所有的记账记录
+	 */
+	public Map<String, Object> getByYear(JSONObject jsonObject, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 获取该用户全部的数据
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return 返回该用户所有的记账记录
+	 */
+	public Map<String, Object> getAll(JSONObject jsonObject, UserBean user, HttpServletRequest request);
 }
