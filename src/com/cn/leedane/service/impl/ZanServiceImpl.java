@@ -77,7 +77,7 @@ public class ZanServiceImpl implements ZanService<ZanBean>{
 		int tableId = JsonUtil.getIntValue(jo, "table_id", 0);
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
-		if(SqlUtil.getBooleanByList(zanMapper.exists(tableName, tableId, user.getId()))){
+		if(SqlUtil.getBooleanByList(zanMapper.exists(ZanBean.class, tableName, tableId, user.getId()))){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;
@@ -226,7 +226,7 @@ public class ZanServiceImpl implements ZanService<ZanBean>{
 		boolean result = false;
 		ZanBean zanBean = zanMapper.findById(ZanBean.class, zid);
 		if(zanBean != null && zanBean.getCreateUserId() == createUserId){
-			result = zanMapper.delete(zanBean) > 0;
+			result = zanMapper.deleteById(ZanBean.class, zid) > 0;
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
 			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);

@@ -85,7 +85,7 @@ public class LoginInterceptor implements HandlerInterceptor{
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object arg2) throws Exception {
-		//logger.info("LoginInterceptor:preHandle");
+		logger.info("LoginInterceptor:preHandle");
 		request.setCharacterEncoding("utf-8");
 		//false将对请求进行拦截，没有下一步的操作，true会将请求提交给controller进行下一步的处理
 

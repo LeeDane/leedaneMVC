@@ -6,7 +6,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.dom4j.DocumentException;
+import org.springframework.stereotype.Service;
 
+@Service
 public abstract class BaseXMLWechatService {
 	
 	HttpServletRequest request;

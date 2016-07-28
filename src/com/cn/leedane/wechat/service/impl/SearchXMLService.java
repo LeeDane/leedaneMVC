@@ -10,16 +10,17 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+import com.cn.leedane.handler.MoodHandler;
+import com.cn.leedane.handler.WechatHandler;
+import com.cn.leedane.mapper.BlogMapper;
+import com.cn.leedane.mapper.MoodMapper;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.SpringUtil;
 import com.cn.leedane.utils.StringUtil;
-import com.cn.leedane.handler.MoodHandler;
-import com.cn.leedane.handler.WechatHandler;
-import com.cn.leedane.mapper.BlogMapper;
-import com.cn.leedane.mapper.MoodMapper;
 import com.cn.leedane.wechat.bean.News;
 import com.cn.leedane.wechat.bean.NewsMessage;
 import com.cn.leedane.wechat.service.BaseXMLWechatService;
@@ -32,6 +33,7 @@ import com.cn.leedane.wechat.util.WeixinUtil;
  * 2016年4月7日 下午4:14:56
  * Version 1.0
  */
+@Repository
 public class SearchXMLService extends BaseXMLWechatService {
 
 	@Autowired
@@ -61,7 +63,6 @@ public class SearchXMLService extends BaseXMLWechatService {
 	@Autowired
 	private MoodMapper moodMapper;
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	protected String execute() {
 		String r = "";
@@ -75,11 +76,11 @@ public class SearchXMLService extends BaseXMLWechatService {
 			}
 			
 			if(moodHandler == null){
-				moodHandler = (MoodHandler) SpringUtil.getBean("moodMapper");
+				moodHandler = (MoodHandler) SpringUtil.getBean("moodHandler");
 			}
 			
 			if(moodMapper == null){
-				moodMapper = (MoodMapper) SpringUtil.getBean("moodService");
+				moodMapper = (MoodMapper) SpringUtil.getBean("moodMapper");
 			}
 			r = initSearchNewsMessage(ToUserName, FromUserName,Content);
 		}else{

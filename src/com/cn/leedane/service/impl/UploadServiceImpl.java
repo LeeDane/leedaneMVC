@@ -51,7 +51,7 @@ public class UploadServiceImpl implements UploadService<UploadBean>{
 	public boolean cancel(UploadBean upload, UserBean user, HttpServletRequest request) {
 		logger.info("UploadServiceImpl-->cancel():upload=" +upload.toString() +", user=" +user.getAccount());
 		try {
-			boolean result = uploadMapper.deleteSql(EnumUtil.getBeanClass(DataTableType.上传.value), " where table_uuid = ? and table_name = ? and f_order = ? and create_user_id = ? and serial_number= ? ", upload.getTableUuid(), upload.getTableName(), upload.getfOrder(), user.getId(), upload.getSerialNumber()) > 0;
+			boolean result = uploadMapper.deleteSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(DataTableType.上传.value)), " where table_uuid = ? and table_name = ? and f_order = ? and create_user_id = ? and serial_number= ? ", upload.getTableUuid(), upload.getTableName(), upload.getfOrder(), user.getId(), upload.getSerialNumber()) > 0;
 				if(result){
 					File file = new File(upload.getPath());
 					if(file.exists()){

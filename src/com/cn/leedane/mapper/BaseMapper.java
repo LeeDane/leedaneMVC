@@ -62,7 +62,7 @@ public interface BaseMapper<T> {
 	 * @return
 	 */
     @SelectProvider(type = SqlProvider.class, method = "exists")
-	public List<Map<String, Object>> exists(String tableName, int tableId, int userId);
+	public List<Map<String, Object>> exists(Class<?> clazz, String tableName, int tableId, int userId);
 	
 	/**
 	 * 判断记录在数据中是否存在

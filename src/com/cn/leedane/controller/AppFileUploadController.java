@@ -25,7 +25,7 @@ import com.cn.leedane.utils.EnumUtil.ResponseCode;
 import com.cn.leedane.utils.StringUtil;
 
 @Controller
-@RequestMapping("/leedane/appFileUpload")
+@RequestMapping("/leedane/appUpload")
 public class AppFileUploadController extends BaseController{
 
 	/**

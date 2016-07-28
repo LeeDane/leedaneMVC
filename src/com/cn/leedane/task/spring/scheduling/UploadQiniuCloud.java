@@ -55,7 +55,7 @@ public class UploadQiniuCloud {
 					if(fileBeans != null && fileBeans.size() >0){
 						for(Map<String, Object> m: fileBeans){
 							if(m.containsKey("id")){
-								filePathMapper.updateSql(EnumUtil.getBeanClass(DataTableType.文件.value), " set qiniu_path=? , is_upload_qiniu=?, modify_time=? where id=? ", ConstantsUtil.QINIU_SERVER_URL + StringUtil.changeNotNull(m.get("path")), ConstantsUtil.STATUS_NORMAL, new Date(), StringUtil.changeObjectToInt(m.get("id")));
+								filePathMapper.updateSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(DataTableType.文件.value)), " set qiniu_path=? , is_upload_qiniu=?, modify_time=? where id=? ", ConstantsUtil.QINIU_SERVER_URL + StringUtil.changeNotNull(m.get("path")), ConstantsUtil.STATUS_NORMAL, new Date(), StringUtil.changeObjectToInt(m.get("id")));
 							}
 						}
 					}

@@ -66,7 +66,7 @@ public class AttentionServiceImpl implements AttentionService<AttentionBean>{
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
 	
-		if(SqlUtil.getBooleanByList(attentionMapper.exists(tableName, tableId, user.getId()))){
+		if(SqlUtil.getBooleanByList(attentionMapper.exists(AttentionBean.class, tableName, tableId, user.getId()))){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;
@@ -124,7 +124,7 @@ public class AttentionServiceImpl implements AttentionService<AttentionBean>{
 		boolean result = false;
 		AttentionBean attentionBean = attentionMapper.findById(AttentionBean.class, aid);
 		if(attentionBean != null && attentionBean.getCreateUserId() == createUserId){
-			result = attentionMapper.delete(attentionBean) > 0;
+			result = attentionMapper.deleteById(AttentionBean.class, attentionBean.getId()) > 0;
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
 			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);

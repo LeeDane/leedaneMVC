@@ -196,7 +196,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		}
 		try {
 			//moodMapper.executeSQL("update "+DataTableType.心情.value+" set status = ? where id = ? ", status, mid);
-			result = moodMapper.updateSql(EnumUtil.getBeanClass(DataTableType.心情.value), " set status = ? where id = ? ", status, mid) > 0;
+			result = moodMapper.updateSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(DataTableType.心情.value)), " set status = ? where id = ? ", status, mid) > 0;
 			if(status == ConstantsUtil.STATUS_NORMAL){
 				//通过观察者的模式发送消息通知
 				Watched watched = new ConcreteWatched();       
@@ -244,7 +244,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			}
 		}
 		
-		boolean result = moodMapper.delete(moodBean) > 0;
+		boolean result = moodMapper.deleteById(MoodBean.class, mid) > 0;
 		// 删除心情日志信息
 		String subject = user.getAccount() + "删除了心情，心情id为:" + mid+StringUtil.getSuccessOrNoStr(result);
 		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "deleteMood()", 1 , 0);

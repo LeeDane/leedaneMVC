@@ -129,7 +129,7 @@ public class GalleryServiceImpl implements GalleryService<GalleryBean> {
 			return message;
 		}
 		
-		boolean result = galleryMapper.delete(galleryBean) > 0;
+		boolean result = galleryMapper.deleteById(GalleryBean.class, galleryId) > 0;
 		if(result){
 			message.put("isSuccess", true);
 		}else{

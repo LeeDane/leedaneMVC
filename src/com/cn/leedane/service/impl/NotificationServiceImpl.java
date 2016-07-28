@@ -155,7 +155,7 @@ public class NotificationServiceImpl implements NotificationService<Notification
 		
 		boolean result = false;
 		if(notificationBean != null){
-			result = notificationMapper.delete(notificationBean) > 0;
+			result = notificationMapper.deleteById(NotificationBean.class, nid) > 0;
 			if(result){
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除通知成功.value));
 			}else{

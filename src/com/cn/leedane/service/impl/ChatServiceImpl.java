@@ -244,7 +244,7 @@ public class ChatServiceImpl implements ChatService<ChatBean> {
 		boolean result = false;
 		if(chatBean != null){
 			content = chatBean.getContent();
-			result = chatMapper.delete(chatBean) > 0;
+			result = chatMapper.deleteById(ChatBean.class, chatBean.getId()) > 0;
 			if(result){
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除聊天记录成功.value));
 			}else{

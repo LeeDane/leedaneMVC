@@ -168,7 +168,7 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 	@Override
 	public int updateReadNum(int id, int num) {
 		logger.info("BlogServiceImpl-->updateReadNum():id="+id+",num="+num);
-		return this.blogMapper.updateSql(EnumUtil.getBeanClass(EnumUtil.DataTableType.博客.value), " set read_number = ? , is_read = true where id = ?", num, id);
+		return this.blogMapper.updateSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(EnumUtil.DataTableType.博客.value)), " set read_number = ? , is_read = true where id = ?", num, id);
 	}
 
 	@Override

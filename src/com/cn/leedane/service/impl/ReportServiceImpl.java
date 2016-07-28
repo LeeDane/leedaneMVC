@@ -59,7 +59,7 @@ public class ReportServiceImpl implements ReportService<ReportBean>{
 			return message;
 		}
 		
-		if(SqlUtil.getBooleanByList(reportMapper.exists(tableName, tableId, user.getId()))){
+		if(SqlUtil.getBooleanByList(reportMapper.exists(ReportBean.class, tableName, tableId, user.getId()))){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;
@@ -103,7 +103,7 @@ public class ReportServiceImpl implements ReportService<ReportBean>{
 		int tableId = JsonUtil.getIntValue(jo, "table_id");
 			
 		try {
-			return reportMapper.deleteSql(EnumUtil.getBeanClass(DataTableType.举报.value), " where table_id = ? and table_name = ? and create_user_id=?", tableId, tableName, user.getId()) > 0;
+			return reportMapper.deleteSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(DataTableType.举报.value)), " where table_id = ? and table_name = ? and create_user_id=?", tableId, tableName, user.getId()) > 0;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

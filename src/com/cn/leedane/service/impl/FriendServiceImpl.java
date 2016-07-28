@@ -102,7 +102,7 @@ public class FriendServiceImpl implements FriendService<FriendBean> {
 		int fromUserId = friendBean.getFromUserId();
 		boolean result = false;
 		if(friendBean != null){
-			result = friendMapper.delete(friendBean) > 0;
+			result = friendMapper.deleteById(FriendBean.class, fid) > 0;
 		}
 		if(result){
 			//清空redis用户的缓存

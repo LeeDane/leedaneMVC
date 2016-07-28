@@ -24,7 +24,6 @@ import com.cn.leedane.cache.SystemCache;
 import com.cn.leedane.model.BlogBean;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.BlogService;
-import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
@@ -244,11 +243,9 @@ public class BlogController extends BaseController{
 	@RequestMapping("/getContent")
 	public String getContent(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		System.out.println("dddd");
 		try{
-			if(!checkParams(message, request)){
-				printWriter(message, response);
-				return null;
-			}
+			checkParams(message, request);
 			String blogId = request.getParameter("blog_id");
 			if(StringUtil.isNull(blogId)) {
 				printWriter(message, response);

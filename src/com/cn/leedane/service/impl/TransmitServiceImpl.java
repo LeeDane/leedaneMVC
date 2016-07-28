@@ -208,7 +208,7 @@ public class TransmitServiceImpl implements TransmitService<TransmitBean>{
 		boolean result = false;
 		TransmitBean transmitBean = transmitMapper.findById(TransmitBean.class, tid);
 		if(transmitBean != null && transmitBean.getCreateUserId() == createUserId){
-			result = transmitMapper.delete(transmitBean) > 0;
+			result = transmitMapper.deleteById(TransmitBean.class, tid) > 0;
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
 			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);
@@ -325,7 +325,7 @@ public class TransmitServiceImpl implements TransmitService<TransmitBean>{
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
 		
-		boolean result = transmitMapper.updateSql(EnumUtil.getBeanClass(tableName), " set can_transmit=? where id=?", canTransmit, tableId) > 0;
+		boolean result = transmitMapper.updateSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(tableName)), " set can_transmit=? where id=?", canTransmit, tableId) > 0;
 		
 		if(result){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.更新转发状态成功.value));

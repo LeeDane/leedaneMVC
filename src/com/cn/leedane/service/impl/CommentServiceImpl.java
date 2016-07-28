@@ -497,7 +497,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
 		
-		boolean result = commentMapper.updateSql(EnumUtil.getBeanClass(tableName), " set can_comment=? where id=?", canComment, tableId) > 0;
+		boolean result = commentMapper.updateSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(tableName)), " set can_comment=? where id=?", canComment, tableId) > 0;
 		
 		if(result){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.更新评论状态成功.value));

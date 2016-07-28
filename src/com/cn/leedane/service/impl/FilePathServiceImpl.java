@@ -487,7 +487,7 @@ public class FilePathServiceImpl implements FilePathService<FilePathBean> {
 	@Override
 	public boolean updateUploadQiniu(int fId, String qiniuPath) {
 		logger.info("FilePathServiceImpl-->updateUploadQiniu():文件ID="+fId+",文件路径："+qiniuPath);
-		return filePathMapper.updateSql(EnumUtil.getBeanClass(DataTableType.文件.value), " set qiniu_path=? , is_upload_qiniu=?, modify_time=? where id=? ", qiniuPath, ConstantsUtil.STATUS_NORMAL, new Date(), fId) > 0;
+		return filePathMapper.updateSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(DataTableType.文件.value)), " set qiniu_path=? , is_upload_qiniu=?, modify_time=? where id=? ", qiniuPath, ConstantsUtil.STATUS_NORMAL, new Date(), fId) > 0;
 	}
 	@Override
 	public List<Map<String, Object>> executeSQL(String sql, Object... params) {

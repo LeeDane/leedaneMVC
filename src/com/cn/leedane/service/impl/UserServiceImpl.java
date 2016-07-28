@@ -912,7 +912,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 
 	@Override
 	public boolean delete(UserBean t) {
-		return userMapper.delete(t) > 0;
+		return userMapper.deleteById(UserBean.class, t.getId()) > 0;
 	}
 
 }

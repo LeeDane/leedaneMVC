@@ -85,6 +85,20 @@ public class EnumUtil {
 	}
 	
 	/**
+	 * 获取表的中文名
+	 * @param tableName 表的英文名
+	 * @return
+	 */
+	public static String getTableCNName(String tableName){
+		for(DataTableType ts: DataTableType.values()){
+			if(ts.value.equals(tableName)){
+				return ts.name();
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * 数据库表类型
 	 * @author LeeDane
 	 * 2016年3月22日 上午10:16:30
@@ -120,12 +134,12 @@ public class EnumUtil {
 	
 	/**
 	 * 获取BeanClass对象
-	 * @param type
+	 * @param tableCNName 表的中文名
 	 * @return
 	 */
-	public static Class<?> getBeanClass(String type){
+	public static Class<?> getBeanClass(String tableCNName){
 		for(BeanClassType ts: BeanClassType.values()){
-			if(ts.name().equals(type)){
+			if(ts.name().equals(tableCNName)){
 				return ts.value;
 			}
 		}

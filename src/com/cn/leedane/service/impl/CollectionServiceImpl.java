@@ -62,7 +62,7 @@ public class CollectionServiceImpl implements CollectionService<CollectionBean>{
 		String tableName = JsonUtil.getStringValue(jo, "table_name");
 		int tableId = JsonUtil.getIntValue(jo, "table_id");
 		
-		if(SqlUtil.getBooleanByList(collectionMapper.exists(tableName, tableId, user.getId()))){
+		if(SqlUtil.getBooleanByList(collectionMapper.exists(CollectionBean.class, tableName, tableId, user.getId()))){
 			return false;
 		}
 		CollectionBean bean = new CollectionBean();
@@ -100,7 +100,7 @@ public class CollectionServiceImpl implements CollectionService<CollectionBean>{
 		boolean result = false;
 		CollectionBean collectionBean = collectionMapper.findById(CollectionBean.class, cid);
 		if(collectionBean != null && collectionBean.getCreateUserId() == createUserId){
-			result = collectionMapper.delete(collectionBean) > 0;
+			result = collectionMapper.deleteById(CollectionBean.class, collectionBean.getId()) > 0;
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
 			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);

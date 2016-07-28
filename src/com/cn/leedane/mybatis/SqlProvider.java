@@ -13,6 +13,7 @@ import com.cn.leedane.mybatis.table.TableFormat;
 import com.cn.leedane.mybatis.table.annotation.Column;
 import com.cn.leedane.mybatis.table.annotation.Table;
 import com.cn.leedane.mybatis.table.impl.HumpToUnderLineFormat;
+import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.StringUtil;
 
 public class SqlProvider {
@@ -353,7 +354,7 @@ public class SqlProvider {
 		    boolean b = ((Boolean) param).booleanValue();
 		    return b ? 1 : 0;
 		} else if (param instanceof Date) {
-		    
+		    return "str_to_date('"+DateUtil.DateToString((Date)param)+"', '%Y-%c-%d %H:%i:%s')";
 		} 
 		
 		try {
