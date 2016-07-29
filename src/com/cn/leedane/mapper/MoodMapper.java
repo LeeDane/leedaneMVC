@@ -1,8 +1,5 @@
 package com.cn.leedane.mapper;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.stereotype.Repository;
 
 import com.cn.leedane.model.MoodBean;

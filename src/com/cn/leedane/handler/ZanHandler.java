@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
+import com.cn.leedane.utils.SqlUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.model.ZanBean;
@@ -188,13 +189,8 @@ public class ZanHandler {
 	 * @return
 	 */
 	private int getCurrentZanNumber(int tableId, String tableName){
-		int zanNumber = 0;
 		//获取数据库中所有赞的数量
-		List<Map<String, Object>> numbers = zanService.executeSQL("select count(id) number from "+DataTableType.赞.value+" where table_name=? and table_id = ?", tableName, tableId);
-		if(numbers != null){
-			zanNumber = StringUtil.changeObjectToInt(numbers.get(0).get("number"));	
-		}
-		return zanNumber;
+		return SqlUtil.getTotalByList(zanService.executeSQL("select count(*) ct from "+DataTableType.赞.value+" where table_name=? and table_id = ?", tableName, tableId));
 	}
 	
 	

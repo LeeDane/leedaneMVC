@@ -12,6 +12,7 @@ import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.service.CommentService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
+import com.cn.leedane.utils.SqlUtil;
 import com.cn.leedane.utils.StringUtil;
 
 /**
@@ -38,16 +39,15 @@ public class CommentHandler {
 		 */
 		RedisUtil redisUtil = RedisUtil.getInstance();
 		String key = getCommentKey(tableName, tableId);
-		String count = null;
+		int count = 0;
 		//还没有添加到redis中
 		if(StringUtil.isNull(redisUtil.getString(key))){
 			//获取数据库中所有评论的数量
-			List<Map<String, Object>> numbers = commentService.executeSQL("select count(id) number from "+DataTableType.评论.value+" where table_name=? and table_id = ?", tableName, tableId);
-			count = String.valueOf(StringUtil.changeObjectToInt(numbers.get(0).get("number")));	
+			count = SqlUtil.getTotalByList(commentService.executeSQL("select count(*) ct from "+DataTableType.评论.value+" where table_name=? and table_id = ?", tableName, tableId));	
 		}else{
-			count = String.valueOf(Integer.parseInt(redisUtil.getString(key)) + 1);
+			count = Integer.parseInt(redisUtil.getString(key)) + 1;
 		}
-		redisUtil.addString(key, count);
+		redisUtil.addString(key, String.valueOf(count));
 	}
 	
 	/**

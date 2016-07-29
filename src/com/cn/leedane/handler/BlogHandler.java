@@ -92,7 +92,7 @@ public class BlogHandler {
 			sql.append(" from "+DataTableType.博客.value+" b");
 			sql.append(" where b.id=? ");
 			sql.append(" and b.status = ?");
-			//list = blogService.executeSQL(sql.toString(), blogId, ConstantsUtil.STATUS_NORMAL);
+			list = blogService.executeSQL(sql.toString(), blogId, ConstantsUtil.STATUS_NORMAL);
 			jsonArray = JSONArray.fromObject(list);
 			redisUtil.addString(blogKey, jsonArray.toString());
 		}else{

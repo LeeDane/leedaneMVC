@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.cn.leedane.model.MoodBean;
+import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.utils.BeanUtil;
 
 /**
@@ -225,9 +226,11 @@ public class MainTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		BeanUtil.convertBeanToMap(moodBean, map);
 		System.out.println(1);*/
-		Double double1 = 0.5667355888261354d;
+		/*Double double1 = 0.5667355888261354d;
 		int i = (int)(double1 * 100);
-		System.out.println(i);
+		System.out.println(i);*/
+		RedisUtil redisUtil = new RedisUtil();
+		redisUtil.clearAll();
 	}	
 	
 	

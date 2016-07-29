@@ -302,7 +302,7 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 	}
 
 	@Override
-	public List<Map<String, Object>> executeSQL(String sql, Object... params) {
+	public List<Map<String, Object>> executeSQL(String sql, Object... params){
 		return blogMapper.executeSQL(sql, params);
 	}
 }

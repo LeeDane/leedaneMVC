@@ -300,11 +300,11 @@ public class SqlProvider {
 	 * @return
 	 */
 	public String getTotal(String tableName, String where){
-		return "select count(*) st from "+tableName +" " +StringUtil.changeNotNull(where);
+		return "select count(*) ct from "+tableName +" " +StringUtil.changeNotNull(where);
 	}
 	
 	public String getTotalByUser(String tableName, int userId){
-		return "select count(*) st from "+tableName +" where create_user_id="+userId;
+		return "select count(*) ct from "+tableName +" where create_user_id="+userId;
 	}
 	
 	public String exists(Class<?> clazz, String tableName, int tableId, int userId){

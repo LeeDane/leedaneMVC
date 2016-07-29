@@ -218,7 +218,7 @@ public class FileUtil {
                 result[1] = bi.getHeight(); //获得 高度
                 result[2] = file.length(); //获取文件大小
                 //删除文件
-                //file.delete();
+                file.delete();
             }
         }
         

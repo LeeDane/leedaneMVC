@@ -549,7 +549,6 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			message.put("responseCode", EnumUtil.ResponseCode.某些参数为空.value);
 			return message;
 		}
-		
 		boolean result = false;
 		
 		//生成统一的uuid
@@ -559,8 +558,8 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		String[] linkArray = links.split(";");
 		FilePathBean filePathBean = null;
 		long[] widthAndHeight;
-		int width, height;
-		long length;
+		int width = 0, height = 0;
+		long length = 0;
 		for(int i = 0; i< linkArray.length; i++){
 			//获取网络图片
 			widthAndHeight = FileUtil.getNetWorkImgAttr(linkArray[i]);
@@ -568,24 +567,23 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 				width = (int) widthAndHeight[0];
 				height = (int) widthAndHeight[1];
 				length = widthAndHeight[2];
-				if(width > 0 && height > 0){
-					filePathBean = new FilePathBean();
-					filePathBean.setCreateTime(new Date());
-					filePathBean.setCreateUserId(user.getId());
-					filePathBean.setPicOrder(i);
-					filePathBean.setPath(StringUtil.getFileName(linkArray[i]));
-					filePathBean.setQiniuPath(linkArray[i]);
-					filePathBean.setUploadQiniu(ConstantsUtil.STATUS_NORMAL);
-					filePathBean.setPicSize(ConstantsUtil.DEFAULT_PIC_SIZE); //source
-					filePathBean.setWidth(width);
-					filePathBean.setHeight(height);
-					filePathBean.setLenght(length);
-					filePathBean.setStatus(ConstantsUtil.STATUS_NORMAL);
-					filePathBean.setTableName(DataTableType.心情.value);
-					filePathBean.setTableUuid(uuid);
-					result = filePathMapper.save(filePathBean) > 0;
-				}
 			}
+			
+			filePathBean = new FilePathBean();
+			filePathBean.setCreateTime(new Date());
+			filePathBean.setCreateUserId(user.getId());
+			filePathBean.setPicOrder(i);
+			filePathBean.setPath(StringUtil.getFileName(linkArray[i]));
+			filePathBean.setQiniuPath(linkArray[i]);
+			filePathBean.setUploadQiniu(ConstantsUtil.STATUS_NORMAL);
+			filePathBean.setPicSize(ConstantsUtil.DEFAULT_PIC_SIZE); //source
+			filePathBean.setWidth(width);
+			filePathBean.setHeight(height);
+			filePathBean.setLenght(length);
+			filePathBean.setStatus(ConstantsUtil.STATUS_NORMAL);
+			filePathBean.setTableName(DataTableType.心情.value);
+			filePathBean.setTableUuid(uuid);
+			result = filePathMapper.save(filePathBean) > 0;
 		}
 		
 		if(result){
