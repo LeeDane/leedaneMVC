@@ -20,12 +20,15 @@ import javax.servlet.ServletContextEvent;
 
 import org.springframework.web.context.ContextLoaderListener;
 
+import com.cn.leedane.cache.SystemCache;
+import com.cn.leedane.model.OptionBean;
+import com.cn.leedane.rabbitmq.RecieveMessage;
+import com.cn.leedane.rabbitmq.recieve.IRecieve;
+import com.cn.leedane.rabbitmq.recieve.LogRecieve;
+import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.utils.CommonUtil;
 import com.cn.leedane.utils.SpringUtil;
 import com.cn.leedane.utils.sensitiveWord.SensitiveWordInit;
-import com.cn.leedane.cache.SystemCache;
-import com.cn.leedane.model.OptionBean;
-import com.cn.leedane.redis.util.RedisUtil;
 public class CacheContextLoaderListener extends ContextLoaderListener{
 
 	/**
@@ -41,9 +44,32 @@ public class CacheContextLoaderListener extends ContextLoaderListener{
 		loadOptionTable(); //加载选项表中的数据
 		loadFilterUrls(); //加载过滤的url地址
 		loadLeeDaneProperties(); // 加载leedane.properties文件
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				startRabbitMqLogListener(); //异步启动rabbitmq的操作日志队列的监听
+			}
+		}).start();
+		
 		SensitiveWordInit.getInstance(); //加载敏感词库
 	}
 	
+	/**
+	 * 启动rabbitmq队列的监听
+	 */
+	private void startRabbitMqLogListener() {
+		
+		IRecieve recieve = new LogRecieve();
+		try {
+			RecieveMessage recieveMessage = new RecieveMessage(recieve);
+			recieveMessage.getMsg();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+
 	/**
 	 * 检查redis服务器有没有打开
 	 */
