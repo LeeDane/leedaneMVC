@@ -131,4 +131,12 @@ public interface BlogService <T extends IDBean>{
 	 * @return
 	 */
 	public Map<String, Object> addTag(JSONObject jo, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 获取博客对象列表
+	 * @param sql
+	 * @param params
+	 * @return
+	 */
+	public List<BlogBean> getBlogBeans(String sql, Object ...params);
 }

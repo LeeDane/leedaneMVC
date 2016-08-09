@@ -56,7 +56,7 @@ public class BatchDealController extends BaseController{
 		}*/
 		Map<String, Object> message = new HashMap<String, Object>();
 		for(int i = 1504;i > 0; i--){
-			List<Map<String, Object>> blogs = blogService.executeSQL("select id, digest from "+DataTableType.博客.value+" where id=?", i);
+			List<BlogBean> blogs = blogService.getBlogBeans("select id, digest from "+DataTableType.博客.value+" where id=?", i);
 			if(!blogs.isEmpty() && blogs.size() >0){
 				List<BlogBean> blogs2 = new ArrayList<BlogBean>(); //blogService.executeHQL("BlogBean", "where digest = '"+StringUtil.changeNotNull(blogs.get(0).get("digest"))+"' and id != "+StringUtil.changeObjectToInt(blogs.get(0).get("id")));
 				if(blogs2.size() > 0){

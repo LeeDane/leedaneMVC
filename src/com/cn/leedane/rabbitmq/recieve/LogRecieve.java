@@ -7,7 +7,7 @@ import com.cn.leedane.utils.SpringUtil;
 /**
  * 日志消费者
  * @author LeeDane
-`* 2016年8月5日 下午3:27:02
+ * 2016年8月5日 下午3:27:02
  * Version 1.0
  */
 public class LogRecieve implements IRecieve{

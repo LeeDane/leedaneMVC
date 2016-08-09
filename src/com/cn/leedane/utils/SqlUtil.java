@@ -30,7 +30,7 @@ public class SqlUtil {
 	public static int getTotalByList(List<Map<String, Object>> list) {
 		int total = 0;
 		if(!CollectionUtils.isEmpty(list)){
-			total = StringUtil.changeObjectToInt(list.get(0).get("st"));
+			total = StringUtil.changeObjectToInt(list.get(0).get("ct"));
 		}
 		return total;
 	}

@@ -305,4 +305,9 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 	public List<Map<String, Object>> executeSQL(String sql, Object... params){
 		return blogMapper.executeSQL(sql, params);
 	}
+
+	@Override
+	public List<BlogBean> getBlogBeans(String sql, Object... params) {
+		return  blogMapper.getBeans(sql, params);
+	}
 }

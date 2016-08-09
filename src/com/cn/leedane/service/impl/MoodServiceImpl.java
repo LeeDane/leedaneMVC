@@ -47,6 +47,9 @@ import com.cn.leedane.observer.ConcreteWatcher;
 import com.cn.leedane.observer.Watched;
 import com.cn.leedane.observer.Watcher;
 import com.cn.leedane.observer.template.UpdateMoodTemplate;
+import com.cn.leedane.rabbitmq.SendMessage;
+import com.cn.leedane.rabbitmq.send.AddReadSend;
+import com.cn.leedane.rabbitmq.send.ISend;
 import com.cn.leedane.service.FilePathService;
 import com.cn.leedane.service.FriendService;
 import com.cn.leedane.service.MoodService;
@@ -414,7 +417,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 	public Map<String, Object> detail(JSONObject jo, UserBean user,
 			HttpServletRequest request, String picSize){
 		logger.info("MoodServiceImpl-->detail():jsonObject=" +jo.toString() +", user=" +user.getAccount());
-		int mid = JsonUtil.getIntValue(jo, "mid", 0); //心情ID
+		final int mid = JsonUtil.getIntValue(jo, "mid", 0); //心情ID
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
 		try {
@@ -429,6 +432,17 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 				message.put("isSuccess", true);
 				//从Redis缓存直接获取
 				message.put("message", list);
+				
+				//把更新读的信息提交到Rabbitmq队列处理
+				new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						ISend send = new AddReadSend(moodMapper.findById(MoodBean.class, mid));
+						SendMessage sendMessage = new SendMessage(send);
+						sendMessage.sendMsg();
+					}
+				}).start();
 			}else{
 				//再次清空redis缓存
 				moodHandler.delete(mid, null, null);

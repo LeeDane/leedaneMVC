@@ -23,6 +23,7 @@ public interface IRecieve {
 	/**
 	 * 执行队列的操作
 	 * @param obj
+	 * @return 返回该操作是否已经处理成功
 	 */
 	public boolean excute(Object obj);
 

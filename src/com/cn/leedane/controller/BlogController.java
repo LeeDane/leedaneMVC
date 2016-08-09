@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cn.leedane.cache.SystemCache;
 import com.cn.leedane.model.BlogBean;
 import com.cn.leedane.model.UserBean;
+import com.cn.leedane.rabbitmq.SendMessage;
+import com.cn.leedane.rabbitmq.send.AddReadSend;
+import com.cn.leedane.rabbitmq.send.ISend;
 import com.cn.leedane.service.BlogService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
@@ -246,27 +249,36 @@ public class BlogController extends BaseController{
 		System.out.println("dddd");
 		try{
 			checkParams(message, request);
-			String blogId = request.getParameter("blog_id");
-			if(StringUtil.isNull(blogId)) {
+			String blog_id = request.getParameter("blog_id");
+			if(StringUtil.isNull(blog_id)) {
 				printWriter(message, response);
 				return null;
 			}
-			int blog_id = Integer.parseInt(blogId);
+			int blogId = Integer.parseInt(blog_id);
 			
-			if(blog_id < 1){
+			if(blogId < 1){
 				printWriter(message, response);
 				return null;
 			}
 			//int blog_id = 1;
 			String sql = "select content, read_number from "+DataTableType.博客.value+" where status = ? and id = ?";
-			List<Map<String,Object>> r = blogService.executeSQL(sql, ConstantsUtil.STATUS_NORMAL, blog_id);				
+			List<BlogBean> r = blogService.getBlogBeans(sql, ConstantsUtil.STATUS_NORMAL, blog_id);				
 			if(r.size() == 1){
-				Map<String,Object> map = r.get(0);
-				//更新读取数量
-				int readNum = StringUtil.changeObjectToInt(map.get("read_number"));
-				blogService.updateReadNum(blog_id, readNum + 1);
-				if(map.containsKey("content")){
-					request.setAttribute("content", map.get("content"));
+				final BlogBean bean = r.get(0);
+				
+				//把更新读的信息提交到Rabbitmq队列处理
+				new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						ISend send = new AddReadSend(bean);
+						SendMessage sendMessage = new SendMessage(send);
+						sendMessage.sendMsg();
+					}
+				}).start();
+				
+				if(StringUtil.isNotNull(bean.getContent())){
+					request.setAttribute("content", bean.getContent());
 					return "content-page";
 				}
 			}
