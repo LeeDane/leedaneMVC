@@ -10,6 +10,8 @@ WebContent/WEB-INF/classes
 src/*.xml
 src/com/cn/leedane/utils/ConstantsUtil.java
 src/com/qiniu
+src/com/cn/leedane/osc
+src/com/cn/leedane/weibo
 WebContent/test
 build
 logs
