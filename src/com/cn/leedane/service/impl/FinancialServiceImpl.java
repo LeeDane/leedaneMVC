@@ -26,7 +26,6 @@ import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.FinancialService;
 import com.cn.leedane.service.OperateLogService;
 import com.cn.leedane.utils.ConstantsUtil;
-import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.StringUtil;
@@ -140,11 +139,11 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 	public Map<String, Object> synchronous(JSONObject jo, UserBean user,
 			HttpServletRequest request) {
 		logger.info("FinancialServiceImpl-->synchronous():jsonObject=" +jo.toString() +", user=" +user.getAccount());
-		List<AppFinancialBean> appFinancialBeans = getListValue(jo, "datas");
+		List<FinancialBean> FinancialBeans = getListValue(jo, "datas");
 		
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
-		if(CollectionUtils.isEmpty(appFinancialBeans)){
+		if(CollectionUtils.isEmpty(FinancialBeans)){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有要同步的数据.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有要同步的数据.value);
 			message.put("isSuccess", true);
@@ -158,24 +157,24 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		
 		int fId = 0;
 		FinancialBean webBean;
-		for(AppFinancialBean appFinancialBean: appFinancialBeans){
-			fId = appFinancialBean.getId();
+		for(FinancialBean FinancialBean: FinancialBeans){
+			fId = FinancialBean.getId();
 			//ID大于0说明是服务器上的数据
 			if(fId > 0){
 				webBean = financialMapper.findById(FinancialBean.class, fId);
 				if(webBean == null){
 					deletes.add(fId);
 				}else{
-					if(hasChange(appFinancialBean, webBean)){
+					if(hasChange(FinancialBean, webBean)){
 						updates.add(fId);
 					}
 				}
 			}else{
-				FinancialBean financialBean = (FinancialBean)appFinancialBean;
+				FinancialBean financialBean = (FinancialBean)FinancialBean;
 				financialBean.setCreateTime(new Date());
 				if(financialMapper.save(financialBean) > 0){
 					Map<String, Integer> map = new HashMap<String, Integer>();
-					map.put("localId", appFinancialBean.getId());
+					map.put("localId", FinancialBean.getId());
 					map.put("id", financialBean.getId());
 					inserts.add(map);
 					total = total + 1;
@@ -203,10 +202,10 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		logger.info("FinancialServiceImpl-->force():jsonObject=" +jo.toString() +", user=" +user.getAccount());
 		
 		int type = JsonUtil.getIntValue(jo, "type"); //1表示强制以客户端数据为主，2表示强制以服务器端数据为主
-		List<AppFinancialBean> appFinancialBeans = getListValue(jo, "datas");
+		List<FinancialBean> financialBeans = getListValue(jo, "datas");
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
-		if(type == 0 || CollectionUtils.isEmpty(appFinancialBeans)){
+		if(type == 0 || CollectionUtils.isEmpty(financialBeans)){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有要同步的数据.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有要同步的数据.value);
 			message.put("isSuccess", true);
@@ -214,28 +213,28 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		}
 				
 		int fId = 0;
-		List<AppFinancialBean> returnBeans = new ArrayList<FinancialServiceImpl.AppFinancialBean>();
-		AppFinancialBean newAppFinancialBean = null;
+		List<FinancialBean> returnBeans = new ArrayList<FinancialBean>();
+		FinancialBean newFinancialBean = null;
 		FinancialBean webBean;
-		for(AppFinancialBean appFinancialBean: appFinancialBeans){
-			fId = appFinancialBean.getId();
+		for(FinancialBean FinancialBean: financialBeans){
+			fId = FinancialBean.getId();
 			//ID大于0说明是服务器上的数据
 			if(fId > 0){
 				if(type == 1){
 					webBean = new FinancialBean();
-					webBean = appFinancialBean;
+					webBean = FinancialBean;
 					webBean.setModifyTime(new Date());
 					//以客户端为主
 					if(financialMapper.update(webBean)>0){
-						newAppFinancialBean = appFinancialBean;
+						newFinancialBean = FinancialBean;
 					}
 				}else{ //以服务器的为主
 					
 					webBean = financialMapper.findById(FinancialBean.class, fId);
-					newAppFinancialBean = (AppFinancialBean) webBean;
-					newAppFinancialBean.setLocalId(appFinancialBean.getLocalId());
+					newFinancialBean = (FinancialBean) webBean;
+					newFinancialBean.setLocalId(FinancialBean.getLocalId());
 				}
-				returnBeans.add(newAppFinancialBean);
+				returnBeans.add(newFinancialBean);
 			}
 		}
 		//保存操作日志
@@ -251,16 +250,25 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 	 * @param key  键名称
 	 * @return
 	 */
-	private List<AppFinancialBean> getListValue(JSONObject object, String key){				
+	private List<FinancialBean> getListValue(JSONObject object, String key){				
 		if(JsonUtil.hasKey(object, key)){
 			String s = String.valueOf(object.get(key));
 			if(StringUtil.isNotNull(s)){
-				return (List<AppFinancialBean>) JSONArray.parseArray(s, AppFinancialBean.class);
+				return JSONArray.parseArray(s, FinancialBean.class);
 			}
-			return new ArrayList<AppFinancialBean>();
+			return new ArrayList<FinancialBean>();
 		}
-		return new ArrayList<AppFinancialBean>();
+		return new ArrayList<FinancialBean>();
 	}
+	
+	/*public static Object jsonToObject(String json, Class cls)
+			throws JsonGenerationException, JsonMappingException, IOException {
+			Object obj = null;
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+			obj = mapper.readValue(json, cls);
+			return obj;
+			}*/
 	
 	/**
 	 * 从json对象中获取key对应的值，没有该key返回[]
@@ -309,19 +317,6 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		}
 		
 		return result;
-	}
-	
-	class AppFinancialBean extends FinancialBean{
-		private static final long serialVersionUID = 1555187356356786403L;
-		private int localId;
-
-		public int getLocalId() {
-			return localId;
-		}
-
-		public void setLocalId(int localId) {
-			this.localId = localId;
-		}
 	}
 
 	@Override
