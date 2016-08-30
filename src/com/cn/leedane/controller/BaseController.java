@@ -2,7 +2,9 @@ package com.cn.leedane.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -92,7 +94,9 @@ public class BaseController {
 			UserBean user = null;
 			try {
 				
-				json = HttpUtil.getJsonObjectFromInputStream(null, request);
+				//json = HttpUtil.getJsonObjectFromInputStream(null, request);
+				json = convertParameterMapToJsonObject(request.getParameterMap());
+				System.out.println("请求参数:"+json.toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -205,5 +209,22 @@ public class BaseController {
 			user = (UserBean) message.get("user");
 		}
 		return user;
+	}
+	
+	/**
+	 * 将请求参数转化成json对象
+	 * @param map
+	 * @return
+	 */
+	private JSONObject convertParameterMapToJsonObject(Map<String, String[]> map){
+		JSONObject json = new JSONObject();
+		for(Entry<String, String[]> entry: map.entrySet()){
+			//说明是数组
+			if(entry.getValue().length > 1)
+				json.put(entry.getKey(), entry.getValue());
+			else 
+				json.put(entry.getKey(), entry.getValue()[0]);
+		}
+		return json;
 	}
 }
