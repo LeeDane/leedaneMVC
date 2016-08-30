@@ -130,7 +130,7 @@ public class CommonUtil {
 	 * @return
 	 */
 	public static String getBroswerInfo(HttpServletRequest request){
-		return request.getHeader("User-Agent") == null || request.getHeader("User-Agent").equals("") ? "无法解析请求的浏览器信息" : request.getHeader("User-Agent");
+		return request.getHeader("User-Agent") == null || "".equals(request.getHeader("User-Agent")) ? "无法解析请求的浏览器信息" : request.getHeader("User-Agent");
 	}
 	
 	/**

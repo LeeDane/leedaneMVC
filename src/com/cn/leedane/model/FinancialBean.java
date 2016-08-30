@@ -51,6 +51,11 @@ public class FinancialBean extends RecordTimeBean{
 	private boolean hasImg;
 	
 	/**
+	 * 图像的路径
+	 */
+	private String path;
+	
+	/**
 	 * 位置的展示信息
 	 */
 	private String location;
@@ -163,6 +168,14 @@ public class FinancialBean extends RecordTimeBean{
 
 	public void setLocalId(int localId) {
 		this.localId = localId;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
     
 }

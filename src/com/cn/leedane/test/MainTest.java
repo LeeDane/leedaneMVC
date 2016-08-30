@@ -1,8 +1,12 @@
 package com.cn.leedane.test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.activemq.filter.function.inListFunction;
 
 import net.sf.json.JSONObject;
 
@@ -240,12 +244,55 @@ public class MainTest {
 		map.put("lee1", strs);
 		JSONObject object = JSONObject.fromObject(map);
 		System.out.println(object.toString());*/
-		String date = "2017-09-01 11:11:11";
+		/*String date = "2017-09-01 11:11:11";
 		System.out.println(date.substring(0, 10));
 		System.out.println(date.substring(11, date.length()));
 		
-	}	
-	
-	
-
+		List<String> strs = new ArrayList<String>();
+		strs.add("09");
+		strs.add("21");
+		strs.add("05");
+		strs.add("13");
+		strs.add("20");
+		strs.add("08");
+		strs.add("14");
+		strs.add("09");
+		strs.add("01");
+		
+		int max = Integer.parseInt(strs.get(0));
+		int min = Integer.parseInt(strs.get(0));
+		for(String s: strs){
+			max = Math.max(max, Integer.parseInt(s));
+			min = Math.min(min, Integer.parseInt(s));
+		}
+		
+		System.out.println("max:"+max);
+		System.out.println("min:"+min);*/
+		/*List<String> datasList = new ArrayList<String>();
+		datasList.add("test1");
+		datasList.add("test2");
+		datasList.add("test3");
+		datasList.add("test4");
+		datasList.add("test5");
+		datasList.add("test6");
+		datasList.add("test7");
+		for(int i = 0; i < datasList.size(); i++){
+			if(i == 2){
+				datasList.
+			}
+		}
+		datasList.remove(2);
+		datasList.add(2, "test18");
+		//String string = datasList.get(2);
+		//string = "test18";
+		System.out.println(datasList.get(2));*/
+		final String ssString;
+		int i = 0;
+		if( i == 0 ){
+			ssString = "kk2";
+		}else {
+			ssString = "kk";
+		}
+		System.err.println(ssString);
+	}
 }

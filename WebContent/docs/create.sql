@@ -17,6 +17,7 @@ CREATE TABLE `t_financial` (
   `one_level` varchar(20) DEFAULT NULL COMMENT '一级分类',
   `two_level` varchar(20) DEFAULT NULL COMMENT '二级分类',
   `has_img` bit(1) DEFAULT b'0' COMMENT '是否有图片',
+  `path` longtext DEFAULT NULL COMMENT '',
   `latitude` double COMMENT '纬度',
   `location` varchar(255) DEFAULT NULL  COMMENT '位置的展示信息',
   `longitude` double COMMENT '经度',
