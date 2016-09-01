@@ -289,8 +289,7 @@ public class ZanServiceImpl implements ZanService<ZanBean>{
 
 	@Override
 	public List<Map<String, Object>> executeSQL(String sql, Object... params) {
-		// TODO Auto-generated method stub
-		return null;
+		return zanMapper.executeSQL(sql, params);
 	}
 	
 }

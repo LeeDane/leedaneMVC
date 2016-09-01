@@ -514,19 +514,16 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 
 	@Override
 	public List<Map<String, Object>> executeSQL(String sql, Object... params) {
-		// TODO Auto-generated method stub
-		return null;
+		return commentMapper.executeSQL(sql, params);
 	}
 
 	@Override
 	public int getTotal(String tableName, String where) {
-		// TODO Auto-generated method stub
-		return 0;
+		return SqlUtil.getTotalByList(commentMapper.getTotal(tableName, where));
 	}
 
 	@Override
 	public boolean save(CommentBean t) {
-		// TODO Auto-generated method stub
-		return false;
+		return commentMapper.save(t) > 0;
 	}
 }

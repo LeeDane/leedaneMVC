@@ -2,7 +2,6 @@ package com.cn.leedane.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -19,7 +18,6 @@ import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
-import com.cn.leedane.utils.HttpUtil;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.StringUtil;
 
@@ -45,6 +43,7 @@ public class BaseController {
 		
 		JSONObject jsonObject = JSONObject.fromObject(message);
 		response.setCharacterEncoding("utf-8");
+		System.out.println("服务器返回:"+jsonObject.toString());
 		PrintWriter writer = null;
 		try {
 			writer = response.getWriter();
@@ -122,9 +121,9 @@ public class BaseController {
 				if(json.has("no_login_code") && json.has("account")){
 										
 					//拿到免登陆码
-					String noLoginCode = JsonUtil.getStringValue(json, "no_login_code");
+					//String noLoginCode = JsonUtil.getStringValue(json, "no_login_code");
 					//拿到登录账户
-					String account = JsonUtil.getStringValue(json, "account");
+					//String account = JsonUtil.getStringValue(json, "account");
 					//UserService<UserBean> userService = new UserServiceImpl();
 					//user = userService.getUserByNoLoginCode(account, noLoginCode);
 					String returnErrorMeg = "";

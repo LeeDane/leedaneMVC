@@ -3,8 +3,10 @@ package com.cn.leedane.test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.activemq.filter.function.inListFunction;
 
@@ -286,13 +288,27 @@ public class MainTest {
 		//String string = datasList.get(2);
 		//string = "test18";
 		System.out.println(datasList.get(2));*/
-		final String ssString;
+		/*final String ssString;
 		int i = 0;
 		if( i == 0 ){
 			ssString = "kk2";
 		}else {
 			ssString = "kk";
 		}
-		System.err.println(ssString);
+		System.err.println(ssString);*/
+		/*Set<Integer> set = new HashSet<Integer>();
+		set.add(100);
+		set.add(10);
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("inserts", set);
+		
+		System.out.println(jsonObject.toString());*/
+		String s = "http://103.229.124.237:8080/SungoalApp/app/getJsonData.do";
+		if(s != null){
+			int lastIndex = s.lastIndexOf("/");
+			s = s.substring(0, lastIndex) + "/BillCheckServlet.do";
+		}
+		System.out.println(s);
+		
 	}
 }

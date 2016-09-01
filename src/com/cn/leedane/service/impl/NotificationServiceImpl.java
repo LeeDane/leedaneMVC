@@ -176,7 +176,6 @@ public class NotificationServiceImpl implements NotificationService<Notification
 
 	@Override
 	public boolean update(NotificationBean t) {
-		// TODO Auto-generated method stub
-		return false;
+		return notificationMapper.update(t) > 0;
 	}
 }

@@ -342,7 +342,6 @@ public class TransmitServiceImpl implements TransmitService<TransmitBean>{
 
 	@Override
 	public int getTotal(String tableName, String where) {
-		// TODO Auto-generated method stub
-		return 0;
+		return SqlUtil.getTotalByList(transmitMapper.getTotal(tableName, where));
 	}
 }

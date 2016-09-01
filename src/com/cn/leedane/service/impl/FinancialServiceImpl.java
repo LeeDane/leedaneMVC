@@ -3,10 +3,8 @@ package com.cn.leedane.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -139,11 +137,11 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 	public Map<String, Object> synchronous(JSONObject jo, UserBean user,
 			HttpServletRequest request) {
 		logger.info("FinancialServiceImpl-->synchronous():jsonObject=" +jo.toString() +", user=" +user.getAccount());
-		List<FinancialBean> FinancialBeans = getListValue(jo, "datas");
+		List<FinancialBean> appFinancialBeans = getListValue(jo, "datas");
 		
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
-		if(CollectionUtils.isEmpty(FinancialBeans)){
+		if(CollectionUtils.isEmpty(appFinancialBeans)){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有要同步的数据.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有要同步的数据.value);
 			message.put("isSuccess", true);
@@ -151,30 +149,37 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		}
 		
 		List<Map<String, Integer>> inserts = new ArrayList<Map<String,Integer>>();//此次同步插入的数据ID
-		Set<Integer> updates = new HashSet<Integer>(); //此次同步发现数据有更新的数据ID
-		Set<Integer> deletes = new HashSet<Integer>();//此次同步发现数据被删的数据ID
+		List<Map<String, Integer>> updates = new ArrayList<Map<String,Integer>>(); //此次同步发现数据有更新的数据ID
+		List<Map<String, Integer>> deletes = new ArrayList<Map<String,Integer>>();//此次同步发现数据被删的数据ID
 		int total = 0; //此次同步总共处理的数量
 		
 		int fId = 0;
 		FinancialBean webBean;
-		for(FinancialBean FinancialBean: FinancialBeans){
-			fId = FinancialBean.getId();
+		for(FinancialBean appFinancialBean: appFinancialBeans){
+			fId = appFinancialBean.getId();
 			//ID大于0说明是服务器上的数据
 			if(fId > 0){
 				webBean = financialMapper.findById(FinancialBean.class, fId);
 				if(webBean == null){
-					deletes.add(fId);
+					//deletes.add(fId);
+					Map<String, Integer> map = new HashMap<String, Integer>();
+					map.put("localId", appFinancialBean.getLocalId());
+					map.put("id", appFinancialBean.getId());
+					deletes.add(map);
 				}else{
-					if(hasChange(FinancialBean, webBean)){
-						updates.add(fId);
+					if(hasChange(appFinancialBean, webBean)){
+						Map<String, Integer> map = new HashMap<String, Integer>();
+						map.put("localId", appFinancialBean.getLocalId());
+						map.put("id", appFinancialBean.getId());
+						updates.add(map);
 					}
 				}
 			}else{
-				FinancialBean financialBean = (FinancialBean)FinancialBean;
+				FinancialBean financialBean = (FinancialBean)appFinancialBean;
 				financialBean.setCreateTime(new Date());
 				if(financialMapper.save(financialBean) > 0){
 					Map<String, Integer> map = new HashMap<String, Integer>();
-					map.put("localId", FinancialBean.getId());
+					map.put("localId", appFinancialBean.getLocalId());
 					map.put("id", financialBean.getId());
 					inserts.add(map);
 					total = total + 1;
@@ -301,7 +306,7 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 	 * @return
 	 */
 	private boolean hasChange(FinancialBean app, FinancialBean web){
-		boolean result = true;
+		/*boolean result = true;
 		if(app.getId() == web.getId()
 				&& app.getModel() == web.getModel()
 				&& app.isHasImg() == web.isHasImg()
@@ -316,7 +321,8 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 			result = false;
 		}
 		
-		return result;
+		return result;*/
+		return !app.equals(web);
 	}
 
 	@Override

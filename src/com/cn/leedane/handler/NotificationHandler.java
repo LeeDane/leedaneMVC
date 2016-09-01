@@ -279,14 +279,21 @@ public class NotificationHandler {
 				bean.setStatus(ConstantsUtil.STATUS_NORMAL);
 				bean.setTableId(tableId);
 				bean.setTableName(tableName);
-				if(commentService.save(bean)){
-					//更新评论数
-					commentHandler.addComment(tableName, tableId);
-					String notificationContent = robotName +"回复您："+robotReply;
-					Set<Integer> ids = new HashSet<Integer>();
-					ids.add(user.getId());
-					sendNotificationByIds(true, robotUser, ids, notificationContent, NotificationType.艾特我, tableName, tableId, objectBean);
+				try {
+					if(commentService.save(bean)){
+						//更新评论数
+						commentHandler.addComment(tableName, tableId);
+						String notificationContent = robotName +"回复您："+robotReply;
+						Set<Integer> ids = new HashSet<Integer>();
+						ids.add(user.getId());
+						sendNotificationByIds(true, robotUser, ids, notificationContent, NotificationType.艾特我, tableName, tableId, objectBean);
+					}else{
+						System.out.println("失败");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+				
 			}
 		}	
 	}

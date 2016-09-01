@@ -497,8 +497,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 
 	@Override
 	public List<Map<String, Object>> executeSQL(String sql, Object... params) {
-		// TODO Auto-generated method stub
-		return null;
+		return fanMapper.executeSQL(sql, params);
 	}
 	
 }
