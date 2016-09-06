@@ -23,6 +23,11 @@ public class FinancialBean extends RecordTimeBean{
 	private int localId;
 	
 	/**
+	 * 设备的imei值，跟local绑定表示客户端的唯一
+	 */
+	private String imei;
+	
+	/**
 	 * 模块，1:收入；2：支出
 	 */
 	private int model;
@@ -176,6 +181,14 @@ public class FinancialBean extends RecordTimeBean{
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public String getImei() {
+		return imei;
+	}
+
+	public void setImei(String imei) {
+		this.imei = imei;
 	}
     
 }

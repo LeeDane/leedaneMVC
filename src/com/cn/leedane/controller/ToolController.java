@@ -1,5 +1,6 @@
 package com.cn.leedane.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,9 +18,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cn.leedane.handler.CloudStoreHandler;
+import com.cn.leedane.model.EmailBean;
 import com.cn.leedane.model.UserBean;
+import com.cn.leedane.rabbitmq.SendMessage;
+import com.cn.leedane.rabbitmq.send.EmailSend;
+import com.cn.leedane.rabbitmq.send.ISend;
+import com.cn.leedane.rabbitmq.send.LogSend;
 import com.cn.leedane.utils.EmailUtil;
 import com.cn.leedane.utils.EnumUtil;
+import com.cn.leedane.utils.EnumUtil.EmailType;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.wechat.util.HttpRequestUtil;
@@ -100,12 +107,22 @@ public class ToolController extends BaseController{
 			//String content = "用户："+user.getAccount() +"已经添加您为好友，请您尽快处理，谢谢！";
 			//String object = "LeeDane好友添加请求确认";
 			Set<UserBean> set = new HashSet<UserBean>();		
-			set.add(toUser);	
-			
-			EmailUtil emailUtil = EmailUtil.getInstance(null, set, content, object);
+			set.add(toUser);
+			EmailBean emailBean = new EmailBean();
+			emailBean.setContent(content);
+			emailBean.setCreateTime(new Date());
+			emailBean.setFrom(getUserFromMessage(message));
+			emailBean.setSubject(object);
+			emailBean.setReplyTo(set);
+			emailBean.setType(EmailType.新邮件.value); //新邮件
+
 			try {
-				emailUtil.sendMore();
-				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件发送成功.value));
+				ISend send = new EmailSend(emailBean);
+				SendMessage sendMessage = new SendMessage(send);
+				sendMessage.sendMsg();//发送消息队列到消息队列
+				message.put("isSuccess", true);
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件已经发送.value));
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件发送失败.value)+",失败原因是："+e.toString());

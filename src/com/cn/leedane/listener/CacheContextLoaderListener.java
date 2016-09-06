@@ -23,6 +23,7 @@ import org.springframework.web.context.ContextLoaderListener;
 import com.cn.leedane.cache.SystemCache;
 import com.cn.leedane.model.OptionBean;
 import com.cn.leedane.rabbitmq.RecieveMessage;
+import com.cn.leedane.rabbitmq.recieve.EmailRecieve;
 import com.cn.leedane.rabbitmq.recieve.IRecieve;
 import com.cn.leedane.rabbitmq.recieve.LogRecieve;
 import com.cn.leedane.redis.util.RedisUtil;
@@ -53,18 +54,42 @@ public class CacheContextLoaderListener extends ContextLoaderListener{
 			}
 		}).start();
 		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				startRabbitMqEmailListener(); //异步启动rabbitmq的操作邮件队列的监听
+			}
+		}).start();
+		
 		SensitiveWordInit.getInstance(); //加载敏感词库
 	}
 	
 	/**
-	 * 启动rabbitmq队列的监听
+	 * 启动rabbitmq日志队列的监听
 	 */
 	private void startRabbitMqLogListener() {
 		
-		IRecieve recieve = new LogRecieve();
 		try {
+			//日志队列的监听
+			IRecieve recieve = new LogRecieve();
 			RecieveMessage recieveMessage = new RecieveMessage(recieve);
 			recieveMessage.getMsg();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	/**
+	 * 启动rabbitmq邮件队列的监听
+	 */
+	private void startRabbitMqEmailListener() {
+		
+		try {
+			//邮件队列的监听
+			IRecieve email = new EmailRecieve();
+			RecieveMessage emailRecieveMessage = new RecieveMessage(email);
+			emailRecieveMessage.getMsg();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		

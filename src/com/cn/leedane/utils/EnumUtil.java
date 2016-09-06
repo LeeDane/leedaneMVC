@@ -195,6 +195,23 @@ public class EnumUtil {
 	}
 	
 	/**
+	 * 邮件类型
+	 * @author LeeDane
+	 * 2016年9月6日 上午9:43:40
+	 * Version 1.0
+	 */
+	public enum EmailType {
+		新邮件(0), 回复(1), 转发(2);
+
+		private EmailType(int value) {
+			this.value = value;
+		}
+
+		public final int value;
+
+	}
+	
+	/**
 	 * 服务器返回码
 	 * @author LeeDane
 	 * 2016年1月20日 上午10:17:54
@@ -267,7 +284,7 @@ public class EnumUtil {
 		您还没有绑定电子邮箱(3025),
 		对方还没有绑定电子邮箱(3026),
 		该用户不存在(3027),
-		邮件发送成功(3028),
+		邮件已经发送(3028),
 		参数不存在或为空(3029),
 		该资源现在不支持评论(3030),
 		该资源现在不支持转发(3031),

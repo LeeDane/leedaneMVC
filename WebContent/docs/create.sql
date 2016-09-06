@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS `t_financial`;
 CREATE TABLE `t_financial` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `local_id` int(11) COMMENT '客户端本地存储的ID',
+  `imei` varchar(20) COMMENT '客户端唯一标记imei码',
   `status` int(11) NOT NULL,
   `create_time` datetime DEFAULT NULL,
   `modify_time` datetime DEFAULT NULL,
@@ -28,3 +29,6 @@ CREATE TABLE `t_financial` (
   CONSTRAINT `FK_financial_create_user_id` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`),
   CONSTRAINT `FK_financial_modify_user_id` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+/*添加imei码和localId的唯一性约束，避免用户多次提交*/
+alter table t_financial add constraint imei_local_id_unique UNIQUE(imei, local_id);

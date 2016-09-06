@@ -48,7 +48,7 @@ public class AddReadRecieve implements IRecieve{
 	}
 
 	@Override
-	public boolean excute(Object obj) {
+	public boolean excute(Object obj) { 
 		boolean success = false;
 		
 		try{

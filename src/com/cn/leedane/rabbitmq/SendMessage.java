@@ -1,6 +1,5 @@
 package com.cn.leedane.rabbitmq;
 
-import com.cn.leedane.exception.ErrorException;
 import com.cn.leedane.rabbitmq.send.ISend;
 import com.cn.leedane.utils.SerializeUtil;
 import com.rabbitmq.client.Channel;

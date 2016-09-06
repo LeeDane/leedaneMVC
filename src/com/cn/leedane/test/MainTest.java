@@ -303,12 +303,15 @@ public class MainTest {
 		jsonObject.put("inserts", set);
 		
 		System.out.println(jsonObject.toString());*/
-		String s = "http://103.229.124.237:8080/SungoalApp/app/getJsonData.do";
+		/*String s = "http://103.229.124.237:8080/SungoalApp/app/getJsonData.do";
 		if(s != null){
 			int lastIndex = s.lastIndexOf("/");
 			s = s.substring(0, lastIndex) + "/BillCheckServlet.do";
 		}
-		System.out.println(s);
+		System.out.println(s);*/
+		
+		String string = "2018-10-19 10:10:10";
+		System.out.println(string.substring(5, 10));
 		
 	}
 }

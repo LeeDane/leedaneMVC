@@ -57,6 +57,14 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 			message.put("isSuccess", true);
 			return message;
 		}
+		
+		if(checkExists(financialBean.getImei(), financialBean.getLocalId(), financialBean.getAdditionTime())){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
+			message.put("isSuccess", false);
+			return message;
+		}
+		
 		boolean result = false;
 		if(financialBean.getId() > 0){//说明是更新
 			result = financialMapper.update(financialBean) > 0;
@@ -77,6 +85,26 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		//保存操作日志
 		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"新添一条记账,ID为：", financialBean.getId(), StringUtil.getSuccessOrNoStr(result)).toString(), "save()", ConstantsUtil.STATUS_NORMAL, 0);
 		return message;
+	}
+	
+	/**
+	 * 判断记录是否已经存在
+	 * @return
+	 */
+	private boolean checkExists(String imei, int localId, String additionTime){
+		
+		//暂时对没有imei或者additionTime 不做处理
+		if(StringUtil.isNull(imei) || StringUtil.isNull(additionTime)){
+			return false;
+		}
+		
+		List<Map<String, Object>> financialBeans = financialMapper.executeSQL("select date_format(addition_time,'%Y-%c-%d %H:%i:%s') addition_time from  t_financial where imei = ? and local_id =? limit 1", imei, localId);
+		if(!CollectionUtils.isEmpty(financialBeans)){
+			if(additionTime.equals(financialBeans.get(0).get("addition_time"))){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override
@@ -177,13 +205,18 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 			}else{
 				FinancialBean financialBean = (FinancialBean)appFinancialBean;
 				financialBean.setCreateTime(new Date());
-				if(financialMapper.save(financialBean) > 0){
-					Map<String, Integer> map = new HashMap<String, Integer>();
-					map.put("localId", appFinancialBean.getLocalId());
-					map.put("id", financialBean.getId());
-					inserts.add(map);
-					total = total + 1;
+				
+				//校验记录是否存在
+				if(!checkExists(financialBean.getImei(), financialBean.getLocalId(), financialBean.getAdditionTime())){
+					if(financialMapper.save(financialBean) > 0){
+						Map<String, Integer> map = new HashMap<String, Integer>();
+						map.put("localId", appFinancialBean.getLocalId());
+						map.put("id", financialBean.getId());
+						inserts.add(map);
+						total = total + 1;
+					}
 				}
+				
 			}
 		}
 		
