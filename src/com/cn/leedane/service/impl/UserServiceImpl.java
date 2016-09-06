@@ -215,21 +215,18 @@ public class UserServiceImpl implements UserService<UserBean> {
 	private void afterRegister(UserBean user2) throws Exception{
 		UserBean user = new UserBean();
 		
-		String content = "欢迎您："+user2.getAccount()+"注册！<a href = 'http://localhost:8080/leedane/user/completeRegister.action?registerCode="+user2.getRegisterCode()+"'>点击完成注册</a>"
-				+ "<p>请勿回复此邮件，有事联系客服QQ825711424</p>";
+		String content = "欢迎您："+user2.getAccount()+"感谢注册！<a href = '"+ConstantsUtil.SYSTEM_SERVER_URL+ "/leedane/user/completeRegister.action?registerCode="+user2.getRegisterCode()+"'>点击完成注册</a>"
+				+ "<p>请勿回复此邮件，有事联系客服QQ"+ConstantsUtil.DEFAULT_USER_FROM_QQ+"</p>";
 		user.setAccount(ConstantsUtil.DEFAULT_USER_FROM_ACCOUNT);
 		user.setChinaName(ConstantsUtil.DEFAULT_USER_FROM_CHINANAME);
 		user.setEmail(ConstantsUtil.DEFAULT_USER_FROM_EMAIL);
 		user.setQq(ConstantsUtil.DEFAULT_USER_FROM_QQ);
 		user.setStr1(ConstantsUtil.DEFAULT_USER_FROM_QQPSW);
 		
-		user2.setChinaName("账号2");
-		user2.setEmail("825711424@qq.com");
-		
 		Set<UserBean> set = new HashSet<UserBean>();		
 		set.add(user2);	
 		
-		EmailUtil emailUtil = EmailUtil.getInstance(user, set, content, "精品网注册验证");
+		EmailUtil emailUtil = EmailUtil.getInstance(user, set, content, ConstantsUtil.WEBSIT_NAME +"注册验证");
 		try {
 			emailUtil.sendMore();
 		} catch (Exception e) {
