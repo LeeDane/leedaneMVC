@@ -332,7 +332,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		operateLogService.saveOperateLog(user, request, null, user.getAccount()+"查看用户id为"+toUserId+"个人中心", "getMoodByLimit()", ConstantsUtil.STATUS_NORMAL, 0);
 		
 		long end = System.currentTimeMillis();
-		System.out.println("获取心情列表总计耗时：" +(end - start) +"毫秒");
+		System.out.println("获取心情列表总计耗时：" +(end - start) +"毫秒, 总数是："+rs.size());
 		message.put("message", rs);
 		message.put("isSuccess", true);
 		return message;
@@ -722,6 +722,96 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 	@Override
 	public List<Map<String, Object>> executeSQL(String sql, Object... params) {
 		return moodMapper.executeSQL(sql, params);
+	}
+
+	@Override
+	public Map<String, Object> getTopicByLimit(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("MoodServiceImpl-->getTopicByLimit():jo=" +jo.toString());
+		long start = System.currentTimeMillis();
+		List<Map<String, Object>> rs = new ArrayList<Map<String,Object>>();
+		int pageSize = JsonUtil.getIntValue(jo, "pageSize", ConstantsUtil.DEFAULT_PAGE_SIZE); //每页的大小
+		int lastId = JsonUtil.getIntValue(jo, "last_id"); //开始的页数
+		int firstId = JsonUtil.getIntValue(jo, "first_id"); //结束的页数
+		String method = JsonUtil.getStringValue(jo, "method", "firstloading"); //操作方式
+		String picSize = ConstantsUtil.DEFAULT_PIC_SIZE; //图像的规格(大小)	
+		String topic = JsonUtil.getStringValue(jo, "topic");
+				
+		StringBuffer sql = new StringBuffer();
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
+		if(StringUtil.isNull(topic)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.话题不能为空.value));
+			message.put("responseCode", EnumUtil.ResponseCode.话题不能为空.value);
+			return message;
+		}
+		
+		if(!topic.startsWith("#") && !topic.endsWith("#"))
+			topic = "#" + topic + "#";
+		
+		if("firstloading".equalsIgnoreCase(method)){
+			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
+			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
+			sql.append(" m.content like '%"+topic+"%'");
+			sql.append(" order by m.id desc limit 0,?");
+			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, pageSize);
+		//下刷新
+		}else if("lowloading".equalsIgnoreCase(method)){
+			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
+			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
+			sql.append(" m.content like '%"+topic+"%'");
+			sql.append(" and m.id < ? order by m.id desc limit 0,? ");
+			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, lastId, pageSize);
+		//上刷新
+		}else if("uploading".equalsIgnoreCase(method)){
+			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
+			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
+			sql.append(" m.content like '%"+topic+"%'");
+			sql.append(" and m.id > ? limit 0,?  ");
+			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, firstId, pageSize);
+		}
+		
+		if(rs !=null && rs.size() > 0){
+			boolean hasImg ;
+			String uuid;
+			int moodId;
+			int createUserId = 0;
+			//为名字备注赋值
+			for(int i = 0; i < rs.size(); i++){
+				createUserId = StringUtil.changeObjectToInt(rs.get(i).get("create_user_id"));
+				hasImg = StringUtil.changeObjectToBoolean(rs.get(i).get("has_img"));
+				uuid = StringUtil.changeNotNull(rs.get(i).get("uuid"));
+				moodId = StringUtil.changeObjectToInt(rs.get(i).get("id"));
+				if(createUserId> 0){
+					rs.get(i).putAll(userHandler.getBaseUserInfo(createUserId));
+					if(createUserId == user.getId()){
+						rs.get(i).put("account", "本人");
+					}
+				}
+				rs.get(i).put("zan_users", zanHandler.getZanUser(moodId, DataTableType.心情.value, user, 6));
+				rs.get(i).put("comment_number", commentHandler.getCommentNumber(moodId, DataTableType.心情.value));
+				rs.get(i).put("transmit_number", transmitHandler.getTransmitNumber(moodId, DataTableType.心情.value));
+				rs.get(i).put("zan_number", zanHandler.getZanNumber(moodId, DataTableType.心情.value));
+				
+				
+				//有图片的获取图片的路径
+				if(hasImg && !StringUtil.isNull(uuid)){
+					rs.get(i).put("imgs", moodHandler.getMoodImg(DataTableType.心情.value, uuid, picSize));
+				}
+			}	
+		}
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, user.getAccount()+"查看话题"+topic, "getTopicByLimit()", ConstantsUtil.STATUS_NORMAL, 0);
+		
+		long end = System.currentTimeMillis();
+		System.out.println("获取话题列表总计耗时：" +(end - start) +"毫秒，总数是："+rs.size());
+		message.put("message", rs);
+		message.put("isSuccess", true);
+		return message;
 	}
 
 }

@@ -146,4 +146,13 @@ public interface MoodService <T extends IDBean>{
 	 * @return
 	 */
 	public List<Map<String, Object>> executeSQL(String sql, Object ...params);
+
+	/**
+	 * 获取话题列表
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> getTopicByLimit(JSONObject jo, UserBean user,HttpServletRequest request);
 }

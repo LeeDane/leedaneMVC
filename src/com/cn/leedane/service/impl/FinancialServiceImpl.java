@@ -58,7 +58,8 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 			return message;
 		}
 		
-		if(checkExists(financialBean.getImei(), financialBean.getLocalId(), financialBean.getAdditionTime())){
+		String imei = JsonUtil.getStringValue(jo, "imei");
+		if(checkExists(imei, financialBean.getLocalId(), financialBean.getAdditionTime())){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			message.put("isSuccess", false);
@@ -176,6 +177,12 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 			return message;
 		}
 		
+		//设置imei值
+		String imei = JsonUtil.getStringValue(jo, "imei");
+		for(FinancialBean fBean: appFinancialBeans){
+			fBean.setImei(imei);
+		}
+		
 		List<Map<String, Integer>> inserts = new ArrayList<Map<String,Integer>>();//此次同步插入的数据ID
 		List<Map<String, Integer>> updates = new ArrayList<Map<String,Integer>>(); //此次同步发现数据有更新的数据ID
 		List<Map<String, Integer>> deletes = new ArrayList<Map<String,Integer>>();//此次同步发现数据被删的数据ID
@@ -199,7 +206,9 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 						Map<String, Integer> map = new HashMap<String, Integer>();
 						map.put("localId", appFinancialBean.getLocalId());
 						map.put("id", appFinancialBean.getId());
-						updates.add(map);
+						if(financialMapper.update(appFinancialBean) > 0){
+							updates.add(map);
+						}
 					}
 				}
 			}else{
@@ -207,7 +216,7 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 				financialBean.setCreateTime(new Date());
 				
 				//校验记录是否存在
-				if(!checkExists(financialBean.getImei(), financialBean.getLocalId(), financialBean.getAdditionTime())){
+				if(!checkExists(imei, financialBean.getLocalId(), financialBean.getAdditionTime())){
 					if(financialMapper.save(financialBean) > 0){
 						Map<String, Integer> map = new HashMap<String, Integer>();
 						map.put("localId", appFinancialBean.getLocalId());
@@ -324,6 +333,7 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 					financialBean.setCreateTime(new Date());
 					financialBean.setModifyUserId(user.getId());
 					financialBean.setModifyTime(new Date());
+					financialBean.setImei(JsonUtil.getStringValue(object, "imei"));
 				}
 				return financialBean;
 			}

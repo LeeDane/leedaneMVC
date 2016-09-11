@@ -297,4 +297,29 @@ public class FriendController extends BaseController{
 		printWriter(message, response);
 		return null;
 	}
+	
+	/**
+	 * 话题列表
+	 * @return
+	 */
+	@RequestMapping("/topic")
+	public String topic(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			//{"id":1, "to_user_id": 2}
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(friendService.matchContact(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}     
+        message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
 }

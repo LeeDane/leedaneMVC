@@ -412,4 +412,28 @@ public class MoodController extends BaseController{
 		printWriter(message, response);
 		return null;
 	}
+	
+	/**
+	 * 获取心情的话题列表
+	 * @return
+	 */
+	@RequestMapping("/topic")
+	public String topic(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(moodService.getTopicByLimit(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
 }
