@@ -139,11 +139,11 @@ public class UserController extends BaseController{
 	}
 	
 	/**
-	 * 根据用户id获取当个用户的id
+	 * 根据用户id获取该用户的个人中心
 	 * @return
-	 */
-	@RequestMapping("/searchUserByUserId")
-	public String searchUserByUserId(HttpServletRequest request, HttpServletResponse response){
+	 *//*
+	@RequestMapping("/searchUserByUserIdOrAccount")
+	public String searchUserByUserIdOrAccount(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
 			if(!checkParams(message, request)){
@@ -168,6 +168,30 @@ public class UserController extends BaseController{
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户不存在或请求参数不对.value));
 				message.put("responseCode", EnumUtil.ResponseCode.用户不存在或请求参数不对.value);
 			}
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}*/
+	
+	/**
+	 * 根据ID或者用户名称获取该用户的个人中心
+	 * @return
+	 */
+	@RequestMapping("/searchUserByUserIdOrAccount")
+	public String searchUserByUserIdOrAccount(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(userService.searchUserByUserIdOrAccount(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {

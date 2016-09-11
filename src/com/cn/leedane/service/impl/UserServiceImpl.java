@@ -16,18 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cn.leedane.exception.ErrorException;
-import com.cn.leedane.utils.Base64ImageUtil;
-import com.cn.leedane.utils.ConstantsUtil;
-import com.cn.leedane.utils.DateUtil;
-import com.cn.leedane.utils.EmailUtil;
-import com.cn.leedane.utils.EnumUtil;
-import com.cn.leedane.utils.EnumUtil.DataTableType;
-import com.cn.leedane.utils.JsonUtil;
-import com.cn.leedane.utils.MD5Util;
-import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.cache.SystemCache;
 import com.cn.leedane.enums.NotificationType;
+import com.cn.leedane.exception.ErrorException;
 import com.cn.leedane.handler.CommentHandler;
 import com.cn.leedane.handler.FanHandler;
 import com.cn.leedane.handler.FriendHandler;
@@ -48,6 +39,15 @@ import com.cn.leedane.service.FilePathService;
 import com.cn.leedane.service.OperateLogService;
 import com.cn.leedane.service.ScoreService;
 import com.cn.leedane.service.UserService;
+import com.cn.leedane.utils.Base64ImageUtil;
+import com.cn.leedane.utils.ConstantsUtil;
+import com.cn.leedane.utils.DateUtil;
+import com.cn.leedane.utils.EmailUtil;
+import com.cn.leedane.utils.EnumUtil;
+import com.cn.leedane.utils.EnumUtil.DataTableType;
+import com.cn.leedane.utils.JsonUtil;
+import com.cn.leedane.utils.MD5Util;
+import com.cn.leedane.utils.StringUtil;
 
 /**
  * 用户service实现类
@@ -910,6 +910,57 @@ public class UserServiceImpl implements UserService<UserBean> {
 	@Override
 	public boolean delete(UserBean t) {
 		return userMapper.deleteById(UserBean.class, t.getId()) > 0;
+	}
+
+	@Override
+	public Map<String, Object> searchUserByUserIdOrAccount(JSONObject jo,
+			UserBean user, HttpServletRequest request) {
+		logger.info("UserServiceImpl-->searchUserByUserIdOrAccount():jo=" +jo.toString());
+		long start = System.currentTimeMillis();
+		
+		int type = JsonUtil.getIntValue(jo, "type", 0);// 0表示ID，1表示名称
+		int searchUserId = 0;
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
+		if(type == 0){
+			searchUserId = JsonUtil.getIntValue(jo, "searchUserIdOrAccount");
+		}else if(type == 1){
+			String account = JsonUtil.getStringValue(jo, "searchUserIdOrAccount");
+			if(StringUtil.isNull(account)){
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户名不能为空.value));
+				message.put("responseCode", EnumUtil.ResponseCode.用户名不能为空.value);
+				return message;
+			}
+			
+			searchUserId = getUserIdByName(account);
+		}
+		
+		
+		if(searchUserId < 1){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户不存在或请求参数不对.value));
+			message.put("responseCode", EnumUtil.ResponseCode.用户不存在或请求参数不对.value);
+			return message;
+		}
+		
+		//执行密码等信息的验证
+		UserBean searchUser = findById(searchUserId);
+
+		if (searchUser != null) {			
+			// 保存操作日志信息
+			message.put("userinfo", userHandler.getUserInfo(searchUser, false));
+			message.put("isSuccess", true);
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户不存在或请求参数不对.value));
+			message.put("responseCode", EnumUtil.ResponseCode.用户不存在或请求参数不对.value);
+		}
+		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, user.getAccount()+"查看用户名ID"+searchUserId +"的个人基本信息", "searchUserByUserIdOrAccount()", ConstantsUtil.STATUS_NORMAL, 0);
+		
+		long end = System.currentTimeMillis();
+		System.out.println("查看用户ID"+ searchUserId +"的个人基本信息总计耗时：" +(end - start) +"毫秒");
+		return message;
 	}
 
 }
