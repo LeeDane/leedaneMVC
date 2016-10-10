@@ -77,18 +77,18 @@ public class ChatServiceImpl implements ChatService<ChatBean> {
 		}
 	
 		if("firstloading".equalsIgnoreCase(method)){
-			sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id, date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time, c.type, c.content");
+			sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id, date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
 			sql.append(" from "+DataTableType.聊天.value+" c where ((c.create_user_id = ? and c.to_user_id =?) or (c.to_user_id =? and c.create_user_id = ?))");
 			sql.append(" order by c.id desc limit 0,?");
 			rs = chatMapper.executeSQL(sql.toString(), user.getId(), toUserId,  user.getId(), toUserId,pageSize);
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
-			sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id , date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time, c.type, c.content");
+			sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id , date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
 			sql.append(" from "+DataTableType.聊天.value+" c where ((c.create_user_id = ? and c.to_user_id =?) or (c.to_user_id =? and c.create_user_id = ?))");
 			sql.append(" and c.id < ? order by c.id desc limit 0,? ");
 			rs = chatMapper.executeSQL(sql.toString(), user.getId(), toUserId, user.getId(), toUserId, firstId, pageSize);
 		}else if("lowloading".equalsIgnoreCase(method)){
-			sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id , date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time, c.type, c.content");
+			sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id , date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
 			sql.append(" from "+DataTableType.聊天.value+" c where ((c.create_user_id = ? and c.to_user_id =?) or (c.to_user_id =? and c.create_user_id = ?))");
 			sql.append(" and c.id > ? order by c.id desc limit 0,? ");
 			rs = chatMapper.executeSQL(sql.toString(), user.getId(), toUserId, user.getId(), toUserId, lastId, pageSize);
@@ -217,7 +217,7 @@ public class ChatServiceImpl implements ChatService<ChatBean> {
 		
 		List<Map<String, Object>> rs = new ArrayList<>();
 		StringBuffer sql = new StringBuffer();
-		sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id , date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time, c.type, c.content");
+		sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id , date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
 		sql.append(" from "+DataTableType.聊天.value+" c where c.to_user_id =? and c.is_read = ? and c.status=?");
 		rs = chatMapper.executeSQL(sql.toString(), user.getId(), false, ConstantsUtil.STATUS_NORMAL);
 		

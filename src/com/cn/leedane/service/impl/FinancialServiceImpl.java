@@ -58,18 +58,17 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 			return message;
 		}
 		
-		String imei = JsonUtil.getStringValue(jo, "imei");
-		if(checkExists(imei, financialBean.getLocalId(), financialBean.getAdditionTime())){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
-			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
-			message.put("isSuccess", false);
-			return message;
-		}
-		
 		boolean result = false;
 		if(financialBean.getId() > 0){//说明是更新
 			result = financialMapper.update(financialBean) > 0;
 		}else{
+			String imei = JsonUtil.getStringValue(jo, "imei");
+			if(checkExists(imei, financialBean.getLocalId(), financialBean.getAdditionTime())){
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+				message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
+				message.put("isSuccess", false);
+				return message;
+			}
 			result = financialMapper.save(financialBean) > 0;
 		}
 		
@@ -99,9 +98,9 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 			return false;
 		}
 		
-		List<Map<String, Object>> financialBeans = financialMapper.executeSQL("select date_format(addition_time,'%Y-%c-%d %H:%i:%s') addition_time from  t_financial where imei = ? and local_id =? limit 1", imei, localId);
+		List<Map<String, Object>> financialBeans = financialMapper.executeSQL("select add_day from  t_financial where imei = ? and local_id =? limit 1", imei, localId);
 		if(!CollectionUtils.isEmpty(financialBeans)){
-			if(additionTime.equals(financialBeans.get(0).get("addition_time"))){
+			if(additionTime.substring(0, 10).equals(String.valueOf(financialBeans.get(0).get("add_day")))){
 				return true;
 			}
 		}
@@ -406,11 +405,4 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		message.put("isSuccess", true);
 		return message;
 	}
-/*	
-	public static void main(String[] args) {
-		String string = "{\"one_level\":\"食品酒水\",\"two_level\":\"早午晚餐\",\"longitude\":0,\"money\":36,\"synchronous\":false,\"has_img\":false,\"create_user_id\":1,\"financial_desc\":\"图库\",\"status\":2,\"id\":0,\"latitude\":0,\"local_id\":0,\"model\":1,\"create_time\":\"2016-07-26 18:08:41\"}";
-		FinancialBean financialBean = JSON.parseObject(string, FinancialBean.class);
-		System.out.println(financialBean.getCreateUserId());
-		System.out.println(DateUtil.DateToString(financialBean.getCreateTime()));
-	}*/
 }

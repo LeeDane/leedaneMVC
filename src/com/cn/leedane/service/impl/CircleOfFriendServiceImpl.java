@@ -172,7 +172,7 @@ public class CircleOfFriendServiceImpl implements CircleOfFriendService<TimeLine
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
 		if("firstloading".equalsIgnoreCase(method)){
-			sql.append("select m.id table_id, '"+DataTableType.心情.value+"' table_name, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img,");
+			sql.append("select m.id table_id, '"+DataTableType.心情.value+"' table_name, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img,");
 			sql.append(" m.read_number, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
 			sql.append(buildCreateUserIdInSQL(fids));
@@ -180,7 +180,7 @@ public class CircleOfFriendServiceImpl implements CircleOfFriendService<TimeLine
 			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, pageSize);
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
-			sql.append("select m.id table_id, '"+DataTableType.心情.value+"' table_name, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img,");
+			sql.append("select m.id table_id, '"+DataTableType.心情.value+"' table_name, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img,");
 			sql.append(" m.read_number, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
 			sql.append(buildCreateUserIdInSQL(fids));
@@ -188,7 +188,7 @@ public class CircleOfFriendServiceImpl implements CircleOfFriendService<TimeLine
 			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, lastId, pageSize);
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
-			sql.append("select m.id table_id, '"+DataTableType.心情.value+"' table_name, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img,");
+			sql.append("select m.id table_id, '"+DataTableType.心情.value+"' table_name, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img,");
 			sql.append(" m.read_number, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
 			sql.append(buildCreateUserIdInSQL(fids));

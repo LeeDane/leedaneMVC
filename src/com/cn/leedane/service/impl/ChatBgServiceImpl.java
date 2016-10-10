@@ -88,7 +88,7 @@ public class ChatBgServiceImpl implements ChatBgService<ChatBgBean> {
 	
 		if("firstloading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select c.id, c.create_user_id, c.path, c.chat_bg_desc, c.type, c.score, date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select c.id, c.create_user_id, c.path, c.chat_bg_desc, c.type, c.score, date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.聊天背景.value+" c");
 			sql.append(" where c.status=? ");
 			sql.append(buildChatBgTypeSql(type));
@@ -97,7 +97,7 @@ public class ChatBgServiceImpl implements ChatBgService<ChatBgBean> {
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select c.id, c.create_user_id, c.path, c.chat_bg_desc, c.type, c.score, date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select c.id, c.create_user_id, c.path, c.chat_bg_desc, c.type, c.score, date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.聊天背景.value+" c");
 			sql.append(" where c.status=? ");
 			sql.append(buildChatBgTypeSql(type));
@@ -106,7 +106,7 @@ public class ChatBgServiceImpl implements ChatBgService<ChatBgBean> {
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select c.id, c.create_user_id, c.path, c.chat_bg_desc, c.type, c.score, date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select c.id, c.create_user_id, c.path, c.chat_bg_desc, c.type, c.score, date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.聊天背景.value+" c");
 			sql.append(" where c.status=? ");
 			sql.append(buildChatBgTypeSql(type));

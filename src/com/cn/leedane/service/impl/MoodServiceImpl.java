@@ -282,7 +282,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		message.put("isSuccess", false);
 		
 		if("firstloading".equalsIgnoreCase(method)){
-			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
 			sql.append(" m.create_user_id = ?");
@@ -290,7 +290,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, toUserId, pageSize);
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
-			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
 			sql.append(" m.create_user_id = ?");
@@ -298,7 +298,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, toUserId, lastId, pageSize);
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
-			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
 			sql.append(" m.create_user_id = ?");
@@ -697,7 +697,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			return message;
 		}
 		
-		List<Map<String, Object>> rs = moodMapper.executeSQL("select id, content, uuid, froms, create_user_id, date_format(create_time,'%Y-%c-%d %H:%i:%s') create_time, has_img , can_comment, can_transmit from "+DataTableType.心情.value+" where status=? and content like '%"+searchKey+"%' order by create_time desc limit 25", ConstantsUtil.STATUS_NORMAL);
+		List<Map<String, Object>> rs = moodMapper.executeSQL("select id, content, uuid, froms, create_user_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time, has_img , can_comment, can_transmit from "+DataTableType.心情.value+" where status=? and content like '%"+searchKey+"%' order by create_time desc limit 25", ConstantsUtil.STATUS_NORMAL);
 		if(rs != null && rs.size() > 0){
 			int createUserId = 0;
 			boolean hasImg;
@@ -751,7 +751,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			topic = "#" + topic + "#";
 		
 		if("firstloading".equalsIgnoreCase(method)){
-			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
 			sql.append(" m.content like '%"+topic+"%'");
@@ -759,7 +759,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, pageSize);
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
-			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
 			sql.append(" m.content like '%"+topic+"%'");
@@ -767,7 +767,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, lastId, pageSize);
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
-			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
 			sql.append(" m.content like '%"+topic+"%'");

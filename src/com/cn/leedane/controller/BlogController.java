@@ -193,7 +193,7 @@ public class BlogController extends BaseController{
 			System.out.println("执行的方式是："+method +",pageSize:"+pageSize+",lastId:"+lastId+",firstId:"+firstId);
 			//下刷新
 			if(method.equalsIgnoreCase("lowloading")){
-				sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+				sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 				sql.append(" , b.digest, b.froms, b.create_user_id, u.account ");
 				sql.append(" from "+DataTableType.博客.value+" b inner join "+DataTableType.用户.value+" u on b.create_user_id = u.id ");
 				sql.append(" where b.status = ?  and b.id < ? order by b.id desc limit 0,?");
@@ -201,7 +201,7 @@ public class BlogController extends BaseController{
 				
 			//上刷新
 			}else if(method.equalsIgnoreCase("uploading")){
-				sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+				sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 				sql.append(" , b.digest, b.froms, b.create_user_id, u.account ");
 				sql.append(" from "+DataTableType.博客.value+" b inner join "+DataTableType.用户.value+" u on b.create_user_id = u.id ");
 				sql.append(" where b.status = ? and b.id > ?  limit 0,?");
@@ -209,7 +209,7 @@ public class BlogController extends BaseController{
 				
 			//第一次刷新
 			}else if(method.equalsIgnoreCase("firstloading")){
-				sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+				sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 				sql.append(" , b.digest, b.froms, b.create_user_id, u.account ");
 				sql.append(" from "+DataTableType.博客.value+" b inner join "+DataTableType.用户.value+" u on b.create_user_id = u.id ");
 				sql.append(" where b.status = ?  order by b.id desc limit 0,?");

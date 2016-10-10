@@ -216,7 +216,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 		if(StringUtil.isNull(tableName) && toUserId > 0){		
 			if("firstloading".equalsIgnoreCase(method)){
 				sql.append("select c.id, c.pid, c.froms, c.content, c.table_id, c.table_name, c.create_user_id, u.account");
-				sql.append(", date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
+				sql.append(", date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
 				sql.append("  from "+DataTableType.评论.value+" c inner join "+DataTableType.用户.value+" u on u.id = c.create_user_id");
 				sql.append(" where c.create_user_id =? and c.status = ? ");
 				sql.append(" order by c.id desc limit 0,?");
@@ -224,7 +224,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 			//下刷新
 			}else if("lowloading".equalsIgnoreCase(method)){
 				sql.append("select c.id, c.pid, c.froms, c.content, c.table_id, c.table_name, c.create_user_id, u.account");
-				sql.append(", date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
+				sql.append(", date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
 				sql.append("  from "+DataTableType.评论.value+" c inner join "+DataTableType.用户.value+" u on u.id = c.create_user_id");
 				sql.append(" where c.create_user_id =? and c.status = ? ");
 				sql.append(" and c.id < ? order by c.id desc limit 0,? ");
@@ -232,7 +232,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 			//上刷新
 			}else if("uploading".equalsIgnoreCase(method)){
 				sql.append("select c.id, c.pid, c.froms, c.content, c.table_id, c.table_name, c.create_user_id, u.account");
-				sql.append(", date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
+				sql.append(", date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
 				sql.append("  from "+DataTableType.评论.value+" c inner join "+DataTableType.用户.value+" u on u.id = c.create_user_id");
 				sql.append(" where c.create_user_id =? and c.status = ? ");
 				sql.append(" and c.id > ? limit 0,?  ");
@@ -244,7 +244,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 		if(StringUtil.isNotNull(tableName) && toUserId < 1 && tableId > 0){
 			if("firstloading".equalsIgnoreCase(method)){
 				sql.append("select c.id, c.pid, c.froms, c.content, c.table_id, c.table_name, c.create_user_id, u.account");
-				sql.append(", date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
+				sql.append(", date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
 				sql.append("  from "+DataTableType.评论.value+" c inner join "+DataTableType.用户.value+" u on u.id = c.create_user_id");
 				sql.append(" where c.table_name = ? and c.table_id = ? and c.status = ?");
 				sql.append(" order by c.id desc limit 0,?");
@@ -252,7 +252,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 			//下刷新
 			}else if("lowloading".equalsIgnoreCase(method)){			
 				sql.append("select c.id, c.pid, c.froms, c.content, c.table_id, c.table_name, c.create_user_id, u.account ");
-				sql.append(", date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
+				sql.append(", date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
 				sql.append("  from "+DataTableType.评论.value+" c inner join "+DataTableType.用户.value+" u on u.id = c.create_user_id ");
 				sql.append(" where c.table_name = ? and c.table_id = ? and c.status = ?");
 				sql.append(" and c.id < ? order by c.id desc limit 0,?");
@@ -260,7 +260,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 			//上刷新
 			}else if("uploading".equalsIgnoreCase(method)){
 				sql.append("select c.id, c.pid, c.froms, c.content, c.table_id, c.table_name, c.create_user_id, u.account");
-				sql.append(", date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
+				sql.append(", date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time,c.comment_level, c.table_id ");
 				sql.append("  from "+DataTableType.评论.value+" c inner join "+DataTableType.用户.value+" u on u.id = c.create_user_id ");
 				sql.append(" where c.table_name = ? and c.table_id = ? and c.status = ?");
 				sql.append(" and c.id > ? limit 0,?");
@@ -359,7 +359,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 		StringBuffer sql = new StringBuffer();
 		if("firstloading".equalsIgnoreCase(method)){
 			sql.append("select c.id, c.content, c.table_id, c.table_name, c.create_user_id, u.account ");
-			sql.append(", date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time,c.comment_level, c.table_id, c.pid ");
+			sql.append(", date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time,c.comment_level, c.table_id, c.pid ");
 			sql.append("  from "+DataTableType.评论.value+" c inner join "+DataTableType.用户.value+" u on u.id = c.create_user_id ");
 			sql.append(" where c.table_name = ? and c.table_id = ? and c.status = ? and c.cid = ? ");
 			sql.append(" order by c.id desc");
@@ -369,7 +369,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){			
 			sql.append("select c.id, c.content, c.table_id, c.table_name, c.create_user_id, u.account ");
-			sql.append(", date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time,c.comment_level, c.table_id, c.pid ");
+			sql.append(", date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time,c.comment_level, c.table_id, c.pid ");
 			sql.append("  from "+DataTableType.评论.value+" c inner join "+DataTableType.用户.value+" u on u.id = c.create_user_id ");
 			sql.append(" where c.table_name = ? and c.table_id = ? and c.status = ? and c.cid = ? ");
 			sql.append(" and c.id < ? order by c.id desc");
@@ -379,7 +379,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
 			sql.append("select c.id, c.content, c.table_id, c.table_name, c.create_user_id, u.account ");
-			sql.append(", date_format(c.create_time,'%Y-%c-%d %H:%i:%s') create_time,c.comment_level, c.table_id, c.pid ");
+			sql.append(", date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time,c.comment_level, c.table_id, c.pid ");
 			sql.append("  from "+DataTableType.评论.value+" c inner join "+DataTableType.用户.value+" u on u.id = c.create_user_id ");
 			sql.append(" where c.table_name = ? and c.table_id = ? and c.status = ? and c.pid = ? ");
 			sql.append(" and c.id > ? ");

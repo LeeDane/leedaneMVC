@@ -460,21 +460,21 @@ public class FilePathServiceImpl implements FilePathService<FilePathBean> {
 		System.out.println("执行的方式是："+method +",pageSize:"+pageSize+",lastId:"+lastId+",firstId:"+firstId);
 		//下刷新
 		if(method.equalsIgnoreCase("lowloading")){
-			sql.append("select f.id, f.path, f.is_upload_qiniu, f.table_name, f.table_uuid, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select f.id, f.path, f.is_upload_qiniu, f.table_name, f.table_uuid, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" from "+DataTableType.文件.value+" f");
 			sql.append(" where f.status = ? and f.create_user_id = ? and f.id < ? order by f.id desc limit 0,?");
 			r = filePathMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, user.getId(), lastId, pageSize);
 			
 		//上刷新
 		}else if(method.equalsIgnoreCase("uploading")){
-			sql.append("select f.id, f.path, f.is_upload_qiniu, f.table_name, f.table_uuid, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select f.id, f.path, f.is_upload_qiniu, f.table_name, f.table_uuid, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" from "+DataTableType.文件.value+" f");
 			sql.append(" where f.status = ? and f.create_user_id = ? and f.id > ?  limit 0,?");
 			r = filePathMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, user.getId(), firstId, pageSize);
 			
 		//第一次刷新
 		}else if(method.equalsIgnoreCase("firstloading")){
-			sql.append("select f.id, f.path, f.is_upload_qiniu, f.table_name, f.table_uuid, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select f.id, f.path, f.is_upload_qiniu, f.table_name, f.table_uuid, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" from "+DataTableType.文件.value+" f");
 			sql.append(" where f.status = ? and f.create_user_id = ? order by f.id desc limit 0,?");
 			r = filePathMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, user.getId(), pageSize);

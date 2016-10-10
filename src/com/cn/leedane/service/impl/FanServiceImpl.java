@@ -93,7 +93,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		StringBuffer sql;
 		if("firstloading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.create_user_id=? ");
 			sql.append(" order by f.id desc limit 0,?");
@@ -101,7 +101,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.create_user_id=? ");
 			sql.append(" and f.id < ? order by f.id desc limit 0,? ");
@@ -109,7 +109,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.create_user_id=? ");
 			sql.append(" and f.id > ? limit 0,? ");
@@ -161,7 +161,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		StringBuffer sql;
 		if("firstloading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.create_user_id=? ");
 			sql.append(" order by f.id desc limit 0,?");
@@ -169,7 +169,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.create_user_id=? ");
 			sql.append(" and f.id < ? order by f.id desc limit 0,? ");
@@ -177,7 +177,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select f.id, f.create_user_id, f.to_user_id user_id, f.user_remark remark, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.create_user_id=? ");
 			sql.append(" and f.id > ? limit 0,? ");
@@ -228,7 +228,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		StringBuffer sql;
 		if("firstloading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.to_user_id=? ");
 			sql.append(" order by f.id desc limit 0,?");
@@ -236,7 +236,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.to_user_id=? ");
 			sql.append(" and f.id < ? order by f.id desc limit 0,? ");
@@ -244,7 +244,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.to_user_id=? ");
 			sql.append(" and f.id > ? limit 0,? ");
@@ -295,7 +295,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		StringBuffer sql;
 		if("firstloading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.to_user_id=? ");
 			sql.append(" order by f.id desc limit 0,?");
@@ -303,7 +303,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.to_user_id=? ");
 			sql.append(" and f.id < ? order by f.id desc limit 0,? ");
@@ -311,7 +311,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
 			sql = new StringBuffer();
-			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select f.id, f.create_user_id user_id, f.to_user_id, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" from "+DataTableType.粉丝.value+" f");
 			sql.append(" where f.status=? and f.to_user_id=? ");
 			sql.append(" and f.id > ? limit 0,? ");

@@ -14,6 +14,11 @@
 	</select>
 	
 	<select id="getAll" resultType="java.util.Map">
-		select * from t_financial where status=#{status} and create_user_id=#{userId} order by create_time desc
+		select imei,model,money, one_level, two_level, has_img, path, location, 
+			longitude, latitude, financial_desc, date_format(addition_time,'%Y-%m-%d %H:%i:%s') addition_time
+			, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time
+			, id, create_user_id, status  
+		from t_financial where status=#{status} and create_user_id=#{userId} 
+		order by create_time desc
 	</select>
 </mapper>

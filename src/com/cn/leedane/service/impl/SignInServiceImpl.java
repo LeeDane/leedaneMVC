@@ -182,7 +182,7 @@ public class SignInServiceImpl implements SignInService<SignInBean> {
 		System.out.println("获取签到历史记录：开始时间："+DateUtil.DateToString(startDate, "yyyy-MM-dd") +",结束时间：" +DateUtil.DateToString(endDate, "yyyy-MM-dd"));
 		StringBuffer sql = new StringBuffer();
 		sql.append("select s.id, s.pid, s.score, s.create_user_id");
-		sql.append(" , date_format(s.create_time,'%Y-%c-%d %H:%i:%s') create_time, s.continuous");
+		sql.append(" , date_format(s.create_time,'%Y-%m-%d %H:%i:%s') create_time, s.continuous");
 		sql.append(" from "+DataTableType.签到.value+" s inner join "+DataTableType.用户.value+" u on u.id = s.create_user_id where s.create_user_id = ? and s.status = ? and DATE(s.create_time) between ? and ? ");
 		sql.append(" order by s.id desc");
 		sql.append(getLimitSQL(pageSize));

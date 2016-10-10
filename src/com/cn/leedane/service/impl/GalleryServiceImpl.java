@@ -158,7 +158,7 @@ public class GalleryServiceImpl implements GalleryService<GalleryBean> {
 		
 		StringBuffer sql = new StringBuffer();
 		if("firstloading".equalsIgnoreCase(method)){
-			sql.append("select g.id, g.path, g.width, g.height, g.length, g.create_user_id, date_format(g.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select g.id, g.path, g.width, g.height, g.length, g.create_user_id, date_format(g.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" , g.gallery_desc, u.account");
 			sql.append(" from "+DataTableType.图库.value+" g inner join "+DataTableType.用户.value+" u on u.id = g.create_user_id where g.status = ? ");
 			sql.append(" and g.create_user_id = ?");
@@ -166,7 +166,7 @@ public class GalleryServiceImpl implements GalleryService<GalleryBean> {
 			rs = galleryMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, uid, pageSize);
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
-			sql.append("select g.id, g.path, g.width, g.height, g.length, g.create_user_id, date_format(g.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select g.id, g.path, g.width, g.height, g.length, g.create_user_id, date_format(g.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" , g.gallery_desc, u.account");
 			sql.append(" from "+DataTableType.图库.value+" g inner join "+DataTableType.用户.value+" u on u.id = g.create_user_id where g.status = ? ");
 			sql.append(" and g.create_user_id = ?");
@@ -174,7 +174,7 @@ public class GalleryServiceImpl implements GalleryService<GalleryBean> {
 			rs = galleryMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, uid, lastId, pageSize);
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
-			sql.append("select g.id, g.path, g.width, g.height, g.length, g.create_user_id, date_format(g.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select g.id, g.path, g.width, g.height, g.length, g.create_user_id, date_format(g.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" , g.gallery_desc, u.account");
 			sql.append(" from "+DataTableType.图库.value+" g inner join "+DataTableType.用户.value+" u on u.id = g.create_user_id where g.status = ? ");
 			sql.append(" and g.create_user_id = ?");

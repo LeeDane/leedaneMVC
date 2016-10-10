@@ -67,19 +67,19 @@ public class ScoreServiceImpl implements ScoreService<ScoreBean>{
 		List<Map<String, Object>> rs = new ArrayList<Map<String,Object>>();
 		//查找该用户所有的积分历史列表(该用户必须是登录用户)
 		if("firstloading".equalsIgnoreCase(method)){
-			sql.append("select s.id, s.score_desc, s.total_score, s.score, s.status, date_format(s.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select s.id, s.score_desc, s.total_score, s.score, s.status, date_format(s.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.积分.value+" s where s.create_user_id = ? ");
 			sql.append(" order by s.id desc limit 0,?");
 			rs = scoreMapper.executeSQL(sql.toString(), user.getId(), pageSize);
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
-			sql.append("select s.id, s.score_desc, s.total_score, s.score, s.status, date_format(s.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select s.id, s.score_desc, s.total_score, s.score, s.status, date_format(s.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.积分.value+" s where s.create_user_id = ? ");
 			sql.append(" and s.id < ? order by s.id desc limit 0,? ");
 			rs = scoreMapper.executeSQL(sql.toString(), user.getId(), lastId, pageSize);
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
-			sql.append("select s.id, s.score_desc, s.total_score, s.score, s.status, date_format(s.create_time,'%Y-%c-%d %H:%i:%s') create_time ");
+			sql.append("select s.id, s.score_desc, s.total_score, s.score, s.status, date_format(s.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+DataTableType.积分.value+" s where s.create_user_id = ? ");
 			sql.append(" and s.id > ? limit 0,?  ");
 			rs = scoreMapper.executeSQL(sql.toString() , user.getId(), firstId, pageSize);
