@@ -87,7 +87,7 @@ public class BlogHandler {
 		JSONArray jsonArray = new JSONArray();
 		if(!redisUtil.hasKey(blogKey)){
 			StringBuffer sql = new StringBuffer();
-			sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%c-%d %H:%i:%s') create_time");
+			sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time");
 			sql.append(" , b.digest, b.froms, b.create_user_id, (select account from "+DataTableType.用户.value+" where id = b.create_user_id) account");
 			sql.append(" from "+DataTableType.博客.value+" b");
 			sql.append(" where b.id=? ");

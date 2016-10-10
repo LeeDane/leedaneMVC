@@ -250,7 +250,7 @@ public class CircleOfFriendsHandler {
 		List<Map<String, Object>> rs = new ArrayList<Map<String,Object>>();
 		if(myList == null || myList.size() ==0){
 			StringBuffer sql = new StringBuffer();
-			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%c-%d %H:%i:%s') create_time, m.has_img,");
+			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img,");
 			sql.append(" m.read_number, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
 			sql.append(" m.create_user_id = ?");
