@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.cn.leedane.mapper.BlogMapper">
+
+	<!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<select id="getLatestBlogById" resultType="java.util.Map">
+		<if test="last_blog_id == 0">
+			select b.id,b.title,b.img_url from t_blog b inner join t_user u on b.create_user_id = u.id 
+			where b.img_url is not null and b.title != '' order by b.id desc limit #{num}
+		</if>
+		<if test="last_blog_id > 0">
+				select b.id,b.title,b.img_url from t_blog b inner join t_user u on b.create_user_id = u.id 
+				where b.id &lt; #{last_blog_id} and b.img_url is not null and b.title != '' order by b.id desc limit #{num}
+		</if>
+	</select>
+</mapper>

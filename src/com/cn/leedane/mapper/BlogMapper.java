@@ -3,6 +3,8 @@ package com.cn.leedane.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.cn.leedane.model.BlogBean;
 /**
  * 博客mapper接口类
@@ -58,7 +60,7 @@ public interface BlogMapper extends BaseMapper<BlogBean>{
 	 * @param num  需要获取的博客条数,注意：当值小于1将取最新的num条
 	 * @return
 	 */
-	public List<Map<String, Object>> getLatestBlogById(int lastBlogId, int num);
+	public List<Map<String, Object>> getLatestBlogById(@Param("last_blog_id")int lastBlogId, @Param("num")int num);
 	
 	
 	/**

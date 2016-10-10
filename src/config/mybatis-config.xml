@@ -9,8 +9,8 @@
 	<!-- 实体类,简称 -设置别名 -->
 	<typeAliases>
 		<typeAlias alias="AttentionBean" type="com.cn.leedane.model.AttentionBean" />
-		<!-- <typeAlias alias="BlogBean" type="com.cn.leedane.model.BlogBean" />
-		<typeAlias alias="ChatBean" type="com.cn.leedane.model.ChatBean" />
+		<typeAlias alias="BlogBean" type="com.cn.leedane.model.BlogBean" />
+		<!-- <typeAlias alias="ChatBean" type="com.cn.leedane.model.ChatBean" />
 		<typeAlias alias="ChatBgBean" type="com.cn.leedane.model.ChatBgBean" />
 		<typeAlias alias="ChatBgUserBean" type="com.cn.leedane.model.ChatBgUserBean" />
 		<typeAlias alias="CollectionBean" type="com.cn.leedane.model.CollectionBean" />
@@ -42,8 +42,8 @@
 	-->
 	<mappers>
 		<mapper resource="com/cn/leedane/mapper/AttentionMapper.xml" />
-		<!-- <mapper resource="com/cn/leedane/mapper/BlogMapper.xml" />
-		<mapper resource="com/cn/leedane/mapper/ChatMapper.xml" />
+		<mapper resource="com/cn/leedane/mapper/BlogMapper.xml" />
+		<!-- <mapper resource="com/cn/leedane/mapper/ChatMapper.xml" />
 		<mapper resource="com/cn/leedane/mapper/ChatBgMapper.xml" />
 		<mapper resource="com/cn/leedane/mapper/ChatBgUserMapper.xml" />
 		<mapper resource="com/cn/leedane/mapper/CollectionMapper.xml" />
