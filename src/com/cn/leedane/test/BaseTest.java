@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 //请注意location的顺序，加载顺序将按照
 @ContextConfiguration(locations={"classpath:config/spring-common.xml","classpath:config/spring-beans.xml","classpath:config/spring-mvc.xml"
-		,/*"classpath:ehcache.xml","classpath*:spring-lucene.xml"*/})
+		/*,"classpath:config/ehcache.xml","classpath*:config/spring-lucene.xml"*/})
 public abstract class BaseTest extends AbstractJUnit4SpringContextTests {
 
 }

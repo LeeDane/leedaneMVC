@@ -102,7 +102,7 @@ public class SanwenNetNovel extends BaseCrawlBean{
 		String content = super.getContent(cssSelect, cssRemoves);
 		
 		//需要对content的图片进行base64位的编译，不然直接范文不了图片地址
-		if(!StringUtil.isNull(content)){
+		/*if(!StringUtil.isNull(content)){
 			Document contentHtml = Jsoup.parse(content);
 			if(contentHtml != null){ 
 				Elements elements = contentHtml.select("img");
@@ -123,7 +123,7 @@ public class SanwenNetNovel extends BaseCrawlBean{
 				
 				content = contentHtml.html();
 			}
-		}
+		}*/
 		return content;
 	}
 	

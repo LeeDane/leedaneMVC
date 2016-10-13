@@ -191,10 +191,17 @@ public class StringUtil {
 	 * @return
 	 */
 	public static boolean isLink(String origin){
+		
 		if(!StringUtil.isNull(origin)){
-			if(origin.startsWith("http://") || origin.startsWith("https://")){
-				return true;
-			}
+			Pattern p = Pattern.compile("(http://|ftp://|https://|www){0,1}[^\u4e00-\u9fa5\\s]*?\\.(com|net|cn|me|tw|fr)[^\u4e00-\u9fa5\\s]*");
+	        String group;
+	        Matcher m=p.matcher(origin);
+	        while(m.find()){
+	            group = m.group().trim();
+	            if(StringUtil.isNotNull(group)){
+	                return true;
+	            }
+	        }
 		}
 		return false;
 	}

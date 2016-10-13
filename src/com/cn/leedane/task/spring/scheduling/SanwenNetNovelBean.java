@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EnumUtil;
+import com.cn.leedane.utils.SqlUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsoupUtil;
 import com.cn.leedane.utils.StringUtil;
@@ -83,7 +84,7 @@ public class SanwenNetNovelBean {
 		
 		//获得用户
 		UserBean user = userService.findById(1);
-		List<CrawlBean> beans = crawlMapper.findAllNotCrawl(0, EnumUtil.WebCrawlType.散文网短篇小说.value);
+		List<CrawlBean> beans = SqlUtil.convertMapsToBeans(CrawlBean.class, crawlMapper.findAllNotCrawl(0, EnumUtil.WebCrawlType.散文网短篇小说.value));
 		if(beans != null && beans.size()> 0){
 			List<Future<Boolean>> futures = new ArrayList<Future<Boolean>>();
 			ExecutorService threadpool = Executors.newFixedThreadPool(beans.size() >2 ? 3: beans.size());

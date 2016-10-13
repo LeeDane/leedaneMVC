@@ -47,7 +47,7 @@
 	
 	
 	
-	<bean id="indexWriter" class="org.apache.lucene.index.IndexWriter">
+	<bean id="indexWriter" class="org.apache.lucene.index.IndexWriter" scope="singleton">
 		<constructor-arg name="d" ref="directory"/>
 		<constructor-arg name="conf" ref="indexWriterConfig"/>
 		<!-- <constructor-arg ref="MAXFIELDLENGTH2"/> -->

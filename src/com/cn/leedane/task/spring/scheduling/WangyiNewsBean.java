@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
+import com.cn.leedane.utils.SqlUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsoupUtil;
 import com.cn.leedane.utils.StringUtil;
@@ -80,13 +81,19 @@ public class WangyiNewsBean {
 		try {
 			//获得用户
 			UserBean user = userService.findById(1);
-			List<CrawlBean> beans = crawlMapper.findAllNotCrawl(0, EnumUtil.WebCrawlType.网易新闻.value);
+			List<CrawlBean> beans = SqlUtil.convertMapsToBeans(CrawlBean.class, crawlMapper.findAllNotCrawl(0, EnumUtil.WebCrawlType.网易新闻.value));
 			for(CrawlBean bean: beans){
 				Pattern p=Pattern.compile("http://[a-z]+.163.com/[0-9]{2}/[0-9]{4}/[0-9]{2}/*");//找网易新闻的子站
 				Matcher m=p.matcher(bean.getUrl());
 				if(m.find()){
 					WangyiNews wangyi = new WangyiNews(bean.getUrl(),"","");
-					wangyi.execute();
+					try{
+						wangyi.execute();
+					}catch(IOException e){
+						System.out.println("处理网易新闻信息出现异常：deal()+url="+bean.getUrl() +e.toString());
+						continue;
+					}
+					
 					if( wangyi != null && wangyi.getContent() != null && !wangyi.getContent().trim().equals("")&& wangyi.getTitle() != null && !wangyi.getTitle().trim().equals("")){
 						
 						//判断是否已经存在相同的信息
@@ -135,8 +142,8 @@ public class WangyiNewsBean {
 					crawlMapper.update(bean);
 				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			//e.printStackTrace();
 			System.out.println("处理网易新闻信息出现异常：deal()");
 		}
 	}

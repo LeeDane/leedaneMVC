@@ -56,7 +56,7 @@ public class RedisTest extends BaseTest {
 		//Map<String>
 		//redisUtil.addMap("test_user_1", map)
 		/*String key = "test_zdd_1";*/
-		redisUtil.delete("setAAA");
+		/*redisUtil.delete("setAAA");
 		Map<Double, String> scoreMembers = new HashMap<Double, String>();
 		scoreMembers.put((double) 1, "leedane1");
 		scoreMembers.put((double) 2, "leedane2");
@@ -74,6 +74,7 @@ public class RedisTest extends BaseTest {
 		Set<String> set = redisUtil.getLimit(1, "setAAA", 2, 5);
 		for(String s: set){
 			System.out.println(s);
-		}
+		}*/
+		redisUtil.clearAll();
 	}
 }

@@ -194,8 +194,15 @@ public class LuceneUtil {
 		searcher = new IndexSearcher(indexReader);
 		QueryParser qp = new MultiFieldQueryParser(fields, analyzer); 
 		
-		qp.setDefaultOperator(dealQueryParserOperator(keyword)); 
-		Query query = qp.parse(keyword);
+		/*PhraseQuery query = new PhraseQuery();
+		query.setSlop(1);
+		query.add(new Term("bookcontent",keyword));*/
+		
+		Term term = new Term("bookcontent",keyword);
+		TermQuery query = new TermQuery(term);	
+		
+		//qp.setDefaultOperator(dealQueryParserOperator(keyword)); 
+		//Query query = qp.parse(keyword);
 		
 		//先获取上一页的最后一个元素
         ScoreDoc lastSd = getLastScoreDoc(pageIndex, pageSize, query, searcher);
@@ -209,7 +216,7 @@ public class LuceneUtil {
 		for(ScoreDoc scoreDoc: scoreDocs){
 			//System.out.println("RRRRRRRRRRRRRRRRR"+scoreDocs.length);
 			Document targetDoc = searcher.doc(scoreDoc.doc);
-			System.out.println("文档的docID是：" + scoreDoc.doc);
+			System.out.println("文档的docID是：" + scoreDoc.doc + "  --->积分" +scoreDoc.score);
 			if(targetDoc != null){
 				for(String f: fields){
 					System.out.print("结果是："+targetDoc.get(f) + "---------------->");

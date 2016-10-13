@@ -2,6 +2,8 @@ package com.cn.leedane.model;
 
 import java.util.Date;
 
+import com.cn.leedane.mybatis.table.annotation.Column;
+
 /**
  * 爬虫的实体bean
  * @author LeeDane
@@ -24,6 +26,7 @@ public class CrawlBean extends IDBean{
 	/**
 	 * 是否已经爬取
 	 */
+	@Column("is_crawl")
 	private boolean isCrawl; 
 	
 	/*以下是对抓取数据的保存字段*/
@@ -31,6 +34,7 @@ public class CrawlBean extends IDBean{
 	/**
 	 * 创建时间
 	 */
+	@Column("create_time")
 	private Date createTime;
 	
 	/**
@@ -46,6 +50,7 @@ public class CrawlBean extends IDBean{
 	/**
 	 * 是否是具体的链接（具体到文章的链接）
 	 */
+	@Column("is_link")
 	private boolean isLink;
 	
 	

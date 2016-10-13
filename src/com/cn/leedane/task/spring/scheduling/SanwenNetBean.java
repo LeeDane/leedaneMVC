@@ -95,7 +95,7 @@ public class SanwenNetBean {
 			threadpool.shutdown();
 			List<String> errors = new ArrayList<String>();
 			for(int i = 0; i < futures.size(); i++){
-				if(!futures.get(i).get()){
+				if(futures.get(i) !=null && !futures.get(i).get()){
 					errors.add(beans.get(i).getUrl());
 				}
 			}

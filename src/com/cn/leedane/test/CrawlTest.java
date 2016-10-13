@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.SpringUtil;
+import com.cn.leedane.utils.SqlUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.cache.SystemCache;
 import com.cn.leedane.crawl.SanwenNet;
@@ -89,7 +90,7 @@ public class CrawlTest extends BaseTest {
 		//获得用户
 		UserBean user = userService.findById(aid);
 		//ExecutorService threadPool = Executors.newFixedThreadPool(5);
-		List<CrawlBean> beans = crawlMapper.findAllNotCrawl(0, EnumUtil.WebCrawlType.网易新闻.value);
+		List<CrawlBean> beans = SqlUtil.convertMapsToBeans(CrawlBean.class, crawlMapper.findAllNotCrawl(0, EnumUtil.WebCrawlType.网易新闻.value));
 		for(CrawlBean bean: beans){
 			Pattern p=Pattern.compile("http://[a-z]+.163.com/[0-9]{2}/[0-9]{4}/[0-9]{2}/*");//找网易新闻的子站
 			Matcher m=p.matcher(bean.getUrl());
@@ -184,7 +185,7 @@ public class CrawlTest extends BaseTest {
 	 */
 	@Test
 	public void updateScore() throws Exception{
-		List<CrawlBean> beans = crawlMapper.findAllNotCrawl(0, EnumUtil.WebCrawlType.网易新闻.value);
+		List<CrawlBean> beans = SqlUtil.convertMapsToBeans(CrawlBean.class, crawlMapper.findAllNotCrawl(0, EnumUtil.WebCrawlType.网易新闻.value));
 		for(CrawlBean bean: beans){
 			Pattern p=Pattern.compile("http://news.163.com/[0-9]{2}/[0-9]{4}/[0-9]{2}/*");//找网易新闻的子站
 			Matcher m=p.matcher(bean.getUrl());
@@ -237,7 +238,7 @@ public class CrawlTest extends BaseTest {
 			//获得用户
 			UserBean user = userService.findById(aid);
 			//ExecutorService threadPool = Executors.newFixedThreadPool(5);
-			List<CrawlBean> beans = crawlMapper.findAllNotCrawl(0,EnumUtil.WebCrawlType.散文网.value);
+			List<CrawlBean> beans = SqlUtil.convertMapsToBeans(CrawlBean.class, crawlMapper.findAllNotCrawl(0,EnumUtil.WebCrawlType.散文网.value));
 			for(CrawlBean bean: beans){
 				if(!StringUtil.isNull(bean.getUrl())){
 					//http://www.sanwen.net/subject/3762456/

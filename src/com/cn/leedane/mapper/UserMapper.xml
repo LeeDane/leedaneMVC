@@ -24,11 +24,11 @@
 	</select>
 	
 	<select id="loginByWeChat" resultType="UserBean">
-		from UserBean where wechat_user_name = #{fromUserName} and status = #{status} 
+		select * from t_user where wechat_user_name = #{fromUserName} and status = #{status} 
 	</select>
 	
 	<select id="checkRegisterCode" resultType="UserBean">
-		from UserBean where registerCode=#{registerCode} and status = 2
+		select * from t_user where registerCode=#{registerCode} and status = 2
 	</select>
 	
 	<select id="find4MoreUser" resultType="java.util.Map">

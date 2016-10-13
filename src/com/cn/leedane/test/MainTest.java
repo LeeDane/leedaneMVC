@@ -14,9 +14,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.activemq.filter.function.inListFunction;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import net.sf.json.JSONObject;
 
+import com.cn.leedane.crawl.BaseCrawlBean;
 import com.cn.leedane.model.MoodBean;
 import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.utils.BeanUtil;
@@ -31,40 +34,15 @@ import com.cn.leedane.utils.DateUtil;
 public class MainTest {
 
 	public static void main(String[] args) throws IOException {
-		/*String str = "@d哈 nihao @天天让人  @123";
-		Set<String> set = StringUtil.getAtUserName(str);
-		if(set != null && set.size()> 0){
-			for(String s: set){
-				System.out.println(s);
-			}
-		}*/
-		
-		/*long length = 6235000;
-		 java.text.DecimalFormat df=new java.text.DecimalFormat("#.##");
-         double d = length / 1024.00/ 1024.00;
-         String size = df.format(d) +"M";
-         
-		System.out.println(size);*/
-		/*String value = " @";
-		//只有一个@字符启动好友选择
-        if(value.equals("@")){
-        	System.out.println("sss");
-        }
-
-        if(value.endsWith(" @")){
-        	System.out.println("aasss");
-        }*/
-		
-		//Pattern p=Pattern.compile("\\[([^\\[\\]]+)\\]");
-		/*Pattern pattern = Pattern.compile("\\#([^\\[\\]]+)\\#");
-		String heheString = "#23#";
-		Matcher matcher = pattern.matcher(heheString);
-        while (matcher.find()) {
-                String group0 = matcher.group().trim();;
-                System.out.println(group0);
-        }*/
-		
-		System.out.println(getInt());
+		int start = 2;
+		int end  = 3;
+		String string = "发货及支付空间设计师科技馆";
+		StringBuffer buffer = new StringBuffer(string);
+		String bStart = "<b>";
+		buffer.insert(start, bStart);
+		String bEnd = "</b>";
+		buffer.insert(start + bStart.length() + 2, bEnd);
+		System.out.println(buffer.toString());
 	}
 	
 	private static int getInt(){

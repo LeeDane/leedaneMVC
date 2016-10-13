@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.cn.leedane.mapper.CrawlMapper;
 import com.cn.leedane.model.CrawlBean;
 import com.cn.leedane.service.CrawlService;
+import com.cn.leedane.utils.SqlUtil;
 
 /**
  * 爬虫的service实现类
@@ -23,12 +24,12 @@ public class CrawlServiceImpl implements CrawlService<CrawlBean> {
 
 	@Override
 	public List<CrawlBean> findAllNotCrawl(int limit, String source) {
-		return this.crawlMapper.findAllNotCrawl(limit, source);
+		return SqlUtil.convertMapsToBeans(CrawlBean.class, this.crawlMapper.findAllNotCrawl(limit, source));
 	}
 
 	@Override
 	public List<CrawlBean> findAllHotNotCrawl(int limit) {
-		return this.crawlMapper.findAllHotNotCrawl(limit);
+		return SqlUtil.convertMapsToBeans(CrawlBean.class, this.crawlMapper.findAllHotNotCrawl(limit));
 	}
 
 	@Override

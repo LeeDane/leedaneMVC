@@ -1,6 +1,9 @@
 package com.cn.leedane.mapper;
 
 import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.cn.leedane.model.CrawlBean;
 /**
@@ -24,14 +27,14 @@ public interface CrawlMapper extends BaseMapper<CrawlBean>{
 	 * @param source 来源，空表示全部
 	 * @return
 	 */
-	public List<CrawlBean> findAllNotCrawl(int limit, String source);
+	public List<Map<String, Object>> findAllNotCrawl(@Param("limit") int limit, @Param("source") String source);
 	
 	/**
 	 * 找出所有没有爬取的热门数据链接,根据score从大到小
 	 * @param limit 现在的数量,等于0表示全部
 	 * @return
 	 */
-	public List<CrawlBean> findAllHotNotCrawl(int limit);
+	public List<Map<String, Object>> findAllHotNotCrawl(@Param("limit") int limit);
 	
 	/**
 	 * 更新所有的score

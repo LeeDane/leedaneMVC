@@ -132,29 +132,29 @@
 	<!-- 网易新闻抓取数据触发器 -->
 	<bean id="wangyiNewsCrawlTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="wangyiNewsCrawlJob" />
-		<property name="cronExpression" value="0 2 0 ? * *" /><!-- 每天0点02分触发 -->
-		<!--<property name="cronExpression" value="0 0/13 * * * ?" /> 每隔15分钟运行一次 -->
+		<!--<property name="cronExpression" value="0 2 0 ? * *" /> 每天0点02分触发 -->
+		<property name="cronExpression" value="0 0/55 * * * ?" /><!-- 每隔15分钟运行一次 -->
 	</bean>
 	
 	<!-- 网易新闻处理数据触发器 -->
 	<bean id="wangyiNewsDealTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="wangyiNewsDealJob" />
-		<property name="cronExpression" value="0 55 0 ? * *" /><!-- 每天0点55分触发 -->
-		<!-- <property name="cronExpression" value="0 0/15 * * * ?" /> 每隔30分钟运行一次 -->
+		<!-- <property name="cronExpression" value="0 55 0 ? * *" />每天0点55分触发 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" /><!--  每隔30分钟运行一次 -->
 	</bean>
 	
 	<!-- 散文网抓取数据触发器 -->
 	<bean id="sanwenNetCrawlTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="sanwenNetCrawlJob" />
-		<property name="cronExpression" value="0 38 1 ? * *" /><!-- 每天1点38分触发 -->
-		<!--<property name="cronExpression" value="0 0/2 * * * ?" /> 每隔20分钟运行一次 -->
+		<property name="cronExpression" value="0 38 1 ? * *" /> <!--每天1点38分触发 -->
+		<!--<property name="cronExpression" value="0 0/50 * * * ?" /> 每隔20分钟运行一次 -->
 	</bean>
 	
 	<!-- 散文网处理数据触发器 -->
 	<bean id="sanwenNetDealTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="sanwenNetDealJob" />
-		<property name="cronExpression" value="0 55 2 ? * *" /><!-- 每天2点55分触发 -->
-		<!--<property name="cronExpression" value="0 0/3 * * * ?" /> 每隔50分钟运行一次 -->
+		<property name="cronExpression" value="0 55 2 ? * *" /> <!--每天2点55分触发 -->
+		<!--<property name="cronExpression" value="0 0/15 * * * ?" /> 每隔50分钟运行一次 -->
 	</bean>
 	
 	<!-- 散文网短篇小说抓取数据触发器 -->

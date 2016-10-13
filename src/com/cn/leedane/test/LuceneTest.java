@@ -1,11 +1,14 @@
 package com.cn.leedane.test;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
@@ -46,8 +49,13 @@ public class LuceneTest extends BaseTest{
 	@Test
 	public void indexTest() throws ParseException{
 		System.out.println("开始时间");
-		analyzer.setUseSmart(false);
-		
+		//analyzer.setUseSmart(false);
+		try {
+			analyzer.tokenStream("bookcontent", "不是#我#做#的");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		/**
 		 * TextField() 索引+分词  Store.YES:存储，Store.NO: 不存储
 		 * StringField() 索引+不分词
@@ -55,9 +63,9 @@ public class LuceneTest extends BaseTest{
 		 */
 		Document bookdoc  = new Document();
 		//标题选择索引+分词，可以存储
-		Field bookNo = new LongField("booktitle", 17277233, Store.YES);
+		Field bookNo = new LongField("booktitle", 344333, Store.YES);
 		//文章内容一般很大，索引选择分词+索引，网上说一般不存储，可是不存储的话就显示不了这些内容
-		Field bookName = new TextField("bookcontent", "我是中国人", Store.YES);
+		Field bookName = new TextField("bookcontent", "不知道为什么", Store.YES);
 		//作者名应该保持完整索引，不需要分词。可以存储
 		//Field author = new StringField("author", "匿名", Store.YES);
 		//时间选择索引，但是不分词，可以存储
@@ -69,15 +77,16 @@ public class LuceneTest extends BaseTest{
 		
 		Document bookdoc1  = new Document();
 		//标题选择索引+分词，可以存储
-		Field bookNo1 = new LongField("booktitle", 1724673, Store.YES);
+		Field bookNo1 = new LongField("booktitle", 423233, Store.YES);
 		//文章内容一般很大，索引选择分词+索引，网上说一般不存储，可是不存储的话就显示不了这些内容
-		Field bookName1 = new TextField("bookcontent", "我们是华夏子孙", Store.YES);
+		Field bookName1 = new TextField("bookcontent", "不是我做的", Store.YES);
 		bookdoc1.add(bookNo1);
 		bookdoc1.add(bookName1);
 		try {
 			indexWriter.addDocument(bookdoc);
 			indexWriter.addDocument(bookdoc1);
 			indexWriter.close();
+			
 			
 			System.out.println("建立索引成功");
 			
@@ -268,7 +277,7 @@ public class LuceneTest extends BaseTest{
 	@Test
 	public void searchSanwenPageByAfter() throws IOException, ParseException{
 		long startTime = System.currentTimeMillis();
-		System.out.println("总数：" +LuceneUtil.getInstance().simpleSearchPageByAfter(new String[]{"title","content"}, "父亲 四月", 1, 50));
+		System.out.println("总数：" +LuceneUtil.getInstance().simpleSearchPageByAfter(new String[]{"booktitle","bookcontent"}, "我", 1, 15));
 		long endTime = System.currentTimeMillis();
 		System.out.println("执行程序总计耗时："+ (endTime - startTime) + "毫秒");
 	}
