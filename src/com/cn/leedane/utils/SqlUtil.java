@@ -1,9 +1,15 @@
 package com.cn.leedane.utils;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.util.CollectionUtils;
+
+import com.alibaba.fastjson.JSONArray;
+import com.cn.leedane.model.FinancialBean;
+import com.cn.leedane.mybatis.table.annotation.Column;
 
 /**
  * sql工具类
@@ -34,4 +40,14 @@ public class SqlUtil {
 		}
 		return total;
 	}
+	
+	/**
+     * 将一个 Map 对象转化为一个 JavaBean
+     * @param type
+     * @param map
+     * @return
+     */
+    public static List convertMapsToBeans(Class<?> clazz, List<Map<String, Object>> maps) {
+       return JSONArray.parseArray(JSONArray.toJSONString(maps), clazz);
+    }
 }

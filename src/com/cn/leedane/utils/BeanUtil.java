@@ -3,6 +3,7 @@ package com.cn.leedane.utils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.cn.leedane.mybatis.table.annotation.Column;
@@ -10,7 +11,7 @@ import com.cn.leedane.mybatis.table.annotation.Column;
 public class BeanUtil {
 	 /**
      * 将一个 Map 对象转化为一个 JavaBean
-     * @param type
+     * @param bean
      * @param map
      * @return
      */
@@ -42,6 +43,8 @@ public class BeanUtil {
             new RuntimeException("get insert sql is exceptoin:" + e);
         }
     }
+    
+    
     
     /**
      * 添加驼峰式下划线
