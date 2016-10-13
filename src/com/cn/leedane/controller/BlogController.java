@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -246,10 +247,10 @@ public class BlogController extends BaseController{
 	@RequestMapping("/getContent")
 	public String getContent(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
-		System.out.println("dddd");
 		try{
 			checkParams(message, request);
 			String blog_id = request.getParameter("blog_id");
+			String device_width = request.getParameter("device_width");
 			if(StringUtil.isNull(blog_id)) {
 				printWriter(message, response);
 				return null;
@@ -278,7 +279,51 @@ public class BlogController extends BaseController{
 				}).start();
 				
 				if(StringUtil.isNotNull(bean.getContent())){
-					request.setAttribute("content", bean.getContent());
+					String content = bean.getContent();
+					Document contentHtml = Jsoup.parse(content);
+					StringBuffer imgs = new StringBuffer();
+					if(contentHtml != null){ 
+						Elements elements = contentHtml.select("img");
+						String imgUrl = null;
+						int i = 0;
+						for(Element element: elements){
+							imgUrl = element.attr("src");
+							imgs.append(imgUrl +";");
+							element.removeAttr("src");
+							
+							//添加网络链接
+							if(StringUtil.isLink(imgUrl)){
+								element.attr("src", "http://7xnv8i.com1.z0.glb.clouddn.com/click_to_look_picture.png");
+								element.attr("onclick", "clickImg(this, "+i+");");
+								if(StringUtil.isNotNull(device_width)){
+									String style = element.attr("style");
+									int width = Integer.parseInt(device_width);
+									if(StringUtil.isNotNull(style) && !style.contains("width") && !style.contains("height")){
+										//style样式存在，但是同时也没有宽高，系统给它一个适配屏幕的宽高
+										if(style.trim().endsWith(";")){
+											style += "width: "+width+"px;height: "+width * 0.6+"px;";
+										}else{
+											style += "; width: "+width+"px;height: "+width * 0.6+"px;";
+										}
+										element.attr("style", style);
+									}else if(StringUtil.isNull(style)){
+										//图片没有限制宽高，系统给它一个适配屏幕的宽高
+										element.attr("style", "width: "+width+"px;height: "+width * 0.6+"px;");
+									}
+								}
+								i++;
+							}
+							
+						}
+						content = contentHtml.html();
+					}
+					if(imgs.toString().endsWith(";")){
+						request.setAttribute("imgs", imgs.toString().substring(0, imgs.toString().length() -1));
+					}else{
+						request.setAttribute("imgs", imgs.toString());
+					}
+					
+					request.setAttribute("content", content);
 					return "content-page";
 				}
 			}
