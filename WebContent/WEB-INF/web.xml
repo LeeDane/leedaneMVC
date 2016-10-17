@@ -21,8 +21,8 @@
 				classpath*:config/spring-mvc.xml,
 				classpath*:config/spring-beans.xml,
 				<!-- classpath*:config/spring-lucene.xml , -->
-				<!-- classpath*:config/spring-activemq.xml,  -->
-				classpath*:config/spring-quartz.xml
+				<!-- classpath*:config/spring-activemq.xml,  
+				classpath*:config/spring-quartz.xml-->
 			</param-value>
 		</init-param>
 		<!-- 启动加载一次 -->  

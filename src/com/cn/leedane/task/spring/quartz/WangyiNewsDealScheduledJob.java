@@ -20,7 +20,7 @@ public class WangyiNewsDealScheduledJob extends QuartzJobBean {
 	protected void executeInternal(JobExecutionContext context)
 			throws JobExecutionException {
 		try {
-			wangyiNewsBean.deal();
+			//wangyiNewsBean.deal();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

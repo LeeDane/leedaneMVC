@@ -20,7 +20,7 @@ public class SanwenNetNovelDealScheduledJob extends QuartzJobBean {
 	protected void executeInternal(JobExecutionContext context)
 			throws JobExecutionException {
 		try {
-			sanwenNetNovelBean.deal();
+			//sanwenNetNovelBean.deal();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

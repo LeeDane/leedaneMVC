@@ -140,7 +140,7 @@
 	<bean id="wangyiNewsDealTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="wangyiNewsDealJob" />
 		<!-- <property name="cronExpression" value="0 55 0 ? * *" />每天0点55分触发 -->
-		<property name="cronExpression" value="0 0/1 * * * ?" /><!--  每隔30分钟运行一次 -->
+		<property name="cronExpression" value="0 0/55 * * * ?" /><!--  每隔30分钟运行一次 -->
 	</bean>
 	
 	<!-- 散文网抓取数据触发器 -->

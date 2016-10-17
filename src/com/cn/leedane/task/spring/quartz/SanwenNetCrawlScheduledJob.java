@@ -20,7 +20,7 @@ public class SanwenNetCrawlScheduledJob extends QuartzJobBean {
 	protected void executeInternal(JobExecutionContext context)
 			throws JobExecutionException {
 		try {
-			sanwenNetBean.crawl();
+			//sanwenNetBean.crawl();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

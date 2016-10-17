@@ -289,26 +289,35 @@ public class BlogController extends BaseController{
 						for(Element element: elements){
 							imgUrl = element.attr("src");
 							imgs.append(imgUrl +";");
-							element.removeAttr("src");
+							//element.removeAttr("src");
 							
 							//添加网络链接
 							if(StringUtil.isLink(imgUrl)){
-								element.attr("src", "http://7xnv8i.com1.z0.glb.clouddn.com/click_to_look_picture.png");
+								//element.attr("src", "http://7xnv8i.com1.z0.glb.clouddn.com/click_to_look_picture.png");
 								element.attr("onclick", "clickImg(this, "+i+");");
 								if(StringUtil.isNotNull(device_width)){
 									String style = element.attr("style");
 									int width = Integer.parseInt(device_width);
 									if(StringUtil.isNotNull(style) && !style.contains("width") && !style.contains("height")){
+										
 										//style样式存在，但是同时也没有宽高，系统给它一个适配屏幕的宽高
 										if(style.trim().endsWith(";")){
-											style += "width: "+width+"px;height: "+width * 0.6+"px;";
+											style += "width: "+width+"px;";
 										}else{
-											style += "; width: "+width+"px;height: "+width * 0.6+"px;";
+											style += "; width: "+width+"px;";
 										}
 										element.attr("style", style);
 									}else if(StringUtil.isNull(style)){
+										String widthString = element.attr("width");
+										if(StringUtil.isNotNull(widthString)){
+											if(widthString.endsWith("px"))
+												widthString = widthString.substring(0, widthString.length() - 2);
+											
+											if(Float.parseFloat(widthString) < width)
+												width = (int) Float.parseFloat(widthString);
+										}
 										//图片没有限制宽高，系统给它一个适配屏幕的宽高
-										element.attr("style", "width: "+width+"px;height: "+width * 0.6+"px;");
+										element.attr("style", "width: "+width+"px;");
 									}
 								}
 								i++;

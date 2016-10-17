@@ -11,13 +11,25 @@
 %>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
 <title>全文阅读</title>
 
 <!-- 百度JQUERYCDN -->
 <script type="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<style type="text/css">
+	*{
+		padding: 0;
+		margin: 0;
+	}
+	#content{
+		margin-top: 1px;
+		margin-left: 0px !important;
+		margin-right: 0px !important;
+	}
+</style>
 </head>
-<body>
-	<div id="content" style="width:100%;z-index: 999;margin-top: 1px;" onclick="showOnclickMessage()"><%=content %></div>
+<body style="overflow-x:hidden;overflow-y:scroll">
+	<div id="content" style="width:100%;" onclick="showOnclickMessage()"><%=content %></div>
 </body>
 
 <script type="text/javascript">

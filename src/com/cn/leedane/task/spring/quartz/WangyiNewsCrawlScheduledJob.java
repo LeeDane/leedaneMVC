@@ -20,7 +20,7 @@ public class WangyiNewsCrawlScheduledJob extends QuartzJobBean {
 	protected void executeInternal(JobExecutionContext context)
 			throws JobExecutionException {
 		try {
-			wangyiNewsBean.crawl();
+			//wangyiNewsBean.crawl();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

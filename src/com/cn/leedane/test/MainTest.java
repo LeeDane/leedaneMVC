@@ -24,6 +24,7 @@ import com.cn.leedane.model.MoodBean;
 import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.utils.BeanUtil;
 import com.cn.leedane.utils.DateUtil;
+import com.sun.org.apache.regexp.internal.recompile;
 
 /**
  * main方法相关的测试类
@@ -36,15 +37,33 @@ public class MainTest {
 	public static void main(String[] args) throws IOException {
 		int start = 2;
 		int end  = 3;
-		String string = "发货及支付空间设计师科技馆";
-		StringBuffer buffer = new StringBuffer(string);
-		String bStart = "<b>";
-		buffer.insert(start, bStart);
-		String bEnd = "</b>";
-		buffer.insert(start + bStart.length() + 2, bEnd);
-		System.out.println(buffer.toString());
+		String tag = "a";
+		String string = "<a>发货及<div></a>支付空间rr<a>设计</a>师科技馆</div>";
+		int focusIndex = string.lastIndexOf("付");
+		//从左边找a的开始索引
+		String left = string.substring(0, focusIndex);
+		String right = string.substring(focusIndex, string.length());
+		int leftLastTagIndex = left.lastIndexOf("</a>");
+		int leftFirstTagIndex = left.lastIndexOf("<a>");
+		int rightFirtTagIndex = right.indexOf("<a>");
+		int rightLastTagIndex = right.indexOf("</a>");
+		
+		if((leftLastTagIndex == -1 && leftFirstTagIndex > 0) || leftLastTagIndex < leftFirstTagIndex){
+			if((rightFirtTagIndex == -1 && rightLastTagIndex > 0) || rightFirtTagIndex > rightLastTagIndex){
+				System.out.println(true);
+				return;
+			}
+		}
+		System.out.println(false);
+		
+		testStringBuffer();
 	}
 	
+	private static void testStringBuffer() {
+		/*StringBuffer buffer = new StringBuffer("hhfhfhf可减肥咖啡");
+		buffer.*/
+	}
+
 	private static int getInt(){
 		int i = 80;
 		if(i > 0)

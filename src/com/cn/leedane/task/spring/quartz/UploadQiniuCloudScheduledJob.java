@@ -20,7 +20,7 @@ public class UploadQiniuCloudScheduledJob extends QuartzJobBean {
 	protected void executeInternal(JobExecutionContext context)
 			throws JobExecutionException {
 		try {
-			uploadQiniuCloud.upload();
+			//uploadQiniuCloud.upload();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

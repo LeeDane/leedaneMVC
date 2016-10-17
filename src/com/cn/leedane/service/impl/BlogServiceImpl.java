@@ -60,10 +60,10 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 		logger.info("BlogServiceImpl-->addBlog():blog="+blog);
 		if(blogMapper.save(blog) > 0){
 			message.put("isSuccess",true);
-			message.put("message","保存成功");
+			message.put("message","文章发布成功");
 		}else{
 			message.put("isSuccess",false);
-			message.put("message","操作失败");
+			message.put("message","文章发布失败");
 		}
 		
 		return message;
