@@ -86,21 +86,34 @@ public class BaseController {
 	
 	public boolean checkLogin(HttpServletRequest request, Map<String, Object> message){
 		boolean result = false;
+		Object sessionUserInfo = request.getSession().getAttribute(UserController.USER_INFO_KEY);
+		
+		UserBean user = null;
+		//标记用户已经登录
+		if(sessionUserInfo != null){
+			result = true;
+			user = (UserBean)sessionUserInfo;
+		}
+		
+		//请求参数
 		String params = request.getParameter("params");
+		JSONObject json = null;
 		if(StringUtil.isNull(params)){
-			//校验用户信息
-			JSONObject json = null;
-			UserBean user = null;
 			try {
-				
-				//json = HttpUtil.getJsonObjectFromInputStream(null, request);
 				json = convertParameterMapToJsonObject(request.getParameterMap());
 				System.out.println("请求参数:"+json.toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if(json != null){		
-				message.put("json", json);
+		}else{
+			//校验用户信息
+			json = JSONObject.fromObject(params);
+		}
+		
+		if(json != null){
+			message.put("json", json);
+			//从请求ID获取用户信息
+			if(user == null){
 				if(json.has("id")){
 					//设置为了防止过滤路径，直接在这里加载用户请求有id为默认登录用户
 					try {
@@ -108,79 +121,70 @@ public class BaseController {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				}else{
-					//设置为了防止过滤路径，直接在这里加载用户1为默认登录用户
-					try {
-						user = userService.findById(1);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				
-				//必须有免登陆验证码和账号
-				if(json.has("no_login_code") && json.has("account")){
-										
-					//拿到免登陆码
-					//String noLoginCode = JsonUtil.getStringValue(json, "no_login_code");
-					//拿到登录账户
-					//String account = JsonUtil.getStringValue(json, "account");
-					//UserService<UserBean> userService = new UserServiceImpl();
-					//user = userService.getUserByNoLoginCode(account, noLoginCode);
-					String returnErrorMeg = "";
-					int returnErrorCode = 0;
-					//if(user != null ){
-						//获取登录用户的状态
-						int status = user.getStatus();
-						
-						boolean canDo = false;
-						
-						//0:被禁止 1：正常，2、注册未激活  ，3：未完善信息 ， 4：被禁言 ，5:注销
-						switch (status) {
-							case ConstantsUtil.STATUS_DISABLE:
-								returnErrorMeg = "账号"+user.getAccount()+"已经被禁用，有问题请联系管理员";
-								returnErrorCode = EnumUtil.ResponseCode.账号已被禁用.value;
-								break;
-							case ConstantsUtil.STATUS_NORMAL:
-								canDo = true;
-								break;
-							case 2:
-								returnErrorMeg = "请先激活账号"+ user.getAccount();
-								returnErrorCode = EnumUtil.ResponseCode.账号未被激活.value;
-								break;
-							case 3:
-								returnErrorMeg = "请先完善账号"+ user.getAccount() +"的信息";
-								returnErrorCode = EnumUtil.ResponseCode.请先完善账号信息.value;
-								break;
-							case 4:
-								returnErrorMeg = "账号"+ user.getAccount()+"已经被禁言，有问题请联系管理员";
-								returnErrorCode = EnumUtil.ResponseCode.账号已被禁言.value;
-								break;
-							case 5:
-								returnErrorMeg = "账号"+ user.getAccount()+"已经被注销，有问题请联系管理员";
-								returnErrorCode = EnumUtil.ResponseCode.账号已被注销.value;
-								break;
-							default:
-								break;
-						}
-						
-						userHandler.addLastRequestTime(user.getId());
-						
-						//当验证账号的状态是正常的情况，继续执行action
-						if(canDo){
-							message.put("user", user);
-							result = true;
-						}else{
-							message.put("message", returnErrorMeg);
-							message.put("responseCode", returnErrorCode);
-						}
-							
-					//}
 				}
 			}
-		}else{
-			message.put("json", params);
+			
+			
+			//从请求免登录码获取用户信息
+			if(user == null && json.has("no_login_code") && json.has("account")){						
+				//拿到免登陆码
+				String noLoginCode = JsonUtil.getStringValue(json, "no_login_code");
+				//拿到登录账户
+				String account = JsonUtil.getStringValue(json, "account");
+				user = userService.getUserByNoLoginCode(account, noLoginCode);
+			}
+			
+			if(user != null){
+				String returnErrorMeg = "";
+				int returnErrorCode = 0;
+				//获取登录用户的状态
+				int status = user.getStatus();
+				boolean canDo = false;
+				
+				//0:被禁止 1：正常，2、注册未激活  ，3：未完善信息 ， 4：被禁言 ，5:注销
+				switch (status) {
+					case ConstantsUtil.STATUS_DISABLE:
+						returnErrorMeg = "账号"+user.getAccount()+"已经被禁用，有问题请联系管理员";
+						returnErrorCode = EnumUtil.ResponseCode.账号已被禁用.value;
+						break;
+					case ConstantsUtil.STATUS_NORMAL:
+						canDo = true;
+						break;
+					case 2:
+						returnErrorMeg = "请先激活账号"+ user.getAccount();
+						returnErrorCode = EnumUtil.ResponseCode.账号未被激活.value;
+						break;
+					case 3:
+						returnErrorMeg = "请先完善账号"+ user.getAccount() +"的信息";
+						returnErrorCode = EnumUtil.ResponseCode.请先完善账号信息.value;
+						break;
+					case 4:
+						returnErrorMeg = "账号"+ user.getAccount()+"已经被禁言，有问题请联系管理员";
+						returnErrorCode = EnumUtil.ResponseCode.账号已被禁言.value;
+						break;
+					case 5:
+						returnErrorMeg = "账号"+ user.getAccount()+"已经被注销，有问题请联系管理员";
+						returnErrorCode = EnumUtil.ResponseCode.账号已被注销.value;
+						break;
+					default:
+						break;
+				}
+				
+				userHandler.addLastRequestTime(user.getId());
+				
+				//当验证账号的状态是正常的情况，继续执行action
+				if(canDo){
+					message.put("user", user);
+					result = true;
+				}else{
+					message.put("message", returnErrorMeg);
+					message.put("responseCode", returnErrorCode);
+				}
+			}else{
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先登录.value));
+				message.put("responseCode", EnumUtil.ResponseCode.请先登录.value);
+			}
 		}
-		
 		return result;
 	}
 	

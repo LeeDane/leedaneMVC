@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -39,6 +40,8 @@ import com.cn.leedane.wechat.util.WeixinUtil;
 @RequestMapping("/leedane/user")
 public class UserController extends BaseController{
 	
+	public static final String USER_INFO_KEY = "user_info";
+	
 	@Autowired
 	private WechatHandler wechatHandler;
 	
@@ -59,7 +62,7 @@ public class UserController extends BaseController{
 	 * @return
 	 */
 	@RequestMapping("/login")
-	public String login(HttpServletRequest request, HttpServletResponse response){
+	public String login(HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
 			checkParams(message, request);
@@ -103,6 +106,7 @@ public class UserController extends BaseController{
 								putInSessionAfterLoginSuccess();
 							}
 							
+							session.setAttribute(USER_INFO_KEY, user);
 							message.put("userinfo", userHandler.getUserInfo(user, true));
 							message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.恭喜您登录成功.value));
 							message.put("responseCode", EnumUtil.ResponseCode.恭喜您登录成功.value);
