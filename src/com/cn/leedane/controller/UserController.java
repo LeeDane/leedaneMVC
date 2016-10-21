@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -380,21 +381,26 @@ public class UserController extends BaseController{
 	 */
 	@RequestMapping("/logout")
 	public String logout(HttpServletRequest request, HttpServletResponse response){
-		
+		Map<String, Object> message = new HashMap<String, Object>();
+		HttpSession session = request.getSession();
 		//判断是否有在线的用户，那就先取消该用户的session
-		/*if(session.get(ConstantsUtil.USER_SESSION) != null) {
-			user = (UserBean) ActionContext.getContext().getSession().get("user");
+		if(session.getAttribute(USER_INFO_KEY) != null) {
+			UserBean user = (UserBean) session.getAttribute(USER_INFO_KEY);
 			try {
-				this.operateLogService.saveOperateLog(user, request, null, user.getAccount()+"退出系统", "logout", resIsSuccess? 1 : 0, 0);
+				session.removeAttribute(USER_INFO_KEY);
+				this.operateLogService.saveOperateLog(user, request, null, user.getAccount()+"退出系统", "logout", 1, 0);
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.注销成功.value));
+				message.put("responseCode", EnumUtil.ResponseCode.注销成功.value);
+				message.put("isSuccess", true);
+				printWriter(message, response);
+				return null;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			session.clear();
-			//removeSession(ConstantsUtil.USER_SESSION);
 		}
-		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.注销成功.value));
-		message.put("responseCode", EnumUtil.ResponseCode.注销成功.value);
-		printWriter(message, response);*/
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
 		return null;
 	}
 	

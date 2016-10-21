@@ -23,3 +23,5 @@
 /batchDeal/execute.action
 /batchDeal/upload10.action
 /tool/fanyi.action
+/tool/getNetwordImage.action
+/webConfig/background.action

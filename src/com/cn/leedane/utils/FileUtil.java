@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import com.cn.leedane.model.GalleryBean;
+
 /**
  * 文件工具类(文件的读取操作)
  * @author LeeDane
@@ -164,6 +166,7 @@ public class FileUtil {
 	 * @param imgUrl
 	 * @return 返回数组，依次是：宽，高，大小
 	 */
+	@Deprecated
 	public static long[] getNetWorkImgAttr(String imgUrl) {
 		
 		long[] result = new long[3];
@@ -223,6 +226,80 @@ public class FileUtil {
         }
         
        return result;
+
+    }
+	
+	/**
+	 * 获取网络图片的详细信息，用GalleryBean返回
+	 * @param imgUrl
+	 * @return galleryBean
+	 */
+	public static GalleryBean getNetWorkImgAttrs(String imgUrl) {
+		
+		GalleryBean galleryBean = null;
+		boolean b = false;
+        if(StringUtil.isNotNull(imgUrl) && ImageUtil.isSupportType(StringUtil.getFileName(imgUrl))){
+        	
+        	StringBuffer tempFilePath = new StringBuffer();
+        	tempFilePath.append(ConstantsUtil.DEFAULT_SAVE_FILE_FOLDER);
+        	tempFilePath.append("temporary");
+        	tempFilePath.append(File.separator);
+        	tempFilePath.append(UUID.randomUUID().toString());
+        	tempFilePath.append("_");
+        	tempFilePath.append(StringUtil.getFileName(imgUrl));
+        	try {
+        		InputStream inputStream = HttpUtil.getInputStream(imgUrl);
+        		if(inputStream != null){
+        			//载入图片到输入流
+                    java.io.BufferedInputStream bis = new BufferedInputStream(inputStream);
+                    //实例化存储字节数组
+                    byte[] bytes = new byte[1024];
+                    //设置写入路径以及图片名称
+                    OutputStream bos = new FileOutputStream(new File(tempFilePath.toString()));
+                    int len;
+                    while ((len = bis.read(bytes)) > 0) {
+                        bos.write(bytes, 0, len);
+                    }
+                    inputStream.close();
+                    bis.close();
+                    bos.flush();
+                    bos.close();
+                    //关闭输出流
+                    b=true;
+        		}
+            } catch (Exception e) {
+            	e.printStackTrace();
+                //如果图片未找到
+                b=false;
+            }
+            
+            if(b){
+            	galleryBean = new GalleryBean();
+            	//图片存在
+                //得到文件
+                java.io.File file = new java.io.File(tempFilePath.toString());
+                BufferedImage bi = null;
+                try {
+                    //读取图片
+                    bi = javax.imageio.ImageIO.read(file);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                
+                //将文件上传到服务器
+                
+                
+                galleryBean.setPath(imgUrl);
+               
+                galleryBean.setWidth(bi.getWidth()); //获得 宽度
+                galleryBean.setHeight(bi.getHeight()); //获得 高度
+                galleryBean.setLength(file.length()); //获取文件大小
+                //删除文件
+                file.delete();
+            }
+        }
+        
+       return galleryBean;
 
     }
 

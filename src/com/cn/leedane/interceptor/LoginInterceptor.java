@@ -72,14 +72,14 @@ public class LoginInterceptor implements HandlerInterceptor{
 			HttpServletResponse request, Object arg2, Exception arg3)
 			throws Exception {
 		//logger.info("LoginInterceptor:afterCompletion");
-		//System.out.println("LoginInterceptor:afterCompletion");
+		System.out.println("LoginInterceptor:afterCompletion");
 	}
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response,
 			Object arg2, ModelAndView arg3) throws Exception {
 		//logger.info("LoginInterceptor:postHandle");
-		//System.out.println("LoginInterceptor:postHandle");
+		System.out.println("LoginInterceptor:postHandle");
 	}
 	
 	@Override

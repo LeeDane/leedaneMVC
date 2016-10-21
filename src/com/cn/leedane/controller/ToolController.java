@@ -1,12 +1,16 @@
 package com.cn.leedane.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.crypto.Mac;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,8 +27,8 @@ import com.cn.leedane.model.UserBean;
 import com.cn.leedane.rabbitmq.SendMessage;
 import com.cn.leedane.rabbitmq.send.EmailSend;
 import com.cn.leedane.rabbitmq.send.ISend;
-import com.cn.leedane.rabbitmq.send.LogSend;
-import com.cn.leedane.utils.EmailUtil;
+import com.cn.leedane.utils.Base64Util;
+import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.EmailType;
 import com.cn.leedane.utils.JsonUtil;
@@ -146,6 +150,7 @@ public class ToolController extends BaseController{
 	@RequestMapping("/getQiNiuToken")
 	public String getQiNiuToken(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
 		try {
 			if(!checkParams(message, request)){
 				printWriter(message, response);
@@ -163,6 +168,54 @@ public class ToolController extends BaseController{
 		printWriter(message, response);
 		return null;
 	}
+	
+	/**
+	 * 根据图片地址获取网络图片流
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping("/getNetwordImage")
+	public String getNetwordImage(HttpServletRequest request, HttpServletResponse response){
+		String imgUrl = request.getParameter("url");
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		InputStream is = null;
+		ByteArrayOutputStream out = null;
+		try {			
+			URL url = new URL(imgUrl);
+			URLConnection uc = url.openConnection(); 
+			is = uc.getInputStream(); 	    
+			out = new ByteArrayOutputStream(); 
+			int i=0;
+			while((i = is.read())!=-1)   { 
+				out.write(i); 
+			}
+			message.put("isSuccess", true);
+			message.put("message", ConstantsUtil.BASE64_JPG_IMAGE_HEAD + new String(Base64Util.encode(out.toByteArray())));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			if(out != null)
+				try {
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			if(is != null)
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
 	
 	/**
      * 获取token 本地生成

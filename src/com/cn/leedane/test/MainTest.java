@@ -1,7 +1,13 @@
 package com.cn.leedane.test;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +30,9 @@ import com.cn.leedane.crawl.BaseCrawlBean;
 import com.cn.leedane.model.MoodBean;
 import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.utils.BeanUtil;
+import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.DateUtil;
+import com.cn.leedane.utils.StringUtil;
 import com.sun.org.apache.regexp.internal.recompile;
 
 /**
@@ -37,9 +46,9 @@ public class MainTest {
 	public static void main(String[] args) throws IOException {
 		int start = 2;
 		int end  = 3;
-		String tag = "a";
+		String tag = "div";
 		String string = "<a>发货及<div></a>支付空间rr<a>设计</a>师科技馆</div>";
-		int focusIndex = string.lastIndexOf("付");
+		int focusIndex = string.lastIndexOf("馆");
 		//从左边找a的开始索引
 		String left = string.substring(0, focusIndex);
 		String right = string.substring(focusIndex, string.length());
@@ -56,9 +65,17 @@ public class MainTest {
 		}
 		System.out.println(false);
 		
-		testStringBuffer();
+		//testStringBuffer();
+		testImages();
 	}
 	
+	private static void testImages() {
+		String ss = "http://www.baidu.co3m/iigiggg";
+		int index = ss.indexOf("http://www.baidu.com");
+		System.out.println(index);
+		
+	}
+
 	private static void testStringBuffer() {
 		/*StringBuffer buffer = new StringBuffer("hhfhfhf可减肥咖啡");
 		buffer.*/

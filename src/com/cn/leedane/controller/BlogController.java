@@ -94,8 +94,7 @@ public class BlogController extends BaseController{
 			String imgUrl = JsonUtil.getStringValue(json, "img_url");
 			String digest = "";
 			if(hasImg){
-				//获取主图信息
-				blog.setHasImg(hasImg);
+				
 						
 				//判断是否有指定的图片，没有的话会自动解析内容中的第一张图片的src的值作为地址
 				if(StringUtil.isNull(imgUrl)){
@@ -104,6 +103,9 @@ public class BlogController extends BaseController{
 					imgUrl= a.get(0).attr("src");
 				}
 				
+				if(StringUtil.isNotNull(imgUrl))
+					//获取主图信息
+					blog.setHasImg(hasImg);
 				blog.setImgUrl(imgUrl);
 				
 				/**

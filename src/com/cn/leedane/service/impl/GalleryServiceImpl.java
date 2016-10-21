@@ -75,16 +75,25 @@ public class GalleryServiceImpl implements GalleryService<GalleryBean> {
 		
 		//宽高有为0，需要网络获取宽高
 		if(width ==0 || height == 0){
-			long[] fileAttr = FileUtil.getNetWorkImgAttr(path);
-			width = (int) fileAttr[0];
-			height = (int) fileAttr[1];
-			length = fileAttr[2];
-			if(width ==0 || height == 0){
+			GalleryBean gBean = FileUtil.getNetWorkImgAttrs(path);
+			if(gBean == null){
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 				message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
 				return message;
 			}
+			
+			width = gBean.getWidth();
+			height = gBean.getHeight();
+			length = gBean.getLength();
+			path = gBean.getPath();
 		}
+		
+		if(length > 1024 * 1024 * 1){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.图片大于1M无法上传.value));
+			message.put("responseCode", EnumUtil.ResponseCode.图片大于1M无法上传.value);
+			return message;
+		}
+		
 		GalleryBean bean = new GalleryBean();
 		bean.setCreateUserId(user.getId());
 		bean.setCreateTime(new Date());
