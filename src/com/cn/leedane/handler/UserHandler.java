@@ -211,6 +211,7 @@ public class UserHandler {
 			infos.put("is_admin", user2.isAdmin());
 			infos.put("education_background", StringUtil.changeNotNull(user2.getEducationBackground()));
 			infos.put("user_pic_path", getUserPicPath(user2.getId(), "30x30"));
+			infos.put("register_time", user2.getRegisterTime() == null ? "" : DateUtil.DateToString(user2.getRegisterTime(), "yyyy-MM-dd"));
 			/*String str = "{\"uid\":"+user2.getId()+", \"pic_size\":\"60x60\"}";
 			JSONObject jo = JSONObject.fromObject(str);
 			try {

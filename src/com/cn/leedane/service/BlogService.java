@@ -139,4 +139,13 @@ public interface BlogService <T extends IDBean>{
 	 * @return
 	 */
 	public List<BlogBean> getBlogBeans(String sql, Object ...params);
+
+	/**
+	 * 获取单个博客的的基本信息(不包括内容)
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> getInfo(JSONObject jo, UserBean user, HttpServletRequest request);
 }

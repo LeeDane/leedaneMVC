@@ -15,7 +15,9 @@
 		String bp = request.getScheme()+"://"+request.getServerName()
 				+":"+request.getServerPort()+request.getContextPath()+"/";
 		response.sendRedirect(bp +"page/login.jsp?ref="+request.getRequestURL()+"&t="+UUID.randomUUID().toString());
-	}	
+	}
+	
+	String bid = request.getParameter("bid");
 %>
 <!DOCTYPE html>
 <html>
@@ -36,6 +38,13 @@
 			margin-top: 5px;
 			margin-right: 5px;
 		}
+		.btn-group{
+			margin-top: 10px;
+		}
+		.row-content{
+			font-family: "华文宋体";
+			font-size: 14px;
+		}
 	</style>
 </head>
 <body>
@@ -47,7 +56,16 @@
 </body>
 
 <div class="container">
-	   <div class="row">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="btn-group">
+				    <button type="button" class="btn btn-default">按钮 1</button>
+				    <button type="button" class="btn btn-default">按钮 2</button>
+				    <button type="button" class="btn btn-default">按钮 3</button>
+				</div>
+			</div>
+		</div>
+	   <div class="row row-content">
 	      <div class="col-lg-4" id="column-01">
 	      	<img alt="" src="http://d.hiphotos.baidu.com/exp/w=500/sign=bbcb94714b086e066aa83f4b32097b5a/f31fbe096b63f624683231438044ebf81a4ca306.jpg?t=2003">
 	      </div>
@@ -61,8 +79,57 @@
 	   </div>
 
 	<script type="text/javascript">
+		var winW = $(window).width(); 
 		$(function(){
-			
+			var bid = '<%=bid %>';
+			if(isEmpty(bid)){
+				layer.msg("文章不存在");
+				return;
+			}
+			getInfo(bid);
+			getContent(bid);
 		});
+		
+		//获取博客的基本信息(没有内容)
+		function getInfo(bid){
+			$.ajax({
+				type : "post",
+				data : {blog_id: bid, t: Math.random()},
+				url : getBasePath() +"leedane/blog/getInfo.action",
+				dataType: 'json',
+				beforeSend:function(){
+				},
+				success : function(data) {
+					if(data.isSuccess){
+						document.title = data.message.title;
+					}else{
+						layer.msg(data.message);
+					}
+				},
+				error : function() {
+					layer.msg("网络请求失败");
+				}
+			});
+		}
+		
+		//获取博客的详细内容
+		function getContent(bid){
+			var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
+			$.ajax({
+				type : "post",
+				data : {blog_id: bid, t: Math.random()},
+				url : getBasePath() +"leedane/blog/getContent.action",
+				beforeSend:function(){
+				},
+				success : function(data) {
+					layer.close(loadi);
+					$(".row-content").html(data);
+				},
+				error : function() {
+					layer.close(loadi);
+					layer.msg("网络请求失败");
+				}
+			});
+		}
 	</script>
 </html>

@@ -284,26 +284,26 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		if("firstloading".equalsIgnoreCase(method)){
 			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
-			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
+			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where "+ getMoodStatusSQL(toUserId, user) +" and ");
 			sql.append(" m.create_user_id = ?");
 			sql.append(" order by m.id desc limit 0,?");
-			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, toUserId, pageSize);
+			rs = moodMapper.executeSQL(sql.toString(), toUserId, pageSize);
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
 			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
-			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
+			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where "+ getMoodStatusSQL(toUserId, user) +" and ");
 			sql.append(" m.create_user_id = ?");
 			sql.append(" and m.id < ? order by m.id desc limit 0,? ");
-			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, toUserId, lastId, pageSize);
+			rs = moodMapper.executeSQL(sql.toString(), toUserId, lastId, pageSize);
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
 			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
-			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where m.status = ? and ");
+			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where "+ getMoodStatusSQL(toUserId, user) +" and ");
 			sql.append(" m.create_user_id = ?");
 			sql.append(" and m.id > ? limit 0,?  ");
-			rs = moodMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, toUserId, firstId, pageSize);
+			rs = moodMapper.executeSQL(sql.toString(), toUserId, firstId, pageSize);
 		}
 		
 		if(rs !=null && rs.size() > 0){
@@ -336,6 +336,21 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		message.put("message", rs);
 		message.put("isSuccess", true);
 		return message;
+	}
+	
+	
+	/**
+	 * 获取状态的SQL
+	 * @param toUserId
+	 * @param user
+	 * @return
+	 */
+	private String getMoodStatusSQL(int toUserId, UserBean user){
+		if(toUserId == user.getId()){
+			return " (m.status = "+ ConstantsUtil.STATUS_NORMAL +" or m.status = "+ ConstantsUtil.STATUS_SELF +")";
+		}else {
+			return " m.status = "+ ConstantsUtil.STATUS_NORMAL;
+		}
 	}
 	
 	@Override

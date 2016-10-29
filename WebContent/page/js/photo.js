@@ -72,6 +72,10 @@ function getWebPhotos(){
 					$("#column-01").empty();
 					$("#column-02").empty();
 					$("#column-03").empty();
+					column1Height = 0;
+					column2Height = 0;
+					column3Height = 0;
+					
 					for(var i = 0; i < photos.length; i++){
 						findColumnToAdd(photos[i], i);
 						if(i == 0)
@@ -208,26 +212,62 @@ function findColumnToAdd(photo, index){
 
 	//判断是否是内部链接
 	if(photo.path.indexOf("7xnv8i.com1.z0.glb.clouddn.com") >= 0){
-		img = '<img width="100%" height="'+height+'" style="margin-top: 10px;" class="img-rounded index_'+index+'" alt="" src="'+ photo.path+'" onclick="showImg('+index+')">';
+		img = '<img width="100%" title="'+ (isNotEmpty(photo.desc) ? isNotEmpty(photo.desc) : '') +'" title" height="'+height+'" style="margin-top: 10px;" class="img-rounded index_'+index+'" alt="" src="'+ photo.path+'" onclick="showImg('+index+')">';
 
 	}else{
-		img = '<img width="100%" height="'+height+'" style="margin-top: 10px;" class="img-rounded out-link index_'+index+'" alt="" temp-src="'+ photo.path+'" onclick="showImg('+index+')">';
+		img = '<img width="100%" title="'+ (isNotEmpty(photo.desc) ? isNotEmpty(photo.desc) : '') +'" height="'+height+'" style="margin-top: 10px;" class="img-rounded out-link index_'+index+'" alt="" temp-src="'+ photo.path+'" onclick="showImg('+index+')">';
 	}
 	if(min == column1Height){
 		$("#column-01").append(img);
-		column1Height += photo.height;
+		column1Height += height;
 		return;
 	}
 	
 	if(min == column2Height){
 		$("#column-02").append(img);
-		column2Height += photo.height;
+		column2Height += height;
 		return;
 	}
 	
 	if(min == column3Height){
 		$("#column-03").append(img);
-		column3Height += photo.height;
+		column3Height += height;
 		return;
 	}
+}
+/**
+ * 添加图片链接
+ * @param params
+ */
+function addLink(params){
+	var loadi = layer.load('努力加载中…');
+	$.ajax({
+		type : "post",
+		data: params,
+		url : getBasePath() +"leedane/gallery/addLink.action",
+		dataType: 'json', 
+		beforeSend:function(){
+		},
+		success : function(data) {
+				layer.msg(data.message);
+				layer.close(loadi);
+				if(data.isSuccess){
+					$(".gallery-link").val("");
+					$(".gallery-desc").val("");
+					$(".gallery-width").val("");
+					$(".gallery-height").val("");
+					$(".gallery-length").val("");
+					$("#add-grallery").modal("hide");
+					//重新刷新一下整个列表
+					canLoadData = true;
+					method = 'firstloading';
+					getWebPhotos();
+				}
+		},
+		error : function() {
+			layer.close(loadi);
+			layer.msg("网络请求失败");
+		}
+	});
+	
 }

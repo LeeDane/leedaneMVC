@@ -55,15 +55,20 @@ public class CollectionServiceImpl implements CollectionService<CollectionBean>{
 	private CommonHandler commonHandler;
 	
 	@Override
-	public boolean addCollect(JSONObject jo, UserBean user,
+	public Map<String, Object> addCollect(JSONObject jo, UserBean user,
 			HttpServletRequest request) {
 		//{\"table_name\":\""+DataTableType.心情.value+"\", \"table_id\":123}
 		logger.info("CollectionServiceImpl-->addCollect():jsonObject=" +jo.toString() +", user=" +user.getAccount());
 		String tableName = JsonUtil.getStringValue(jo, "table_name");
 		int tableId = JsonUtil.getIntValue(jo, "table_id");
 		
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
 		if(SqlUtil.getBooleanByList(collectionMapper.exists(CollectionBean.class, tableName, tableId, user.getId()))){
-			return false;
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
+			return message;
 		}
 		CollectionBean bean = new CollectionBean();
 		bean.setCreateTime(new Date());
@@ -71,7 +76,19 @@ public class CollectionServiceImpl implements CollectionService<CollectionBean>{
 		bean.setStatus(ConstantsUtil.STATUS_NORMAL);
 		bean.setTableName(tableName);
 		bean.setTableId(tableId);
-		return collectionMapper.save(bean) > 0;
+		boolean result = collectionMapper.save(bean) > 0;
+		if(result){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.收藏成功.value));
+			message.put("isSuccess", result);
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库保存失败.value));
+			message.put("responseCode", EnumUtil.ResponseCode.数据库保存失败.value);
+		}
+		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"收藏表ID为：", tableId, ",表名为：", tableName, "的记录", StringUtil.getSuccessOrNoStr(result)).toString(), "addCollect()", ConstantsUtil.STATUS_NORMAL, 0);
+				
+		return message;
 	}
 	
 	@Override

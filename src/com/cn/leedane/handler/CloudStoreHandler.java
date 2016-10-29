@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.cn.leedane.model.UserBean;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.cache.SystemCache;
@@ -127,6 +129,48 @@ public class CloudStoreHandler {
     
     /**
      * 执行上传操作
+     * @param fileMap
+     * @return
+     */
+    public static String uploadFile(UserBean user, File file){
+    	System.out.println("Single开始执行上传操作...............");
+    	String path = file.getName();
+    	if(StringUtil.isNull(path))
+    		return null;
+		//String fileFullPath = ConstantsUtil.DEFAULT_SAVE_FILE_FOLDER +"file" +File.separator + user.getAccount() + "_upload_" + UUID.randomUUID().toString() + "_" + StringUtil.getFileName(path);
+		//File file = new File(fileFullPath);
+		if(file.exists()){
+			try {
+				//密钥配置
+		    	Auth auth1 = Auth.create(ACCESSKEY, SECRETKEY);
+		    	String token1 = auth1.uploadToken(BUCKETNAME);
+		    	//创建上传对象
+		    	UploadManager uploadManager1 = new UploadManager();
+		    	Response r = uploadManager1.put(file, path, token1);
+				if(r.isOK() && r.statusCode == 200){
+					return ConstantsUtil.QINIU_SERVER_URL + path;
+				}else{
+					System.out.println("上传失败，返回的信息是--->"+r.bodyString());
+				}
+			} catch (QiniuException e) {
+				try {
+					Response r = e.response;
+					// 请求失败时打印的异常的信息
+					System.out.println(r.toString());
+					//响应的文本信息
+				    System.out.println(r.bodyString());
+				} catch (QiniuException e1) {
+				}
+			}
+		}else{
+			
+		}
+		System.out.println("Single上传任务执行结束...............");
+		return null;
+    }
+    
+    /**
+     * 执行单个文件上传操作
      * @param filePathBeans
      */
     public int executeSingleUpload(Map<String, Object> filePathBean){

@@ -34,10 +34,16 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>用户登录</title>
-    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <!-- 百度JQUERYCDN -->
+    <!-- <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    百度JQUERYCDN
 	<script type="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
-	<script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+	
+	<link rel="stylesheet" href="<%=basePath %>page/other/bootstrap-3.3.0/css/bootstrap.min.css">
+	<!-- 百度JQUERYCDN -->
+	<script type="text/javascript" src="<%=basePath %>page/other/jquery-1.9.1.min.js"></script>
+	<script src="<%=basePath %>page/other/bootstrap-3.3.0/js/bootstrap.min.js"></script>
+	
 	<script src="<%=basePath %>page/js/base.js"></script>
 	<script type="text/javascript" src="<%=basePath %>page/other/jquery.md5.js"></script>
 	<script type="text/javascript" src="<%=basePath %>page/other/layui/layui.js"></script>
@@ -93,7 +99,7 @@
 	      <form class="form-signin" role="form">
 	        <h2 class="form-signin-heading">登录</h2>
 	        <input type="text" id="account" class="form-control" placeholder="Email address" autofocus>
-	        <input type="password" id="password" class="form-control" placeholder="Password" data-placement="bottom">
+	        <input type="password" id="password" class="form-control" style="margin-top: 10px;" placeholder="Password" data-placement="bottom">
 	        <div class="checkbox">
 	          <label>
 	            <input type="checkbox" value="remember-me"> Remember me

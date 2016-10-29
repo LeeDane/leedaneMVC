@@ -19,12 +19,15 @@ import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.handler.UserHandler;
+import com.cn.leedane.handler.ZanHandler;
 import com.cn.leedane.mapper.BlogMapper;
 import com.cn.leedane.model.BlogBean;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.UserBean;
+import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.service.BlogService;
 import com.cn.leedane.service.OperateLogService;
+import com.sun.crypto.provider.RSACipher;
 
 /**
  * 博客service实现类
@@ -309,5 +312,41 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 	@Override
 	public List<BlogBean> getBlogBeans(String sql, Object... params) {
 		return  blogMapper.getBeans(sql, params);
+	}
+
+	@Override
+	public Map<String, Object> getInfo(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("BlogServiceImpl-->getInfo():jsonObject=" +jo.toString() +", user=" +user.getAccount());
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		int blogId = JsonUtil.getIntValue(jo, "blog_id");
+		
+		if(blogId < 1){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
+			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);
+			return message;
+		}
+		
+		//String sql = "select content, read_number from "+DataTableType.博客.value+" where status = ? and id = ?";
+		StringBuffer sql = new StringBuffer();
+		sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time");
+		sql.append(" , b.digest, b.froms, b.create_user_id, u.account ");
+		sql.append(" from "+DataTableType.博客.value+" b inner join "+DataTableType.用户.value+" u on b.create_user_id = u.id ");
+		sql.append(" where b.status = ?  and b.id = ? ");
+		
+		List<BlogBean> r = getBlogBeans(sql.toString(), ConstantsUtil.STATUS_NORMAL, blogId);				
+		if(r.size() == 1){
+			message.put("message", r.get(0));
+			message.put("isSuccess", true);
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库对象数量不符合要求.value));
+			message.put("responseCode", EnumUtil.ResponseCode.数据库对象数量不符合要求.value);
+		}
+		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取文章ID为：", blogId, ",的基本信息", StringUtil.getSuccessOrNoStr(r.size() == 1)).toString(), "getInfo()", ConstantsUtil.STATUS_NORMAL, 0);
+		
+		return message;
 	}
 }

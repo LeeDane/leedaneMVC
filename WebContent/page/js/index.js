@@ -4,11 +4,34 @@ var method = 'firstloading';
 var imgs = [];
 
 var blogs;
+//浏览器可视区域页面的高度
+var winH = $(window).height(); 
+var isLoad = false;
 $(function(){
 	//layer.msg($('.main_bg').offset().top)
 	//getLogin();
 	//getScore();
 	getWebBackgroud();
+	$(window).scroll(function (e) {
+		e = e || window.event;
+	    if (e.wheelDelta) {  //判断浏览器IE，谷歌滑轮事件             
+	        if (e.wheelDelta > 0) { //当滑轮向上滚动时
+	            return;
+	        }
+	    } else if (e.detail) {  //Firefox滑轮事件
+	        if (e.detail> 0) { //当滑轮向上滚动时
+	            return;
+	        }
+	    }
+	    var pageH = $(document.body).height(); //页面总高度 
+	    var scrollT = $(window).scrollTop(); //滚动条top 
+	    var height = (pageH-winH-scrollT)/winH;
+	    if(!isLoad && height < 0.20){
+	    	isLoad = true;
+	    	method = 'lowloading';
+	    	getMainContentData();
+	    }
+	}); 
 	getMainContentData();
 });
 
@@ -87,22 +110,49 @@ function getMainContentData(){
 				if(method == 'firstloading')
 					$(".container").empty();
 				
-				blogs = data.message;
-				for(var i = 0; i < blogs.length; i++){
-					//判断是否有图
-					if(data.message[i].has_img)
-						$(".container").append(buildHasImgRow(i, blogs[i]));
-					else
-						$(".container").append(buildNotHasImgRow(i, blogs[i]));
+				if(data.message.length == 0){
+					canLoadData = false;
+					layer.msg("无更多数据");
+					return;
+				}
+				
+				if(method == 'firstloading'){
+					blogs = data.message;
+					for(var i = 0; i < blogs.length; i++){
+						//判断是否有图
+						if(data.message[i].has_img)
+							$(".container").append(buildHasImgRow(i, blogs[i]));
+						else
+							$(".container").append(buildNotHasImgRow(i, blogs[i]));
+						if(i == 0)
+							first_id = blogs[i].id;
+						if(i == blogs.length -1)
+							last_id = blogs[i].id;
+					}
+				}else{
+					var currentIndex = blogs.length;
+					for(var i = 0; i < data.message.length; i++){
+						blogs.push(data.message[i]);
+						//判断是否有图
+						if(data.message[i].has_img)
+							$(".container").append(buildHasImgRow(currentIndex + i, data.message[i]));
+						else
+							$(".container").append(buildNotHasImgRow(currentIndex + i, data.message[i]));
+						
+						if(i == data.message.length -1)
+							last_id = data.message[i].id;
+					}
 				}
 				resetSideHeight();
 			}else{
 				layer.msg(data.message);
 			}
 			console.log(data);
+			isLoad = false;
 		},
 		error : function() {
 			layer.close(loadi);
+			isLoad = false;
 			layer.msg("网络请求失败");
 		}
 	});
@@ -110,7 +160,7 @@ function getMainContentData(){
 
 //构建有图的情况下的html
 function buildHasImgRow(index, blog){
-	var html ='<div class="row">'+
+	var html ='<div class="row row_'+index+'">'+
 			      '<div class="col-lg-4">'+
 			      	  	'<img width="100%" height="424" class="img-rounded" alt="" src="'+ blog.img_url +'" onClick="showImg('+ index +');">'+
 			      '</div>'+
@@ -153,11 +203,11 @@ function buildHasImgRow(index, blog){
 														'data-toggle="dropdown">操作 <span class="caret"></span>'+
 												'</button>'+
 												'<ul class="dropdown-menu" role="menu">'+
-													'<li><a href="#">关注</a></li>'+
-													'<li><a href="#">Edit</a></li>'+
-													'<li><a href="#">Delete</a></li>'+
+													'<li><a class="attention" href="javascript:void(0);" onclick="attention('+ blog.id+','+ index+ ');">关注</a></li>'+
+													'<li><a class="collection" href="javascript:void(0);" onclick="collect('+ blog.id+','+ index+ ');">收藏</a></li>'+
+													'<li><a class="delete-blog" href="javascript:void(0);" onclick="deleteBlog('+ blog.id+','+ index+ ');">Delete</a></li>'+
 													'<li class="divider"></li>'+
-													'<li><a href="#">Delete</a></li>'+
+													'<li><a href="javascript:void(0);">Delete</a></li>'+
 												'</ul>'+
 											'</div>';
 								}
@@ -165,7 +215,7 @@ function buildHasImgRow(index, blog){
 						html +='<button type="button" class="btn btn-primary btn-default ">'+
 									  			'<span class="glyphicon glyphicon-phone"></span> '+ blog.froms +
 												'</button>'+
-								'<button type="button" class="btn btn-primary btn-default ">'+
+								'<button type="button" class="btn btn-primary btn-default" href="javascript:void(0);" onclick="my('+ blog.create_user_id + ');">'+
 									  			'<span class="glyphicon glyphicon-user"></span> '+ blog.account +
 												'</button>'+
 								'<button type="button" class="btn btn-primary" onclick="goToReadFull('+ blog.id+')">阅读全文</button>'+
@@ -178,7 +228,7 @@ function buildHasImgRow(index, blog){
 
 //构建无图的情况下的html
 function buildNotHasImgRow(index, blog){
-	var html = '<div class="row">'+
+	var html = '<div class="row row_'+index+'">'+
 			      '<div class="col-lg-12">'+
 		      	  	'<div class="panel panel-info">'+
 						'<div class="panel-heading">'+
@@ -217,9 +267,9 @@ function buildNotHasImgRow(index, blog){
 													'data-toggle="dropdown">操作 <span class="caret"></span>'+
 											'</button>'+
 											'<ul class="dropdown-menu" role="menu">'+
-												'<li><a href="#">关注</a></li>'+
-												'<li><a href="#">Edit</a></li>'+
-												'<li><a href="#">Delete</a></li>'+
+												'<li><a class="attention" href="javascript:void(0);" onclick="attention('+ blog.id+','+ index+ ');">关注</a></li>'+
+												'<li><a class="collection" href="javascript:void(0);" onclick="collection('+ blog.id+','+ index+ ');">收藏</a></li>'+
+												'<li><a class="delete-blog" href="javascript:void(0);" onclick="deleteBlog('+ blog.id+','+ index+ ');">Delete</a></li>'+
 												'<li class="divider"></li>'+
 												'<li><a href="#">Delete</a></li>'+
 											'</ul>'+
@@ -229,7 +279,7 @@ function buildNotHasImgRow(index, blog){
 					html +='<button type="button" class="btn btn-primary btn-default ">'+
 								  			'<span class="glyphicon glyphicon-phone"></span> '+ blog.froms +
 											'</button>'+
-							'<button type="button" class="btn btn-primary btn-default ">'+
+							'<button type="button" class="btn btn-primary btn-default" href="javascript:void(0);" onclick="my('+ blog.create_user_id + ');">'+
 								  			'<span class="glyphicon glyphicon-user"></span> '+ blog.account +
 											'</button>'+
 							'<button type="button" class="btn btn-primary" onclick="goToReadFull('+ blog.id+')">阅读全文</button>'+
@@ -272,5 +322,107 @@ function showImg(index){
 
 //跳转到全文阅读
 function goToReadFull(id){
-	layer.msg("文章ID为："+id);
+	//layer.msg("文章ID为："+id);
+	if(isEmpty(id)){
+		layer.msg("该博客不存在，请联系管理员核实");
+		return;
+	}
+	window.open(getBasePath() +"page/detail.jsp?bid="+id, "_blank");
+}
+
+/**
+ * 关注
+ * @param id
+ * @param index
+ */
+function attention(id, index){
+	var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
+	$.ajax({
+		type : "post",
+		data : {table_name: "t_blog", table_id: id, t: Math.random()},
+		dataType: 'json',  
+		url : getBasePath() +"leedane/attention/add.action",
+		beforeSend:function(){
+		},
+		success : function(data) {
+			layer.close(loadi);
+			layer.msg(data.message);
+			if(data.isSuccess){
+				$(".row_"+index).find(".attention").text("已关注");
+			}
+		},
+		error : function() {
+			layer.close(loadi);
+			layer.msg("网络请求失败");
+		}
+	});
+}
+
+/**
+ * 收藏
+ * @param id
+ * @param index
+ */
+function collection(id, index){
+	var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
+	$.ajax({
+		type : "post",
+		data : {table_name: "t_blog", table_id: id, t: Math.random()},
+		dataType: 'json',  
+		url : getBasePath() +"leedane/collection/add.action",
+		beforeSend:function(){
+		},
+		success : function(data) {
+			layer.close(loadi);
+			layer.msg(data.message);
+			if(data.isSuccess){
+				$(".row_"+index).find(".collection").text("已收藏");
+			}
+		},
+		error : function() {
+			layer.close(loadi);
+			layer.msg("网络请求失败");
+		}
+	});
+}
+
+
+/**
+ * 删除
+ * @param id
+ * @param index
+ */
+function deleteBlog(id, index){
+	var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
+	$.ajax({
+		type : "post",
+		data : {b_id: id, t: Math.random()},
+		dataType: 'json',  
+		url : getBasePath() +"leedane/blog/deleteBlog.action",
+		beforeSend:function(){
+		},
+		success : function(data) {
+			layer.close(loadi);
+			layer.msg(data.message);
+			if(data.isSuccess){
+				$(".row_"+index).remove();
+			}
+		},
+		error : function() {
+			layer.close(loadi);
+			layer.msg("网络请求失败");
+		}
+	});
+}
+
+/**
+ * 链接到个人中心
+ * @param create_user_id
+ */
+function my(create_user_id){
+	if(isEmpty(create_user_id)){
+		layer.msg("该用户不存在，请联系管理员核实");
+		return;
+	}
+	window.open(getBasePath() +"page/my.jsp?uid="+create_user_id, "_blank");
 }

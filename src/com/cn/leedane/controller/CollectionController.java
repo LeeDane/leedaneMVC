@@ -39,7 +39,7 @@ public class CollectionController extends BaseController{
 				printWriter(message, response);
 				return null;
 			}
-			message.put("isSuccess", collectionService.addCollect(getJsonFromMessage(message), getUserFromMessage(message), request));
+			message.putAll(collectionService.addCollect(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {

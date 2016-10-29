@@ -243,6 +243,20 @@ public class CircleOfFriendServiceImpl implements CircleOfFriendService<TimeLine
 	}
 	
 	/**
+	 * 获取状态的SQL
+	 * @param toUserId
+	 * @param user
+	 * @return
+	 */
+	private String getMoodStatusSQL(int toUserId, UserBean user){
+		if(toUserId == user.getId()){
+			return " (m.status = "+ ConstantsUtil.STATUS_NORMAL +" or m.status = "+ ConstantsUtil.STATUS_SELF +")";
+		}else {
+			return " m.status = "+ ConstantsUtil.STATUS_NORMAL;
+		}
+	}
+	
+	/**
 	 * 构建CreateUser的SQL语句字符串
 	 * @param ids
 	 * @return

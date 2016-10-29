@@ -33,14 +33,17 @@
 </body>
 
 <script type="text/javascript">
-
 	$(function(){
 	});
 	
 	function clickImg(obj, index){
-		var width = parseInt($(obj).width());
-		var height = parseInt($(obj).height());
-		webview.clickImg("<%=imgs %>", index, width, height);
+		if(winW < 600){
+			var width = parseInt($(obj).width());
+			var height = parseInt($(obj).height());
+			webview.clickImg("<%=imgs %>", index, width, height);
+		}else{
+			layer.msg("fff");
+		}
 	}
 	
 </script>

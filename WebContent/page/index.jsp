@@ -51,7 +51,7 @@
 	<div class="main_bg"></div>
 	
 	<div class="container">
-	   <div class="row">
+	   <!-- <div class="row">
 	      <div class="col-lg-4">
 	      	  	<img width="100%" height="100%" class="img-rounded" alt="" src="images/main_content_img.jpg">
 	      </div>
@@ -66,9 +66,9 @@
 						    </h1>
 						    <ol class="breadcrumb">
 						    	<li>文章</li>
-								<li class="active">2016-10-10 10:10:08</li><!-- 
+								<li class="active">2016-10-10 10:10:08</li>
 								<li>10</li>
-								<li class="active">18</li> -->
+								<li class="active">18</li>
 							</ol>
 							<span class="label label-default">默认标签</span>
 							<span class="label label-primary">主要标签</span>
@@ -125,9 +125,9 @@
 						    </h1>
 						    <ol class="breadcrumb">
 						    	<li>文章</li>
-								<li class="active">2016-10-10 10:10:08</li><!-- 
+								<li class="active">2016-10-10 10:10:08</li>
 								<li>10</li>
-								<li class="active">18</li> -->
+								<li class="active">18</li>
 							</ol>
 							<span class="label label-default">默认标签</span>
 							<span class="label label-primary">主要标签</span>
@@ -174,9 +174,9 @@
 						    </h1>
 						    <ol class="breadcrumb">
 						    	<li>文章</li>
-								<li class="active">2016-10-10 10:10:08</li><!-- 
+								<li class="active">2016-10-10 10:10:08</li>
 								<li>10</li>
-								<li class="active">18</li> -->
+								<li class="active">18</li>
 							</ol>
 							<span class="label label-default">默认标签</span>
 							<span class="label label-primary">主要标签</span>
@@ -207,7 +207,7 @@
 				</div>
 	      		
 	      </div>      
-	   </div>
+	   </div> -->
 	</div>
 	<i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="font-size: 30px; color: #1E9FFF;">&#xe63e;</i>  
 </div>

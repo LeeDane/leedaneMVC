@@ -312,6 +312,8 @@ public class EnumUtil {
 		系统不支持查找该年份的数据(3053),
 		话题不能为空(3054),
 		图片大于1M无法上传(3055),
+		收藏成功(3056),
+		数据库对象数量不符合要求(3057)
 		;
 		
 		private ResponseCode(int value) {

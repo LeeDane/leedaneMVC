@@ -10,9 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import com.cn.leedane.handler.CloudStoreHandler;
 import com.cn.leedane.model.GalleryBean;
+import com.cn.leedane.model.UserBean;
 
 /**
  * 文件工具类(文件的读取操作)
@@ -234,7 +238,7 @@ public class FileUtil {
 	 * @param imgUrl
 	 * @return galleryBean
 	 */
-	public static GalleryBean getNetWorkImgAttrs(String imgUrl) {
+	public static GalleryBean getNetWorkImgAttrs(UserBean user, String imgUrl) {
 		
 		GalleryBean galleryBean = null;
 		boolean b = false;
@@ -286,8 +290,9 @@ public class FileUtil {
                     ex.printStackTrace();
                 }
                 
-                //将文件上传到服务器
-                
+                //不是七牛存储的互联网连接，先将文件上传到服务器
+                if(imgUrl.indexOf(ConstantsUtil.QINIU_SERVER_URL_NO_HTTP) < 0)
+                	imgUrl = CloudStoreHandler.uploadFile(user, file);
                 
                 galleryBean.setPath(imgUrl);
                

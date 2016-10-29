@@ -15,6 +15,32 @@ function isNotEmpty(str){
 }
 
 /**
+ * 对空的字符串，以""输出
+ * @param str
+ * @returns
+ */
+function changeNotNullString(str){
+	if(isEmpty(str))
+		return "";
+	return str;
+}
+
+/**
+ * 将form的serializeArray数组转化成json对象
+ * @param array
+ */
+function serializeArrayToJsonObject(array){
+	var json = {};
+	if(array.length > 0){
+		for(var i = 0; i < array.length; i++){
+			var o = array[i];
+			json[o.name] = o.value;
+		}
+	}
+	return json;
+}
+
+/**
  * 添加cookie
  * @param key
  * @param value

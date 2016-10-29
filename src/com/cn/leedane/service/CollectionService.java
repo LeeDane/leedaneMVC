@@ -25,7 +25,7 @@ public interface CollectionService<T extends IDBean>{
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean addCollect(JSONObject jo, UserBean user, HttpServletRequest request);
+	public Map<String, Object> addCollect(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	
 

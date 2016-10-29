@@ -13,11 +13,15 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Bootstrap 实例 - 响应式的导航栏</title>
-	<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<!-- 百度JQUERYCDN -->
+	<title>公共部分</title>
+	<!-- <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	百度JQUERYCDN
 	<script type="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
-	<script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+	<link rel="stylesheet" href="<%=basePath %>page/other/bootstrap-3.3.0/css/bootstrap.min.css">
+	<!-- 百度JQUERYCDN -->
+	<script type="text/javascript" src="<%=basePath %>page/other/jquery-1.9.1.min.js"></script>
+	<script src="<%=basePath %>page/other/bootstrap-3.3.0/js/bootstrap.min.js"></script>
 	<style type="text/css">
 		::-webkit-scrollbar-track {
 		  background-color: #666699;
@@ -78,8 +82,11 @@
     </div>
     <div>
         <ul class="nav navbar-nav">
-            <li class="active nav-blog"><a href="<%=basePath %>page/index.jsp">博客</a></li>
-            <li class="nav-photo"><a href="<%=basePath %>page/photo.jsp">相册</a></li>
+            <li class="active nav-blog nav-main-li"><a href="<%=basePath %>page/index.jsp">博客</a></li>
+            <li class="nav-photo nav-main-li"><a href="<%=basePath %>page/photo.jsp">相册</a></li>
+            <% if(login) { %>
+            	<li class="nav-my nav-main-li"><a href="<%=basePath %>page/my.jsp">个人中心</a></li>
+            <%} %>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     	我 <b class="caret"></b>
@@ -100,7 +107,7 @@
 </nav>
 <div class="left-sider-bg" onclick="sideClick()"></div>
 <div class="left-sider">
-	<iframe width="100%" height="100%" src="<%=basePath %>page/jsp/index-sider.jsp"></iframe>
+	<%-- <iframe width="100%" height="100%" src="<%=basePath %>page/jsp/index-sider.jsp"></iframe> --%>
 </div>
 
 <script type="text/javascript">

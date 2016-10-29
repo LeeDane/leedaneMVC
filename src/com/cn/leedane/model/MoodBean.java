@@ -12,7 +12,7 @@ public class MoodBean extends RecordTimeBean{
 		
 	private static final long serialVersionUID = -6784369167574852718L;
 
-	//心情的状态,-1：草稿，1：正常，0:禁用，2、删除
+	//心情的状态,-1：草稿，1：正常，0:禁用，2、删除, 5、私有的
 	
 	/**
 	 * 非必须，uuid,唯一(如在图像的时候一定必须，因为它是关联filepath表的唯一凭证)

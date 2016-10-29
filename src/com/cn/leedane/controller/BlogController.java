@@ -347,6 +347,30 @@ public class BlogController extends BaseController{
 	}
 	
 	/**
+	 * 获取博客的的基本信息(不包括内容)
+	 * @return
+	 */
+	@RequestMapping("/getInfo")
+	public String getInfo(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(blogService.getInfo(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
 	 * 根据博客ID获取一条博客信息
 	 * @return
 	 * @throws Exception 

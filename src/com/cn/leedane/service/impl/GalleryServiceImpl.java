@@ -75,7 +75,7 @@ public class GalleryServiceImpl implements GalleryService<GalleryBean> {
 		
 		//宽高有为0，需要网络获取宽高
 		if(width ==0 || height == 0){
-			GalleryBean gBean = FileUtil.getNetWorkImgAttrs(path);
+			GalleryBean gBean = FileUtil.getNetWorkImgAttrs(user, path);
 			if(gBean == null){
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 				message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
@@ -105,6 +105,7 @@ public class GalleryServiceImpl implements GalleryService<GalleryBean> {
 		bean.setWidth(width);
 		if(galleryMapper.save(bean) > 0){
 			message.put("isSuccess", true);
+			message.put("message", "添加到图库成功");
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库保存失败.value));
 			message.put("responseCode", EnumUtil.ResponseCode.数据库保存失败.value);
