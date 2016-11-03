@@ -51,5 +51,9 @@ public class EmailRecieve implements IRecieve{
 		}
 		return success;
 	}
-
+	
+	@Override
+	public boolean errorDestroy() {
+		return true;
+	}
 }

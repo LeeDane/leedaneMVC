@@ -9,6 +9,12 @@ package com.cn.leedane.rabbitmq.recieve;
 public interface IRecieve {
 	
 	/**
+	 * 是否不管处理是否错误直接销毁（默认是false）
+	 * @return
+	 */
+	public boolean errorDestroy();
+	
+	/**
 	 * 获取队列的名称
 	 * @return
 	 */

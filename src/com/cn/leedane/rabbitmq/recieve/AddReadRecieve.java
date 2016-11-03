@@ -70,5 +70,9 @@ public class AddReadRecieve implements IRecieve{
 		}
 		return success;
 	}
-
+	
+	@Override
+	public boolean errorDestroy() {
+		return true;
+	}
 }

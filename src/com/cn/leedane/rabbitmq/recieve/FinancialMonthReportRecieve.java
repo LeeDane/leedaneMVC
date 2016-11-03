@@ -44,10 +44,16 @@ public class FinancialMonthReportRecieve implements IRecieve{
 			ids.add(userBean.getId());
 			notificationHandler.sendNotificationByIds(true, userBean, ids, financialReport.getDesc(), NotificationType.通知, "t_financial_report", 1, financialReport);	
 			System.out.println(JSON.toJSON(financialReport));
+			success = true;
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		return success;
+	}
+
+	@Override
+	public boolean errorDestroy() {
+		return false;//出错不能销毁
 	}
 
 }

@@ -36,5 +36,9 @@ public class LogRecieve implements IRecieve{
 		}
 		return success;
 	}
-
+	
+	@Override
+	public boolean errorDestroy() {
+		return true;
+	}
 }

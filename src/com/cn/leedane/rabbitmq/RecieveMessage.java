@@ -45,10 +45,13 @@ public class RecieveMessage {
 			//message = new String(delivery.getBody());
 			Object o = SerializeUtil.deserializeObject(delivery.getBody(), recieve.getClass());
 			if(o != null){
-				if(recieve.excute(o)){
+				if(recieve.excute(o) && !recieve.errorDestroy()){
 					//System.out.println("日志执行成功");
 					//确认消息，已经收到  
 					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+				}else{
+					//出错直接销毁
+					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), true);
 				}
 			}
 				
