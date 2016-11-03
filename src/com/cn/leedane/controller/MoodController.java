@@ -56,7 +56,9 @@ public class MoodController extends BaseController{
 				printWriter(message, response);
 				return null;
 			}
-			message.putAll(moodService.updateMoodStatus(getJsonFromMessage(message), ConstantsUtil.STATUS_NORMAL, request, getUserFromMessage(message)));
+			JSONObject jsonObject = getJsonFromMessage(message);
+			int status = JsonUtil.getIntValue(jsonObject, "status", ConstantsUtil.STATUS_NORMAL);
+			message.putAll(moodService.updateMoodStatus(jsonObject, status, request, getUserFromMessage(message)));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {
@@ -108,7 +110,11 @@ public class MoodController extends BaseController{
 				printWriter(message, response);
 				return null;
 			}
-			message.putAll(moodService.sendWord(getJsonFromMessage(message), getUserFromMessage(message), request));
+			
+			JSONObject jsObject = getJsonFromMessage(message);
+			int status = JsonUtil.getIntValue(jsObject, "status", ConstantsUtil.STATUS_NORMAL);
+			
+			message.putAll(moodService.sendWord(jsObject, getUserFromMessage(message), status, request));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {

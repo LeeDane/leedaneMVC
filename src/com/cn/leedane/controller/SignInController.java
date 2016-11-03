@@ -81,6 +81,7 @@ public class SignInController extends BaseController{
 				printWriter(message, response);
 				return null;
 			}
+			message.put("isSuccess", true);
 			JSONObject json = getJsonFromMessage(message);
 			UserBean user = getUserFromMessage(message);
 			if(json.has("id")) {
@@ -96,7 +97,8 @@ public class SignInController extends BaseController{
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}  
+		} 
+		message.put("isSuccess", true);
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
 		printWriter(message, response);

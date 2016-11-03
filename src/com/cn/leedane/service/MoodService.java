@@ -31,10 +31,11 @@ public interface MoodService <T extends IDBean>{
 	 * 保存纯文字的心情
 	 * @param jsonObject
 	 * @param user
+	 * @param status
 	 * @param request
 	 * @return
 	 */
-	public Map<String, Object> sendWord(JSONObject jsonObject, UserBean user, HttpServletRequest request);
+	public Map<String, Object> sendWord(JSONObject jsonObject, UserBean user, int status, HttpServletRequest request);
 	
 	
 	/**

@@ -21,4 +21,9 @@
 		from t_financial where status=#{status} and create_user_id=#{userId} 
 		order by create_time desc
 	</select>
+	
+	<select id="getByTimeRange" resultType="FinancialBean">
+		select * from t_financial where status=#{status} and create_user_id=#{createUserId}  and addition_time between #{startTime} and #{endTime} 
+		order by create_time desc
+	</select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.cn.leedane.mapper;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -31,5 +32,15 @@ public interface FinancialMapper extends BaseMapper<FinancialBean>{
 	 * @return
 	 */
 	public List<Map<String, Object>> getAll(@Param("status")int status, @Param("userId")int userId);
+
+	/**
+	 * 获取指定用户的范围内的记账记录
+	 * @param createUserId
+	 * @param status
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<FinancialBean> getByTimeRange(@Param("createUserId")int createUserId, @Param("status")int status, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
 	
 }

@@ -24,6 +24,7 @@ import com.cn.leedane.cache.SystemCache;
 import com.cn.leedane.model.OptionBean;
 import com.cn.leedane.rabbitmq.RecieveMessage;
 import com.cn.leedane.rabbitmq.recieve.EmailRecieve;
+import com.cn.leedane.rabbitmq.recieve.FinancialMonthReportRecieve;
 import com.cn.leedane.rabbitmq.recieve.IRecieve;
 import com.cn.leedane.rabbitmq.recieve.LogRecieve;
 import com.cn.leedane.redis.util.RedisUtil;
@@ -62,7 +63,31 @@ public class CacheContextLoaderListener extends ContextLoaderListener{
 			}
 		}).start();
 		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				startRabbitMqFinancialReportListener(); //异步启动rabbitmq记账月报队列的监听
+			}
+		}).start();
+		
 		SensitiveWordInit.getInstance(); //加载敏感词库
+	}
+	
+
+	/**
+	 * 启动rabbitmq记账月报队列的监听
+	 */
+	private void startRabbitMqFinancialReportListener() {
+		
+		try {
+			//记账月报队列的监听
+			IRecieve recieve = new FinancialMonthReportRecieve();
+			RecieveMessage recieveMessage = new RecieveMessage(recieve);
+			recieveMessage.getMsg();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	/**

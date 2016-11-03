@@ -405,4 +405,10 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		message.put("isSuccess", true);
 		return message;
 	}
+
+	@Override
+	public List<FinancialBean> getByTimeRange(int createUserId, int status,
+			Date startTime, Date endTime) {
+		return this.financialMapper.getByTimeRange(createUserId, status, startTime, endTime);
+	}
 }

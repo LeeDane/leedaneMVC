@@ -35,6 +35,10 @@
 		
 	</select>
 	
+	<select id="getAllUsers" resultType="UserBean">
+		select * from t_user where status=#{status}
+	</select>
+	
 	<select id="getUserByNoLoginCode" resultType="UserBean">
 		select * from t_user where account = #{account} and no_login_code = #{noLoginCode} and status = #{status}
 	</select>

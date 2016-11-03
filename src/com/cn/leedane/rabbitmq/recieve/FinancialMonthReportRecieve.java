@@ -1,0 +1,53 @@
+package com.cn.leedane.rabbitmq.recieve;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import com.alibaba.fastjson.JSON;
+import com.cn.leedane.handler.NotificationHandler;
+import com.cn.leedane.model.FinancialReport;
+import com.cn.leedane.model.UserBean;
+import com.cn.leedane.utils.EnumUtil.NotificationType;
+import com.cn.leedane.utils.SpringUtil;
+
+/**
+ * 记账月报消费者
+ * @author LeeDane
+ * 2016年11月2日 上午11:18:33
+ * Version 1.0
+ */
+public class FinancialMonthReportRecieve implements IRecieve{
+
+
+	public final static String QUEUE_NAME = "financial_month_rabbitmq";
+	@Override
+	public String getQueueName() {
+		return QUEUE_NAME;
+	}
+
+	@Override
+	public Class<?> getQueueClass() {
+		return FinancialReport.class;
+	}
+
+	@Override
+	public boolean excute(Object obj) {
+		boolean success = false;
+		try{
+			if(obj == null)
+				return success;
+			
+			FinancialReport financialReport = (FinancialReport)obj;
+			NotificationHandler notificationHandler = (NotificationHandler) SpringUtil.getBean("notificationHandler");
+			UserBean userBean = financialReport.getUser();
+			Set<Integer> ids = new HashSet<Integer>();
+			ids.add(userBean.getId());
+			notificationHandler.sendNotificationByIds(true, userBean, ids, financialReport.getDesc(), NotificationType.通知, "t_financial_report", 1, financialReport);	
+			System.out.println(JSON.toJSON(financialReport));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return success;
+	}
+
+}

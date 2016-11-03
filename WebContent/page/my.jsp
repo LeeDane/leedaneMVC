@@ -32,6 +32,8 @@
 	<meta charset="utf-8">
 	<title><%=account %>的个人中心</title>
 	<link rel="stylesheet" href="other/layui/css/layui.css">
+	<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_733gvu39kn265hfr.css">
+	
 	<script src="js/base.js"></script>
 	<style type="text/css">
 		
@@ -85,7 +87,7 @@
 			padding-top:150px;
 		}
 		#float-month li{
-			
+			text-align: center;
 		}
 		.cursor{
 			cursor: pointer;
@@ -104,6 +106,33 @@
 		}
 		#operate-item-list{
 			padding-top: 150px;
+		}
+		.tip-list{
+			padding-bottom: 3px;
+		}
+		.tip-list span{
+			padding: .3em .6em .3em !important;
+			margin-right: 5px;
+		}
+		#comment-or-transmit-list{
+			padding-top: 150px;
+		}
+		.commentOrTransmitUser{
+			width: 60px;
+			white-space:nowrap; 
+			overflow:hidden; 
+			text-overflow:ellipsis;
+			cursor: pointer;
+			text-align: center;
+			margin-top: 5px;
+		}
+		#comment-or-transmit-item{
+			height: 400px !important;
+			overflow: auto !important;
+		}
+		#comment-or-transmit-item .badge{
+			background-color: #3071a9 !important;
+			margin-right: 5px;
 		}
 	</style>
 </head>
@@ -131,7 +160,7 @@
 		   		<div class="row" id="user_info">
 		   		</div>
 		   </div>
-	      <div class="col-lg-6" id="mood-container">
+	      <div class="col-lg-6 scrollspy-example" id="mood-container" data-spy="scroll" data-target="#navbarExample" data-offset="50">
 	      
 		      	<!-- <div class="list-group">
 				    <div class="list-group-item active">
@@ -256,9 +285,13 @@
 					<p>Try to scroll this section and look at the navigation list while scrolling!</p>
 				</div> -->
 	      </div>
-	      <nav class="col-sm-3">
+	      <nav class="col-sm-3" id="navbarExample">
 		      	<ul class="nav nav-pills nav-stacked" id="float-month">
-					
+					<li>
+						<div class="panel-body text-center">
+							<button class="btn btn-success" data-toggle="modal" data-target="#add-mood">发布心情</button>
+						</div>
+					</li>
 				</ul>
 	        <!-- <ul class="nav nav-pills nav-stacked">
 				<li class="active"><a href="#section1">Section 1</a></li>
@@ -321,6 +354,62 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
 				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框评论、转发列表 -->
+<div class="modal fade" id="comment-or-transmit-list" tabindex="-1" role="dialog" aria-labelledby="commentOrTransmitListModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="commentOrTransmitListModalLabel">
+					评论/转发列表
+				</h4>
+			</div>
+			<div class="modal-body" id="comment-or-transmit-item">
+				<!-- <div class="list-group">
+					<div class="list-group-item">
+						<div class="row">
+							<div class="col-lg-2 col-sm-2">
+								<div>
+									<img src="images/main_content_img.jpg" width="60px" height="60px" class="img-circle">
+								</div>
+								<div class="commentOrTransmitUser text-info">leedanssfffffffdddse</div> 
+							</div>
+							<div class="col-lg-10 col-sm-10">
+								<div class="row">
+									<div class="col-lg-8 col-sm-8 text-muted">来自：机器人自动回复 </div>
+									<div class="col-lg-4 col-sm-4 text-muted" style="text-align: right;">
+										14天前<button type="button" class="btn btn-primary btn-xs" 
+											    data-toggle="button" style="margin-left: 5px;">回复
+											</button>
+									</div>
+								</div>
+								<div>你啊，怎么这么逗你啊，怎么这么逗你啊，怎么这么逗你啊，么这么逗你啊，怎么这么逗你啊，么这么逗你啊，怎么这么逗你啊，么这么逗你啊，怎么这么逗你啊，么这么逗你啊，怎么这么逗你啊，么这么逗你啊，怎么这么逗你啊，怎么这么逗你啊，怎么这么逗你啊，怎么这么逗你啊，怎么这么逗</div>
+							</div>
+						</div>
+					</div>
+				</div> -->
+				
+				<button class="btn btn-info">加载更多</button>
+			</div>
+			<div class="modal-footer">
+				<!-- <div class="form-group">
+					<input type="text" class="form-control">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+				</div> -->
+				<div class="input-group">
+			      <input type="text" id="comment-or-transmit-text" class="form-control" placeholder="请说点什么吧">
+			      <span class="input-group-btn">
+			        <button class="btn btn-default" type="button" onclick="sendCommentOrTransmit();">发送</button>
+			      </span>
+			    </div><!-- /input-group -->
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal -->

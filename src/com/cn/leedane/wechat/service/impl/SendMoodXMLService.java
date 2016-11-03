@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.SpringUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.model.MoodBean;
@@ -53,7 +54,7 @@ public class SendMoodXMLService extends BaseXMLWechatService {
 			
 			String str = "{'content':'"+Content+"','froms':'微信leedane公众号'}";
 			JSONObject jsonObject = JSONObject.fromObject(str);
-			Map<String, Object> result = moodService.sendWord(jsonObject, user, null);
+			Map<String, Object> result = moodService.sendWord(jsonObject, user,ConstantsUtil.STATUS_NORMAL, null);
 			if(result.containsKey("isSuccess") && StringUtil.changeObjectToBoolean(result.get("isSuccess"))){
 				return "发布心情成功";
 			}else{

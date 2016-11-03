@@ -47,6 +47,7 @@ import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.MD5Util;
+import com.cn.leedane.utils.SqlUtil;
 import com.cn.leedane.utils.StringUtil;
 
 /**
@@ -961,6 +962,11 @@ public class UserServiceImpl implements UserService<UserBean> {
 		long end = System.currentTimeMillis();
 		System.out.println("查看用户ID"+ searchUserId +"的个人基本信息总计耗时：" +(end - start) +"毫秒");
 		return message;
+	}
+
+	@Override
+	public List<UserBean> getAllUsers(int status) {
+		return userMapper.getAllUsers(status);
 	}
 
 }

@@ -100,6 +100,17 @@
 		<property name="durability" value="true" />
 	</bean>
 	
+	<!-- 处理记账月报信息 -->
+	<bean name="financialMonthJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass" value="com.cn.leedane.task.spring.quartz.FinancialMonthScheduledJob" />
+		<property name="jobDataMap">
+			<map>
+				<entry key="financialMonth" value-ref="financialMonth" />
+			</map>
+		</property>
+		<property name="durability" value="true" />
+	</bean>
+	
 	<!-- 删除临时文件的调度任务 -->
 	<bean name="deleteTemporaryFilesJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
 		<property name="jobClass" value="com.cn.leedane.task.spring.quartz.DeleteTemporaryFilesScheduledJob" />
@@ -175,6 +186,12 @@
 		<property name="cronExpression" value="0 0/59 * * * ?" /><!-- 测试，每隔59分钟运行一次 -->
 	</bean>
 	
+	<!-- 记账月报触发器 -->
+	<bean id="financialMonthTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="financialMonthJob" />
+		<property name="cronExpression" value="0 0 2 1 * ?" /><!-- 每月1号凌晨2点0分触发  -->
+	</bean>
+	
 	<!-- 删除临时文件触发器 -->
 	<bean id="deleteTemporaryFilesTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="deleteTemporaryFilesJob" />
@@ -200,6 +217,7 @@
 				<ref bean="uploadQiniuCloudJob" />
 				<ref bean="deleteTemporaryFilesJob" />
 				<ref bean="solrIndexJob" />
+				<ref bean="financialMonthJob"/>
 			</list>
 		</property>
 
@@ -215,13 +233,10 @@
 				<ref bean="uploadQiniuCloudTrigger" />
 				<ref bean="deleteTemporaryFilesTrigger" />
 				<ref bean="solrIndexTrigger" />
+				<ref bean="financialMonthTrigger" />
 			</list>
 		</property>
 	</bean>
-	
-    
-    
-    
     
 <!-- 
 网络上关于quartz CronExpression表达式:

@@ -9,7 +9,7 @@ var isLoad = false;
 var winH = $(window).height(); 
 
 var monthArray = new Array();
-
+var canLoadData = true;
 $(function(){
 	$(window).scroll(function (e) {
 		e = e || window.event;
@@ -25,12 +25,36 @@ $(function(){
 	    var pageH = $(document.body).height(); //页面总高度 
 	    var scrollT = $(window).scrollTop(); //滚动条top 
 	    var height = (pageH-winH-scrollT)/winH;
-	    if(!isLoad && height < 0.20){
+	    if(!isLoad && height < 0.20 && canLoadData){
 	    	isLoad = true;
 	    	method = 'lowloading';
 	    	getMoods();
 	    }
-	}); 
+	});
+	
+	$('#comment-or-transmit-item').on('scroll',function(){
+		var groups = $("#comment-or-transmit-item").find(".list-group");
+		var totalH = 0;
+		groups.each(function(){
+			totalH += $(this).height();
+		});
+		console.log("totalH--->"+ totalH);
+	    // div 滚动了
+		var pageH = $("#comment-or-transmit-item").height(); //页面总高度 
+		console.log("pageH"+ pageH);
+	    var scrollT = $("#comment-or-transmit-item").scrollTop(); //滚动条top 
+	    console.log("scrollT"+ scrollT);
+	 
+	    var height = (pageH-scrollT)/winH;
+	  
+	    if (!ct_isLoad && totalH - scrollT - pageH < 50 && ct_canLoadData) {
+	        // 滚动到底部了
+	        console.log('开始执行加载更多');
+	        ct_isLoad = true;
+	    	ct_method = 'lowloading';
+	    	asynchronousLoadData();
+	    }
+	});
 });
 
 /**
@@ -65,11 +89,14 @@ function loadUserInfo(){
 									'</button>';
 				if(isLoginUser){
 					descHtml += '<button id="sign_button" type="button" class="btn btn-primary btn-xs" style="margin-left:5px;" disabled="disabled">'+
-								  '<span class="glyphicon glyphicon-time" ></span> 签到'+
+								  
 								'</button>';
 				}
-								
+				
 				$("#user_desc").html(descHtml);
+				
+				if(isLoginUser)
+					isTodaySignIn();//加载是否今天已经签到
 				
 				buildShowUserinfo();
 				buildEditUserinfo();
@@ -110,31 +137,43 @@ function getMoods(){
 				if(method == 'firstloading'){
 					moods = data.message;
 					for(var i = 0; i < moods.length; i++){
-						//判断是否有图
-						$("#mood-container").append(buildMoodRow(i, moods[i]));
+						
+						var ifFlagNew = false;
+						var flagMonth = moods[i].create_time.substring(0, 7);
+						if(!isInMonthArray(flagMonth)){
+							ifFlagNew = true
+							monthArray.push(flagMonth);
+							$("#float-month").append('<li  class="active"><a href="#mood-'+flagMonth+'">'+ flagMonth +'</a></li>');
+						}
+						
+						//添加每一行到心情容器
+						$("#mood-container").append(buildMoodRow(i, moods[i], ifFlagNew, flagMonth));
 						if(i == 0)
 							first_id = moods[i].id;
 						if(i == moods.length -1)
 							last_id = moods[i].id;
 						
-						if(!isInMonthArray(moods[i].create_time.substring(0, 7))){
-							monthArray.push(moods[i].create_time.substring(0, 7));
-							$("#float-month").append('<li><a href="#section2">'+ moods[i].create_time.substring(0, 7) +'</a></li>');
-						}
+						
 					}
 				}else{
 					var currentIndex = moods.length;
 					for(var i = 0; i < data.message.length; i++){
 						moods.push(data.message[i]);
-							$("#mood-container").append(buildMoodRow(currentIndex + i, data.message[i]));
+						
+						var ifFlagNew = false;
+						var flagMonth = data.message[i].create_time.substring(0, 7);
+						if(!isInMonthArray(flagMonth)){
+							monthArray.push(flagMonth);
+							ifFlagNew = true;
+							$("#float-month").append('<li  class="active"><a href="#mood-'+flagMonth+'">'+ flagMonth +'</a></li>');
+						}
+						
+						$("#mood-container").append(buildMoodRow(currentIndex + i, data.message[i], ifFlagNew, flagMonth));
 							
 						if(i == data.message.length -1)
 							last_id = data.message[i].id;
 						
-						if(!isInMonthArray(data.message[i].create_time.substring(0, 7))){
-							monthArray.push(data.message[i].create_time.substring(0, 7));
-							$("#float-month").append('<li  class="active"><a href="#section2">'+ data.message[i].create_time.substring(0, 7) +'</a></li>');
-						}
+						
 					}
 				}
 				console.log(monthArray);
@@ -168,14 +207,16 @@ function isInMonthArray(str){
  * 构建每一行心情列表的数据
  * @param index
  * @param mood
+ * @param ifFlagNew 为true表示需要添加flag
+ * @param flagMonth 当ifFlagNew为true有效
  * @returns {String}
  */
-function buildMoodRow(index, mood){
+function buildMoodRow(index, mood, ifFlagNew, flagMonth){
 	/*var html = '<div id="section1" class="row_'+ index +'">'+
 					'<h1>'+ mood.content+'</h1>'+
 					'<p>Try to scroll this section and look at the navigation list while scrolling!</p>'+
 				'</div>';*/
-	var html = '<div class="list-group">'+
+	var html = '<div class="list-group" id="'+(ifFlagNew? 'month-'+flagMonth: '')+'">'+
 				    '<div class="list-group-item active">'+
 						'<div class="row">'+
 							'<div class="col-lg-8">'+
@@ -191,6 +232,13 @@ function buildMoodRow(index, mood){
 						'</div>'+
 					'</div>'+
 					'<div class="list-group-item">'+
+						'<div class="list-group-item-text tip-list">';
+						if(isLoginUser && mood.status == 5){
+							html += '<span class="label label-warning">私有</span>';
+						}
+							html += '<span class="label '+ (mood.can_comment? 'label-default' : 'label-success') +'">'+ (mood.can_comment? '可以评论':'禁止评论') +'</span>'+
+							'<span class="label '+ (mood.can_transmit? 'label-default' : 'label-success') +'">'+ (mood.can_transmit? '可以转发':'禁止转发') +'</span>'+
+						'</div>'+
 					    '<div class="list-group-item-text">'+ changeNotNullString(mood.content) +
 					    '</div>';
 				if(isNotEmpty(mood.location)){
@@ -223,8 +271,8 @@ function buildMoodRow(index, mood){
 					
 			html +=	'</div>'+
 					'<div class="list-group-item list-group-item-operate">'+
-					     '<button type="button" class="btn btn-primary btn-sm" '+ (mood.can_comment? '' : 'disabled="disabled"') +'>评论('+ mood.comment_number+')</button>'+
-					     '<button type="button" class="btn btn-primary btn-sm" '+ (mood.can_transmit? '' : 'disabled="disabled"') +'>转发('+ mood.transmit_number+')</button>'+
+					     '<button type="button" class="btn btn-primary btn-sm" onclick="showCommentOrTransmit(1, '+ index +')">评论('+ mood.comment_number+')</button>'+
+					     '<button type="button" class="btn btn-primary btn-sm" onclick="showCommentOrTransmit(2, '+ index +')">转发('+ mood.transmit_number+')</button>'+
 					     '<button type="button" class="btn btn-primary btn-sm" onclick="goToReadFull('+ mood.id +')">查看详细</button>'+
 					'</div>'+
 				'</div>';
@@ -431,6 +479,10 @@ function showItemListModal(index){
 			    '<li class="list-group-item cursor" onclick="copyToClipBoard(\''+ mood.content +'\');">复制文字</li>';
 	if(isLoginUser){
 		html += '<li class="list-group-item cursor" onclick="deleteMood('+ mood.id +')">删除</li>'+
+				'<li class="list-group-item cursor" onclick="updateIsSelfStatus('+ mood.status +','+ mood.id +');">'+
+			        '<span class="badge">'+ (mood.status == 5? '私有': '非私有') +'</span>'+
+			        	'设置转为私有'+
+			    '</li>'+
 			    '<li class="list-group-item cursor" onclick="updateCommentStatus('+ mood.can_comment +','+ mood.id +');">'+
 			        '<span class="badge">'+ (mood.can_comment? '已启用': '已禁用') +'</span>'+
 			        	'设置是否能评论'+
@@ -501,6 +553,30 @@ function deleteMood(id){
 		}
 	});
 }
+
+function updateIsSelfStatus(status, id){
+	var loadi = layer.load('努力加载中…');
+	$.ajax({
+		type : "post",
+		data: {status: (status == 1 ? 5 : 1), mid: id},
+		url : getBasePath() +"leedane/mood/send.action",
+		dataType: 'json', 
+		beforeSend:function(){
+		},
+		success : function(data) {
+				layer.close(loadi);
+				layer.msg(data.message);
+				if(data.isSuccess){
+					window.location.reload();
+				}
+		},
+		error : function() {
+			layer.close(loadi);
+			layer.msg("网络请求失败");
+		}
+	});
+}
+
 /**
  * 更新评论状态
  * @param can
@@ -550,6 +626,259 @@ function updateTransmitStatus(can, table_id){
 					window.location.reload();
 				}
 				
+		},
+		error : function() {
+			layer.close(loadi);
+			layer.msg("网络请求失败");
+		}
+	});
+}
+
+/**
+ * 判断今天是否已经签到
+ */
+function isTodaySignIn(){
+	$.ajax({
+		type : "post",
+		data : {id: uid},
+		url : getBasePath() +"leedane/signIn/currentDateIsSignIn.action",
+		dataType: 'json', 
+		beforeSend:function(){
+		},
+		success : function(data) {
+			if(data.isSuccess){
+				$("#sign_button").html('<span class="iconfont icon-signin" ></span> 已签到');
+			}else{
+				$("#sign_button").removeAttr("disabled");
+				$("#sign_button").attr("onclick", "signin();");
+				$("#sign_button").html('<span class="glyphicon glyphicon-time"></span> 立即签到');
+			}
+		},
+		error : function() {
+			layer.msg("网络请求失败");
+		}
+	});
+}
+
+/**
+ * 执行签到操作
+ */
+function signin(){
+	var loadi = layer.load('努力加载中…');
+	$.ajax({
+		type : "post",
+		data: {id: uid},
+		url : getBasePath() +"leedane/signIn/signIn.action",
+		dataType: 'json', 
+		beforeSend:function(){
+		},
+		success : function(data) {
+				layer.close(loadi);
+				if(data.isSuccess){
+					layer.msg("签到成功");
+					$("#sign_button").attr("disabled", "disabled");
+					$("#sign_button").html('<span class="glyphicon glyphicon-time" ></span> 已签到');
+				}else{
+					layer.msg(data.message);
+				}
+				
+		},
+		error : function() {
+			layer.close(loadi);
+			layer.msg("网络请求失败");
+		}
+	});
+}
+
+
+//评论转发相关------------------------------------------------------------------
+var ct_last_id = 0;
+var ct_first_id = 0;
+var ct_method = 'firstloading';
+var cts = [];
+var ct_isLoad = false;
+var ct_type = 0;
+var ct_id = 0; //当前心情的ID
+var ct_canLoadData = true;//标记是否还能下拉请求
+var ct_click_index = -1;  //点击的评论/转发的索引
+/**
+ * 展示评论或者转发列表
+ * @param type 1表示评论，2表示转发
+ * @param index 当前心情的索引位置
+ */
+function showCommentOrTransmit(type, index){
+	$("#comment-or-transmit-list").modal("show");
+	if(type == 1){
+		$("#commentOrTransmitListModalLabel").text("评论列表");
+	}else{
+		$("#commentOrTransmitListModalLabel").text("转发列表");
+	}
+	var id = moods[index].id;
+	ct_type = type;
+	ct_id = id;
+	ct_last_id = 0;
+	ct_first_id = 0;
+	ct_method = 'firstloading';
+	cts = [];
+	ct_isLoad = false;
+	ct_canLoadData = true;
+	ct_click_index = -1;
+	$('#comment-or-transmit-text').attr('placeholder','请说点什么吧');
+	asynchronousLoadData();
+}
+
+/**
+ * 获取评论、转发列表的请求参数
+ * @param table_id
+ * @returns {___anonymous20849_20964}
+ */
+function getCTRequestParams(table_id){
+	var pageSize = 15;
+	if(ct_method != 'firstloading')
+		pageSize = 10;
+	return {pageSize: pageSize, last_id: ct_last_id, first_id: ct_first_id, method: ct_method, table_name: 't_mood', showUserInfo: true, table_id: table_id, t: Math.random()};
+}
+
+/**
+ * 异步加载评论或者转发的列表
+ * @param type
+ * @param id
+ */
+function asynchronousLoadData(){
+	ct_isLoad = true;
+	var loadi = layer.load('努力加载中…');
+	$.ajax({
+		type : "post",
+		data: getCTRequestParams(ct_id),
+		url : getBasePath() +"leedane/"+(ct_type==1? "comment": "transmit")+"/paging.action",
+		dataType: 'json', 
+		beforeSend:function(){
+		},
+		success : function(data) {
+				layer.close(loadi);
+				if(data != null && data.isSuccess){
+					if(ct_method == 'firstloading')
+						$("#comment-or-transmit-item").empty();
+						//$("#mood-container").empty();
+					
+					$("#comment-or-transmit-item").find(".footer-button").remove();
+					
+					if(ct_method == 'firstloading'){
+						cts = data.message;
+						for(var i = 0; i < cts.length; i++){
+							//添加每一行到心情容器
+							$("#comment-or-transmit-item").append(buildCommentOrTransmitRow(i, cts[i]));
+							if(i == 0)
+								ct_first_id = cts[i].id;
+							if(i == cts.length -1)
+								ct_last_id = cts[i].id;
+						}
+						if(data.message.length == 0){
+							ct_canLoadData = false;
+							$("#comment-or-transmit-item").html('<button class="btn btn-info">无更多数据</button>');
+						}else{
+							$("#comment-or-transmit-item").append('<button class="btn btn-info footer-button" onclick="asynchronousLoadData()">点击加载更多</button>');
+						}
+					}else{
+						var currentIndex = cts.length;
+						for(var i = 0; i < data.message.length; i++){
+							cts.push(data.message[i]);
+							$("#comment-or-transmit-item").append(buildCommentOrTransmitRow(currentIndex + i, data.message[i]));
+								
+							if(i == data.message.length -1)
+								ct_last_id = data.message[i].id;
+						}
+						if(data.message.length == 0){
+							ct_canLoadData = false;
+							$("#comment-or-transmit-item").append('<button class="btn btn-info footer-button">无更多数据</button>');
+						}else{
+							$("#comment-or-transmit-item").append('<button class="btn btn-info footer-button" onclick="asynchronousLoadData()">点击加载更多</button>');
+						}
+					}
+				}else{
+					layer.msg(data.message);
+				}
+				console.log(data);
+				ct_isLoad = false;
+		},
+		error : function() {
+			layer.close(loadi);
+			layer.msg("网络请求失败");
+		}
+	});
+}
+
+function buildCommentOrTransmitRow(index, ct){
+	var html = '<div class="list-group">'+
+					'<div class="list-group-item">'+
+						'<div class="row">'+
+							'<div class="col-lg-2 col-sm-2">'+
+								'<div>';
+						if(isEmpty(ct.user_pic_path))
+							html += '<img width="60px" height="60px" class="img-circle">';
+						else
+							html += '<img src="'+ ct.user_pic_path +'" width="60px" height="60px" class="img-circle">';
+						
+						html += '</div>'+
+								'<div class="commentOrTransmitUser text-info">'+ ct.account +'</div> '+
+							'</div>'+
+							'<div class="col-lg-10 col-sm-10">'+
+								'<div class="row">'+
+									'<div class="col-lg-6 col-sm-6 text-muted"><span class="badge">'+ (index +1) +'</span>来自：'+ ct.froms +' </div>'+
+									'<div class="col-lg-6 col-sm-6 text-muted" style="text-align: right;">'+ ct.create_time +
+										'<button type="button" class="btn btn-primary btn-xs" '+
+											    'data-toggle="button" style="margin-left: 5px;" onclick="reply('+index+');">回复'+
+											'</button>'+
+									'</div>'+
+								'</div>'+
+								'<div>'+ ct.content+'</div>'+
+							'</div>'+
+						'</div>'+
+					'</div>'+
+				'</div>';
+		return html;
+}
+/**
+ * 回复某人
+ * @param index
+ */
+function reply(index){
+	ct_click_index = index;
+	$('#comment-or-transmit-text').attr('placeholder','@'+ changeNotNullString(cts[ct_click_index].account));
+}
+
+/**
+ * 发送评论或者转发
+ */
+function sendCommentOrTransmit(){
+	var text = $('#comment-or-transmit-text').val();
+	if(isEmpty(text)){
+		layer.msg("请说点什么吧");
+		$('#comment-or-transmit-text').focus();
+		return;
+	}
+	
+	var loadi = layer.load('努力加载中…');
+	var params = {table_name: 't_mood', table_id: ct_id, content: text, froms: 'web网页端'};
+	if(ct_click_index >= 0){
+		params.pid = cts[ct_click_index].id;
+	}
+	$.ajax({
+		type : "post",
+		data: params,
+		url : getBasePath() +"leedane/"+(ct_type == 1? 'comment': 'transmit')+"/add.action",
+		dataType: 'json', 
+		beforeSend:function(){
+		},
+		success : function(data) {
+				layer.close(loadi);
+				if(data.isSuccess){
+					layer.msg("评论成功");
+					window.location.reload();
+				}else{
+					layer.msg(data.message);
+					layer.close(loadi);
+				}
 		},
 		error : function() {
 			layer.close(loadi);

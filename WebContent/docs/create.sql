@@ -40,3 +40,37 @@ for EACH ROW
 BEGIN
  SET NEW.add_day = date_format(NEW.addition_time,'%Y-%m-%d');
 end;
+
+
+CREATE TABLE `t_mood` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` int(11) NOT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `modify_time` datetime DEFAULT NULL,
+  `comment_number` int(11) DEFAULT '0',
+  `content` longtext NOT NULL,
+  `froms` varchar(255) DEFAULT NULL,
+  `has_img` bit(1) DEFAULT b'0',
+  `is_publish_now` bit(1) DEFAULT b'0',
+  `read_number` int(11) DEFAULT '0',
+  `share_number` int(11) DEFAULT '0',
+  `is_solr_index` bit(1) DEFAULT b'0',
+  `str1` varchar(255) DEFAULT NULL,
+  `str2` varchar(255) DEFAULT NULL,
+  `tag` varchar(255) DEFAULT NULL,
+  `transmit_number` int(11) DEFAULT '0',
+  `uuid` varchar(255) DEFAULT NULL,
+  `zan_number` int(11) DEFAULT '0',
+  `create_user_id` int(11) DEFAULT NULL,
+  `modify_user_id` int(11) DEFAULT NULL,
+  `latitude` double NOT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `longitude` double NOT NULL,
+  `can_comment` bit(1) DEFAULT b'1',
+  `can_transmit` bit(1) DEFAULT b'1' COMMENT '是否能转发',
+  PRIMARY KEY (`id`),
+  KEY `FK_2787lae1f3u8spdpchjjpagol` (`create_user_id`),
+  KEY `FK_3dk4sagctkrb4cm2g0lx8r4sd` (`modify_user_id`),
+  CONSTRAINT `FK_2787lae1f3u8spdpchjjpagol` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`),
+  CONSTRAINT `FK_3dk4sagctkrb4cm2g0lx8r4sd` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=336 DEFAULT CHARSET=utf8;

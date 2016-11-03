@@ -1,9 +1,14 @@
+<%@page import="com.cn.leedane.model.UserBean"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <%@page import="com.cn.leedane.controller.UserController"%>
 <%
 	Object o = session.getAttribute(UserController.USER_INFO_KEY);
+	String ac = "";
 	boolean login = o != null;
+	if(login){
+		ac = ((UserBean)o).getAccount();
+	}
 	String basePath = request.getScheme()+"://"+request.getServerName()
 			+":"+request.getServerPort()+request.getContextPath()+"/"; 
 	
@@ -89,7 +94,12 @@
             <%} %>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    	我 <b class="caret"></b>
+                		<% if(login) { %>
+                			<%=ac %>
+                		<%}else{ %>
+                			我
+                		<%} %>
+                    	 <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
                     <li><a href="#">关于我</a></li>

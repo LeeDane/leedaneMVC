@@ -138,6 +138,13 @@ public interface UserMapper  extends BaseMapper<UserBean>{
 	
 	
 	/**
+	 * 获取所有用户
+	 * @param status
+	 * @return
+	 */
+	public List<UserBean> getAllUsers(@Param("status") int status);
+	
+	/**
 	 * 通过免登陆码获取用户对象
 	 * @param account
 	 * @param noLoginCode

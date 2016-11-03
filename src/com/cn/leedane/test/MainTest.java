@@ -70,9 +70,13 @@ public class MainTest {
 	}
 	
 	private static void testImages() {
-		String ss = "http://www.baidu.co3m/iigiggg";
-		int index = ss.indexOf("http://www.baidu.com");
-		System.out.println(index);
+		float tb = 4546;
+		float total = 4881;
+		float f = (total - tb)/tb * 100;
+		
+		BigDecimal   bd   =   new   BigDecimal(f);   
+		  bd   =   bd.setScale(2,BigDecimal.ROUND_HALF_UP);   
+		System.out.println(bd.floatValue());
 		
 	}
 

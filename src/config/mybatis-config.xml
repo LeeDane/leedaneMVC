@@ -20,6 +20,7 @@
 		<typeAlias alias="FanBean" type="com.cn.leedane.model.FanBean" />
 		<!-- <typeAlias alias="FilePathBean" type="com.cn.leedane.model.FilePathBean" />-->
 		<typeAlias alias="FriendBean" type="com.cn.leedane.model.FriendBean" />
+		<typeAlias alias="FinancialBean" type="com.cn.leedane.model.FinancialBean" />
 		<typeAlias alias="GalleryBean" type="com.cn.leedane.model.GalleryBean" />
 		<typeAlias alias="MoodBean" type="com.cn.leedane.model.MoodBean" />
 		<!-- <typeAlias alias="NotificationBean" type="com.cn.leedane.model.NotificationBean" />
@@ -52,6 +53,7 @@
 		<mapper resource="com/cn/leedane/mapper/EmailMapper.xml" />-->
 		<mapper resource="com/cn/leedane/mapper/FanMapper.xml" />
 		<!-- <mapper resource="com/cn/leedane/mapper/FilePathMapper.xml" />-->
+		<mapper resource="com/cn/leedane/mapper/FinancialMapper.xml" />
 		<mapper resource="com/cn/leedane/mapper/FriendMapper.xml" />
 		<mapper resource="com/cn/leedane/mapper/GalleryMapper.xml" />
 		<mapper resource="com/cn/leedane/mapper/MoodMapper.xml" />

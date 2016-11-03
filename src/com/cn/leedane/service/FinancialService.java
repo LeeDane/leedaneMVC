@@ -1,11 +1,14 @@
 package com.cn.leedane.service;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import com.cn.leedane.model.FinancialBean;
 import com.cn.leedane.model.IDBean;
 import com.cn.leedane.model.UserBean;
 
@@ -84,4 +87,14 @@ public interface FinancialService<T extends IDBean>{
 	 * @return 返回该用户所有的记账记录
 	 */
 	public Map<String, Object> getAll(JSONObject jsonObject, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 获取指定用户的范围内的记账记录
+	 * @param createUserId
+	 * @param status
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<FinancialBean> getByTimeRange(int createUserId, int status, Date startTime, Date endTime);
 }

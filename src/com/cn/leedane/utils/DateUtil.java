@@ -336,9 +336,33 @@ public class DateUtil {
 		return currentDate.getTime();  
 	}
 	
-	/*public static Date getOneHourAfter(Date date){
-		
-	}*/
+	/**
+	 * 获取上一个月日期的开始时间
+	 * @return
+	 */
+	public static Date getLastMonthStart(){
+		Calendar calendar = Calendar.getInstance();  
+		calendar.add(Calendar.MONTH, -1);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		//设置日期格式
+		SimpleDateFormat sf=new SimpleDateFormat("yyyy-MM-dd");
+		return stringToDate(sf.format(calendar.getTime()) + " 00:00:00");
+	}
+	
+	/**
+	 * 获取上一个月日期的结束时间
+	 * @return
+	 */
+	public static Date getLastMonthEnd(){
+		Calendar calendar = Calendar.getInstance();  
+		calendar.add(Calendar.MONTH, -1);
+		//设置日期为本月最大日期
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(calendar.DATE));
+		//设置日期格式
+		SimpleDateFormat sf=new SimpleDateFormat("yyyy-MM-dd");
+		return stringToDate(sf.format(calendar.getTime()) + " 23:59:59");
+	}
+	
 	/**
 	 * 获取本年日期的开始时间
 	 * @return
@@ -469,11 +493,53 @@ public class DateUtil {
 		return false;
 	}
 	
+
+	/**
+	 * 获取去年本月的开始时间(本月的同比时间)
+	 * @return
+	 */
+	public static String getLastYearThisMonthStart(){
+		Calendar calendar = Calendar.getInstance();  
+		calendar.add(Calendar.YEAR, -1);
+		return DateToString(calendar.getTime(), "yyyy-MM") +"-01 00:00:00";
+	}
+	
+	/**
+	 * 获取去年本月的开始时间(本月的同比时间)
+	 * @return
+	 */
+	public static String getLastYearThisMonthEnd(){
+		Calendar calendar = Calendar.getInstance();  
+		calendar.add(Calendar.YEAR, -1);
+		return DateToString(calendar.getTime(), "yyyy-MM-dd HH:mm:ss");
+	}
+	
+	/**
+	 * 获取去年的1月1号凌晨时间(本年的环比时间)
+	 * @return
+	 */
+	public static String getLastYearStart(){
+		Calendar calendar = Calendar.getInstance();  
+		calendar.add(Calendar.YEAR, -1);
+		return DateToString(calendar.getTime(), "yyyy") +"-01-01 00:00:00";
+	}
+	
+	/**
+	 * 获取去年的现在这个时间(本年的环比时间)
+	 * @return
+	 */
+	public static String getLastYearEnd(){
+		Calendar calendar = Calendar.getInstance();  
+		calendar.add(Calendar.YEAR, -1);
+		return DateToString(calendar.getTime(), "yyyy-MM-dd HH:mm:ss");
+	}
+	
 	public static void main(String[] args) {
 		try {
-			Date d1 = DateUtil.stringToDate("2016-1-27 10:22:00");
-			Date d2 = DateUtil.stringToDate("2016-1-27 10:21:59");
-			System.out.println(isInOneMinute(d1, d2));
+			Date d1 = DateUtil.getLastMonthStart();
+			Date d2 = DateUtil.getLastMonthEnd();
+			System.out.println(DateToString(d1));
+			System.out.println(DateToString(d2));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

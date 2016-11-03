@@ -282,7 +282,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		message.put("isSuccess", false);
 		
 		if("firstloading".equalsIgnoreCase(method)){
-			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append("select m.id, m.status, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where "+ getMoodStatusSQL(toUserId, user) +" and ");
 			sql.append(" m.create_user_id = ?");
@@ -290,7 +290,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			rs = moodMapper.executeSQL(sql.toString(), toUserId, pageSize);
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
-			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append("select m.id, m.status, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where "+ getMoodStatusSQL(toUserId, user) +" and ");
 			sql.append(" m.create_user_id = ?");
@@ -298,7 +298,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			rs = moodMapper.executeSQL(sql.toString(), toUserId, lastId, pageSize);
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
-			sql.append("select m.id, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
+			sql.append("select m.id, m.status, m.content, m.froms, m.uuid, m.create_user_id, date_format(m.create_time,'%Y-%m-%d %H:%i:%s') create_time, m.has_img, m.can_comment, m.can_transmit,");
 			sql.append(" m.read_number, m.location, m.longitude, m.latitude, m.zan_number, m.comment_number, m.transmit_number, m.share_number, u.account");
 			sql.append(" from "+DataTableType.心情.value+" m inner join "+DataTableType.用户.value+" u on u.id = m.create_user_id where "+ getMoodStatusSQL(toUserId, user) +" and ");
 			sql.append(" m.create_user_id = ?");
@@ -476,7 +476,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 	}
 
 	@Override
-	public Map<String, Object> sendWord(JSONObject jsonObject, UserBean user, HttpServletRequest request) {
+	public Map<String, Object> sendWord(JSONObject jsonObject, UserBean user, int status,HttpServletRequest request) {
 		logger.info("MoodServiceImpl-->sendWord():jsonObject=" +jsonObject.toString());
 		String content = JsonUtil.getStringValue(jsonObject, "content");
 		//从客户端获取uuid(有图片的情况下)，为空表示无图，有图就有值
@@ -510,7 +510,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		moodBean.setCreateTime(new Date());
 		moodBean.setFroms(JsonUtil.getStringValue(jsonObject, "froms"));
 		moodBean.setPublishNow(true);
-		moodBean.setStatus(ConstantsUtil.STATUS_NORMAL);
+		moodBean.setStatus(status);
 		moodBean.setCreateUserId(user.getId());
 		moodBean.setUuid(uuid);
 		moodBean.setCanComment(JsonUtil.getBooleanValue(jsonObject, "can_comment", true));

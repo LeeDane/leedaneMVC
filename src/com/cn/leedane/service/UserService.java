@@ -373,4 +373,11 @@ public interface UserService<T extends IDBean>{
 	 * @return
 	 */
 	public Map<String, Object> searchUserByUserIdOrAccount(JSONObject jo, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 获取所有用户
+	 * @param status
+	 * @return
+	 */
+	public List<UserBean> getAllUsers(int status);
 }
