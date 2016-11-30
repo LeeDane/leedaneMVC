@@ -289,7 +289,7 @@
 		      	<ul class="nav nav-pills nav-stacked" id="float-month">
 					<li>
 						<div class="panel-body text-center">
-							<button class="btn btn-success" data-toggle="modal" data-target="#add-mood">发布心情</button>
+							<button class="btn btn-success" data-toggle="modal" data-target="#add-mood" onclick="shoqSendMoodDialog();">发布心情</button>
 						</div>
 					</li>
 				</ul>
@@ -408,6 +408,44 @@
 			      <input type="text" id="comment-or-transmit-text" class="form-control" placeholder="请说点什么吧">
 			      <span class="input-group-btn">
 			        <button class="btn btn-default" type="button" onclick="sendCommentOrTransmit();">发送</button>
+			      </span>
+			    </div><!-- /input-group -->
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框发布心情列表 -->
+<div class="modal fade" id="push-mood" tabindex="-1" role="dialog" aria-labelledby="pushMoodListModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="pushMoodListModalLabel">
+					发布心情
+				</h4>
+			</div>
+			<div class="modal-body">
+				<ul>
+					<li>发布规则</li>
+					<li>发布规则</li>
+					<li>发布规则</li>
+					<li>发布规则</li>
+					<li>发布规则</li>
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<!-- <div class="form-group">
+					<input type="text" class="form-control">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+				</div> -->
+				<div class="input-group">
+			      <input type="text" id="push-mood-text" class="form-control" placeholder="请说点什么吧">
+			      <span class="input-group-btn">
+			        <button class="btn btn-default" type="button" onclick="sendMood();">发送</button>
 			      </span>
 			    </div><!-- /input-group -->
 			</div>

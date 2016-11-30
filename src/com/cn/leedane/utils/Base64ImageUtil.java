@@ -340,6 +340,16 @@ public class Base64ImageUtil {
 	}
 	
 	/**
+	 * 获取指定路径下的图像，将图像转化成base64格式的字符串
+	 * @param file   根据指定路径下的图片文件
+	 * @param type 图像的类型(png/jpg)可以为空，默认是jpg
+	 * @return
+	 */
+	public static String convertImageToBase64(File file, String type) throws IOException{		        
+		return convertImageToBase64(new FileInputStream(file), type);//返回Base64编码过的字节数组字符串	
+	}
+	
+	/**
 	 * 将base64格式的字符串转化成图像
 	 * @param path  图片文件的保存路径
 	 * @param fileName  图片的名称
@@ -490,12 +500,12 @@ public class Base64ImageUtil {
 
 	public static void main(String[] args) throws Exception {
 		
-		String path = "G://P51011-151210.jpg";
+		String path = "D://dd.jpg";
 		String base64Str = convertImageToBase64(path, null);
 		long start = System.currentTimeMillis();
-		String paths = base64ImgTo320x400(base64Str, "dane");
+		//String paths = base64ImgTo320x400(base64Str, "dane");
 		System.out.println(base64Str);
 		long end = System.currentTimeMillis();
-		System.out.println(paths+"总计耗时:" + (end - start)+"毫秒");		
+		//System.out.println(paths+"总计耗时:" + (end - start)+"毫秒");		
 	}
 }

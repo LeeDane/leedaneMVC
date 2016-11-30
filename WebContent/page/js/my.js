@@ -896,6 +896,56 @@ function copyToClipBoard(text){
 	layer.msg(text +"已经成功复制到粘贴板");
 } 
 
+
+/**发送心情相关的**************************************************************************************************
+
+/**
+ * 显示发表评论的
+ */
+function shoqSendMoodDialog(){
+	$("#push-mood").modal("show");
+}
+
+/**
+ * 发送心情
+ */
+function sendMood(){
+	var text = $('#push-mood-text').val();
+	if(isEmpty(text)){
+		layer.msg("请先输入你想说的");
+		$('#push-mood-text').focus();
+		return;
+	}
+	
+	var loadi = layer.load('努力加载中…');
+	var params = {table_name: 't_mood', table_id: ct_id, content: text, froms: 'web网页端'};
+	if(ct_click_index >= 0){
+		params.pid = cts[ct_click_index].id;
+	}
+	$.ajax({
+		type : "post",
+		data: params,
+		url : getBasePath() +"leedane/transmit/add.action",
+		dataType: 'json', 
+		beforeSend:function(){
+		},
+		success : function(data) {
+				layer.close(loadi);
+				if(data.isSuccess){
+					layer.msg("评论成功");
+					window.location.reload();
+				}else{
+					layer.msg(data.message);
+					layer.close(loadi);
+				}
+		},
+		error : function() {
+			layer.close(loadi);
+			layer.msg("网络请求失败");
+		}
+	});
+}
+
 function testClick(obj){
 	//$(this).animate({scrollTop: "10"});
 	var t = $(obj);
