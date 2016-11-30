@@ -1038,5 +1038,39 @@ public class UserServiceImpl implements UserService<UserBean> {
 		}
 		return message;
 	}
+	
+	@Override
+	public Map<String, Object> cancelScanLogin(JSONObject jo,
+			UserBean userFromMessage, HttpServletRequest request) {
+		logger.info("UserServiceImpl-->cancelScanLogin():jo=" +jo.toString());		
+		String cid = JsonUtil.getStringValue(jo, "cid");//获取连接ID
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
+		if(StringUtil.isNull(cid)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.免登录码为空.value));
+			message.put("responseCode", EnumUtil.ResponseCode.免登录码为空.value);
+			return message;
+		}
+		
+		if(AppStore.getInstance().get(cid) == null){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.登录页面已经过期.value));
+			message.put("responseCode", EnumUtil.ResponseCode.登录页面已经过期.value);
+			return message;
+		}
+		
+		message.put("isSuccess", true);
+		CometEngine engine = CometContext.getInstance().getEngine();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("isSuccess", true);
+		map.put("message", "cancel");
+		HttpSession session = (HttpSession) AppStore.getInstance().get(cid);
+		if(session != null){
+			session.removeAttribute(UserController.USER_INFO_KEY);
+		}
+		engine.sendTo(Comet4jServer.SCAN_LOGIN, engine.getConnection(cid), JSONObject.fromObject(map).toString());
+		
+		return message;
+	}
 
 }

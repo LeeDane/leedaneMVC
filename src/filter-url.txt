@@ -12,6 +12,7 @@
 /user/getPhoneLoginCode.action
 /user/registerByPhoneNoValidate.action
 /user/scan/login.action
+/user/scan/cancel.action
 /blog/pagingp.action
 /blog/getHotestBlogs.action
 /blog/getNewestBlogs.action

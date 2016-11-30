@@ -97,6 +97,9 @@
 		#load-qr-code{
 			padding-top:150px;
 		}
+		#load-qr-code-body-ul li {
+			list-style-type:none;
+		}
     </style>
   </head>
   
@@ -133,7 +136,7 @@
 			</div>
 			<div class="modal-body">
 				提示：
-				<ul class="list-group">
+				<ul class="list-group" id="load-qr-code-body-ul">
 				    <li>请将app取景框对准下面的二维码</li>
 				    <li>使二维码全部包含在取景框内</li>
 				    <li>保留一定的距离</li>
@@ -200,7 +203,12 @@
     	  scan_login : function(data){
     		 	data = eval('(' + data + ')');
     			if(data.isSuccess){
-    				window.location.reload();
+    				if(data.message && "cancel" == data.message){
+    					//window.close();
+    					window.open("about:blank","_self").close();
+    					//window.open("","_self").close()
+    				}else
+    					window.location.reload();
     			}
       			//alert("返回的数据是："+data);
           }  

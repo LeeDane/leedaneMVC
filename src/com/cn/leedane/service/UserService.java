@@ -392,12 +392,19 @@ public interface UserService<T extends IDBean>{
 
 	/**
 	 * 扫码登陆验证
-	 * @param jsonFromMessage
-	 * @param userFromMessage
+	 * @param json
+	 * @param user
 	 * @param request
 	 * @return
 	 */
-	public Map<String, Object> scanLogin(
-			JSONObject jsonFromMessage, UserBean userFromMessage,
-			HttpServletRequest request);
+	public Map<String, Object> scanLogin(JSONObject json, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 取消扫码登陆
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> cancelScanLogin(JSONObject json, UserBean user, HttpServletRequest request);
 }

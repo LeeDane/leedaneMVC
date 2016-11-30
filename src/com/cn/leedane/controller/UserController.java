@@ -1045,6 +1045,28 @@ public class UserController extends BaseController{
 		return null;
 	}
 	
+	/**
+	 * 取消扫码登陆
+	 * @return
+	 */
+	@RequestMapping("/scan/cancel")
+	public String CancelScanLogin(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			checkParams(message, request);
+			message.put("isSuccess", false);
+			message.putAll(userService.cancelScanLogin(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
 	/*@RequestMapping("/aaa")
 	public String getAllUser(HttpServletRequest request, HttpServletResponse response){
 		try {
