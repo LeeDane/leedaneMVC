@@ -1,5 +1,6 @@
 package com.cn.leedane.handler;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -280,6 +281,90 @@ public class UserHandler {
 	
 	
 	/**
+	 * 返回该用户登录失败次数
+	 * @param account
+	 * @return
+	 */
+	public synchronized int addLoginErrorNumber(String account){
+		int number = 1;
+		String key = getRedisUserNameLoginErrorKey(account);
+		number = getLoginErrorNumber(account) + number;
+		//redisUtil.addString(key, redisUtil.getString(key).substring(0, 14) + number);
+		
+		Calendar calendar = Calendar.getInstance();
+		//分钟加5分钟
+		calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 5);
+		//以最新的系统时间作为错误时间
+		redisUtil.addString(key, DateUtil.DateToString(calendar.getTime(), "yyyyMMddHHmmss") +number);
+		return number;
+	}
+	
+	/**
+	 * 获取用户登录失败数量
+	 * @param account
+	 * @return
+	 */
+	public int getLoginErrorNumber(String account){
+		int number = 0;
+		String key = getRedisUserNameLoginErrorKey(account);
+		if(redisUtil.hasKey(key)){
+			String string = redisUtil.getString(key);
+			//截取14位是因为前面14位被第一次错我的时间格式字符串
+			number = StringUtil.changeObjectToInt(string.substring(14, string.length()));
+		}
+		return number;
+	}
+	
+	/**
+	 * 获取用户登录第一次失败的时间
+	 * @param account
+	 * @return
+	 */
+	public Date getLoginErrorTime(String account){
+		Date date = null;
+		String key = getRedisUserNameLoginErrorKey(account);
+		if(redisUtil.hasKey(key)){
+			String string = redisUtil.getString(key);
+			//截取14位是因为前面14位被第一次错的时间格式字符串
+			date = DateUtil.stringToDate(string.substring(0, 14), "yyyyMMddHHmmss");
+		}
+		return date;
+	}
+	
+	/**
+	 * 添加免登录码
+	 * @param account
+	 * @return
+	 */
+	public boolean addNoLoginCode(String noLoginCode, String password){
+		String key = getRedisNoLoginCodeKey(noLoginCode);
+		redisUtil.addString(key, password);
+		return true;
+	}
+	
+	/**
+	 * 获取免登录码
+	 * @param account
+	 * @return
+	 */
+	public String getNoLoginCode(String noLoginCode){
+		String key = getRedisNoLoginCodeKey(noLoginCode);
+		return redisUtil.getString(key);
+	}
+	
+	/**
+	 * 移除用户的登录失败次数
+	 * @param account
+	 * @return
+	 */
+	public boolean removeLoginErrorNumber(String account){
+		String key = getRedisUserNameLoginErrorKey(account);
+		redisUtil.delete(key);
+		return true;
+	}
+	
+	
+	/**
 	 * 构建获取图像大小的SQL
 	 * @param picSize
 	 * @return
@@ -315,6 +400,24 @@ public class UserHandler {
 	 */
 	public static String getRedisUserNameKey(String username){
 		return "user_name_"+username;
+	}
+	
+	/**
+	 * 缓存用户名登录失败信息
+	 * @param username
+	 * @return
+	 */
+	public static String getRedisUserNameLoginErrorKey(String username){
+		return "user_login_error_"+username;
+	}
+	
+	/**
+	 * 缓存免登录码信息
+	 * @param username
+	 * @return
+	 */
+	public static String getRedisNoLoginCodeKey(String noLoginCode){
+		return "no_login_"+noLoginCode;
 	}
 	
 	/*private String getRedisUserAccountKey(int userId){

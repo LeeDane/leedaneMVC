@@ -151,9 +151,9 @@ public class JsonUtil {
 			if(StringUtil.isIntNumeric(s)){
 				return Integer.parseInt(s);
 			}
-			return 0;
+			return -1;
 		}
-		return 0;
+		return -1;
 	}
 	
 	/**
@@ -220,7 +220,7 @@ public class JsonUtil {
 	 */
 	public static int getIntValue(JSONObject object, String key, int defaultValue){
 		int v = getIntValue(object, key);
-		return v == 0 ? defaultValue: v;
+		return v == -1 ? defaultValue: v;
 	}
 	
 	/**

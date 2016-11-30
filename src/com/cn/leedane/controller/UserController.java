@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -68,70 +67,107 @@ public class UserController extends BaseController{
 		try {
 			checkParams(message, request);
 			JSONObject json = getJsonFromMessage(message);
-			//执行密码等信息的验证
-			UserBean user = userService.loginUser(
-					String.valueOf(json.get("account")),String.valueOf(json.get("password")));
-
-			if (user != null) {
-			
-				//校验权限和角色
-				if(checkRole(user) && checkPemission(user)){
-					//登录成功后加载权限和角色信息缓存中
-					
-					if(user != null){
-						if(user.getStatus() == 4 ){
-							message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已经注销.value));
-							message.put("responseCode", EnumUtil.ResponseCode.用户已经注销.value);
-						}else if(user.getStatus() == 0){
-							message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先验证邮箱.value));
-							message.put("responseCode", EnumUtil.ResponseCode.请先验证邮箱.value);
-						}
-						else {
-							//判断是android平台的登录
-							if(json.has("login_mothod") && LoginType.LOGIN_TYPE_ANDROID.getValue().equals(json.get("login_mothod"))){
-								
-								String noLoginCode = JsonUtil.getStringValue(json, "no_login_code");
-								//检查免登陆码是否存在
-								//不存在
-								if(StringUtil.isNull(noLoginCode)){
-									noLoginCode = StringUtil.getNoLoginCode(user.getAccount());
-									//upDateNoLoginCode(user, noLoginCode);	
-									//更新免登陆验证码
-									user.setNoLoginCode(noLoginCode);
-									userService.update(user);
-								}else{
-									//存在的话检查验证码的有效性，失效的验证码就更新验证码
-								}
+			String account = JsonUtil.getStringValue(json, "account");
+			String password = JsonUtil.getStringValue(json, "password");
+			if(StringUtil.isNull(account) || StringUtil.isNull(password)){
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.账号或密码为空.value));
+				message.put("responseCode", EnumUtil.ResponseCode.账号或密码为空.value);
+			}else{
+				//获取登录失败的数量
+				int number = userHandler.getLoginErrorNumber(account);
+				if(number > 5){
+					Date date = userHandler.getLoginErrorTime(account);
+					if(date != null){
+						//是否在禁止5分钟内
+						if(DateUtil.isInMinutes(new Date(), date, 5)){
+							//计算还剩下几分钟
+							int minutes = DateUtil.leftMinutes(new Date(), date);
+							if(minutes > 1){
+								message.put("message", "由于您的账号失败连续超过5次，系统已限制您5分钟内不能登录,大概还剩余"+ minutes +"分钟");
 							}else{
-								// 登录成功后将必要信息加载到session
-								putInSessionAfterLoginSuccess();
+								message.put("message", "由于您的账号失败连续超过5次，系统已限制您5分钟内不能登录,大概还剩余"+ DateUtil.leftSeconds(new Date(), date) +"秒");
 							}
 							
-							session.setAttribute(USER_INFO_KEY, user);
-							message.put("userinfo", userHandler.getUserInfo(user, true));
-							message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.恭喜您登录成功.value));
-							message.put("responseCode", EnumUtil.ResponseCode.恭喜您登录成功.value);
-							message.put("isSuccess", true);
+							message.put("responseCode", EnumUtil.ResponseCode.您的账号登录失败太多次.value);
 							printWriter(message, response);
 							return null;
 						}
-					}else{
-						message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.账号或密码不匹配.value));
-						message.put("responseCode", EnumUtil.ResponseCode.账号或密码不匹配.value);
 					}
-				}else{	
-					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
-					message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 				}
 				
-				// 保存用户登录日志信息
-				String subject = user != null ? user.getAccount()+"登录系统": "账号"+json.get("account")+"登录系统失败";
-				this.operateLogService.saveOperateLog(user, request, new Date(), subject, "账号登录", 0, 0);
-			}else{
-				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.账号或密码不匹配.value));
-				message.put("responseCode", EnumUtil.ResponseCode.账号或密码不匹配.value);
+				//执行密码等信息的验证
+				UserBean user = userService.loginUser(
+						String.valueOf(json.get("account")),String.valueOf(json.get("password")));
+				if (user != null) {
+				
+					//清楚登录失败的缓存
+					
+					
+					
+					//校验权限和角色
+					if(checkRole(user) && checkPemission(user)){
+						//登录成功后加载权限和角色信息缓存中
+						
+						if(user != null){
+							if(user.getStatus() == 4 ){
+								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已经注销.value));
+								message.put("responseCode", EnumUtil.ResponseCode.用户已经注销.value);
+							}else if(user.getStatus() == 0){
+								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先验证邮箱.value));
+								message.put("responseCode", EnumUtil.ResponseCode.请先验证邮箱.value);
+							}
+							else {
+								//判断是android平台的登录
+								if(json.has("login_mothod") && LoginType.LOGIN_TYPE_ANDROID.getValue().equals(json.get("login_mothod"))){
+									
+									String noLoginCode = JsonUtil.getStringValue(json, "no_login_code");
+									//检查免登陆码是否存在
+									//不存在
+									if(StringUtil.isNull(noLoginCode)){
+										noLoginCode = StringUtil.getNoLoginCode(user.getAccount());
+										userHandler.addNoLoginCode(noLoginCode, user.getPassword());
+										//upDateNoLoginCode(user, noLoginCode);	
+										//更新免登陆验证码
+										user.setNoLoginCode(noLoginCode);
+										userService.update(user);
+									}else{
+										//存在的话检查验证码的有效性，失效的验证码就更新验证码
+									}
+								}else{
+									// 登录成功后将必要信息加载到session
+									putInSessionAfterLoginSuccess();
+								}
+								
+								userHandler.removeLoginErrorNumber(account);
+								session.setAttribute(USER_INFO_KEY, user);
+								message.put("userinfo", userHandler.getUserInfo(user, true));
+								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.恭喜您登录成功.value));
+								message.put("responseCode", EnumUtil.ResponseCode.恭喜您登录成功.value);
+								message.put("isSuccess", true);
+								/*printWriter(message, response);
+								return null;*/
+							}
+						}
+					}else{	
+						message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+						message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+					}
+					
+					// 保存用户登录日志信息
+					String subject = user != null ? user.getAccount()+"登录系统": "账号"+json.get("account")+"登录系统失败";
+					this.operateLogService.saveOperateLog(user, request, new Date(), subject, "账号登录", 0, 0);
+				}else{
+					//RedisUtil redisUtil = RedisUtil.getInstance();
+					number = userHandler.addLoginErrorNumber(account);	
+					if(number > 5){
+						message.put("message", "您的账号已经连续登陆失败"+number+"次，账号已被限制5分钟");
+					}else{
+						message.put("message", "您的账号已经连续登陆失败"+number+"次，还剩下" +(5- number)+"次");
+					}
+					
+					message.put("responseCode", EnumUtil.ResponseCode.账号或密码不匹配.value);
+				}
 			}
-			
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {
@@ -397,6 +433,10 @@ public class UserController extends BaseController{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.注销成功.value));
+			message.put("responseCode", EnumUtil.ResponseCode.注销成功.value);
+			message.put("isSuccess", true);
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
@@ -972,6 +1012,28 @@ public class UserController extends BaseController{
 				return null;
 			}
 			message.putAll(userService.updatePassword(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
+	 * 扫码登陆验证
+	 * @return
+	 */
+	@RequestMapping("/scan/login")
+	public String scanLogin(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			checkParams(message, request);
+			message.put("isSuccess", false);
+			message.putAll(userService.scanLogin(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {

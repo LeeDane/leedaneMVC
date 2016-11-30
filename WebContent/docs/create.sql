@@ -74,3 +74,21 @@ CREATE TABLE `t_mood` (
   CONSTRAINT `FK_2787lae1f3u8spdpchjjpagol` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`),
   CONSTRAINT `FK_3dk4sagctkrb4cm2g0lx8r4sd` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=336 DEFAULT CHARSET=utf8;
+
+
+<!-- 创建记账位置表 -->
+CREATE TABLE `t_financial_location` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` int(11) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `modify_time` datetime DEFAULT NULL,
+  `location` varchar(255) NOT NULL COMMENT '位置描述',
+  `location_desc` varchar(255) DEFAULT NULL COMMENT '位置描述信息',
+  `create_user_id` int(11) NOT NULL,
+  `modify_user_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_financial_location_create_user` (`create_user_id`),
+  KEY `FK_financial_location_modify_user` (`modify_user_id`),
+  CONSTRAINT `FK_financial_location_create_user` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`),
+  CONSTRAINT `FK_financial_location_modify_user` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=336 DEFAULT CHARSET=utf8;

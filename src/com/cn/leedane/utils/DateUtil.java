@@ -357,7 +357,7 @@ public class DateUtil {
 		Calendar calendar = Calendar.getInstance();  
 		calendar.add(Calendar.MONTH, -1);
 		//设置日期为本月最大日期
-		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(calendar.DATE));
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DATE));
 		//设置日期格式
 		SimpleDateFormat sf=new SimpleDateFormat("yyyy-MM-dd");
 		return stringToDate(sf.format(calendar.getTime()) + " 23:59:59");
@@ -475,17 +475,18 @@ public class DateUtil {
 	
 	
 	/**
-	 * 判断结束时间和开始时间是否在一分钟内(包括一分钟)
+	 * 判断结束时间和开始时间是否在n分钟内(包括n分钟)
 	 * @param createTime
 	 * @param endTime
+	 * @param n n表示分钟数
 	 * @return
 	 */
-	public static boolean isInOneMinute(Date createTime, Date endTime){
+	public static boolean isInMinutes(Date createTime, Date endTime, int n){
 		try{
 		    long diff = endTime.getTime() - createTime.getTime();
 		    if(diff < 0) 
 		    	return false;
-		    return (diff - (1000 * 60)) <= 0 ;
+		    return (diff - (1000 * 60 * n)) <= 0 ;
 		    
 		}catch(Exception e){
 			e.printStackTrace();
@@ -493,6 +494,45 @@ public class DateUtil {
 		return false;
 	}
 	
+	/**
+	 * 计算开始时间离结束时间还有多少分钟
+	 * @param createTime
+	 * @param endTime
+	 * @return
+	 */
+	public static int leftMinutes(Date createTime, Date endTime){
+		try{
+		    long diff = endTime.getTime() - createTime.getTime();
+		    if(diff < 0) 
+		    	return 1;
+		    int i = StringUtil.changeObjectToInt(diff / (1000 * 60));
+		    return  i == 0? 1 : i;
+		    
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return 1;
+	}
+	
+	/**
+	 * 计算开始时间离结束时间还有多少秒
+	 * @param createTime
+	 * @param endTime
+	 * @return
+	 */
+	public static int leftSeconds(Date createTime, Date endTime){
+		try{
+		    long diff = endTime.getTime() - createTime.getTime();
+		    if(diff < 0) 
+		    	return 1;
+		    int i = StringUtil.changeObjectToInt(diff / 1000);
+		    return  i == 0? 1 : i;
+		    
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return 1;
+	}
 
 	/**
 	 * 获取去年本月的开始时间(本月的同比时间)
@@ -536,10 +576,10 @@ public class DateUtil {
 	
 	public static void main(String[] args) {
 		try {
-			Date d1 = DateUtil.getLastMonthStart();
-			Date d2 = DateUtil.getLastMonthEnd();
-			System.out.println(DateToString(d1));
-			System.out.println(DateToString(d2));
+			int i = leftMinutes(stringToDate("2016-11-03 18:59:00"), new Date());
+			System.out.println(i);
+			Date date = getOverdueTime(new Date(), "7天");
+			System.out.println(DateToString(date));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

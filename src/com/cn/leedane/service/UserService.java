@@ -63,12 +63,21 @@ public interface UserService<T extends IDBean>{
 	//public UserBean loadById(int Uid);
 	
 	/**
-	 * 
+	 * 账号密码登录
 	 * @param condition  用户的账号/邮箱
-	 * @param password  用户的密码
+	 * @param password  用户的密码(密码将再次进行MD5加密)
 	 * @return
 	 */
 	public UserBean loginUser(String condition , String password);
+	
+	/**
+	 * 账号密码登录
+	 * @param condition  用户的账号/邮箱
+	 * @param password  用户的密码(密码不再进行MD5加密)
+	 * @return
+	 */
+	public UserBean loginUserNoComputePSW(String condition , String password);
+	
 	
 	/**
 	 * 用户注册
@@ -380,4 +389,15 @@ public interface UserService<T extends IDBean>{
 	 * @return
 	 */
 	public List<UserBean> getAllUsers(int status);
+
+	/**
+	 * 扫码登陆验证
+	 * @param jsonFromMessage
+	 * @param userFromMessage
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> scanLogin(
+			JSONObject jsonFromMessage, UserBean userFromMessage,
+			HttpServletRequest request);
 }

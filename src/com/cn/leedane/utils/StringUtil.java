@@ -3,6 +3,7 @@ package com.cn.leedane.utils;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -53,6 +54,35 @@ public class StringUtil {
 	 */
 	public static String getNoLoginCode(String account){
 		return System.currentTimeMillis() + MD5Util.compute(account) + Math.random()*1000;
+	}
+	
+	/**
+	 * 校验免登陆验证码
+	 * @param noLoginCode
+	 * @param account
+	 * @param format 目前支持格式：如"x年","x个月","x天","x小时","x分钟","x秒钟"
+	 * @return
+	 */
+	public static boolean checkNoLoginCode(String noLoginCode, String account, String format){
+		boolean result = false;
+		if(StringUtil.isNull(noLoginCode) || noLoginCode.length() < 15)
+			return result;
+		try {
+			long time = Long.parseLong(noLoginCode.substring(0, 13));
+			Date date = new Date(time);
+			//获取过期时间
+			Date outDate = DateUtil.getOverdueTime(date, format);
+			
+			//判断如果没有过期
+			if(!DateUtil.isOverdue(new Date(), outDate)){
+				String str = String.valueOf(time) + MD5Util.compute(account);
+				result = noLoginCode.startsWith(str);
+				return result;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
 	/**

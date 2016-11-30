@@ -8,15 +8,21 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
+import org.comet4j.core.CometContext;
+import org.comet4j.core.CometEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cn.leedane.cache.SystemCache;
+import com.cn.leedane.comet4j.AppStore;
+import com.cn.leedane.comet4j.Comet4jServer;
+import com.cn.leedane.controller.UserController;
 import com.cn.leedane.enums.NotificationType;
 import com.cn.leedane.exception.ErrorException;
 import com.cn.leedane.handler.CommentHandler;
@@ -47,7 +53,6 @@ import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.MD5Util;
-import com.cn.leedane.utils.SqlUtil;
 import com.cn.leedane.utils.StringUtil;
 
 /**
@@ -109,6 +114,12 @@ public class UserServiceImpl implements UserService<UserBean> {
 	public UserBean loginUser(String condition, String password) {	
 		logger.info("UserServiceImpl-->loginUser():condition="+condition+",password="+password);
 		return userMapper.loginUser(condition, MD5Util.compute(password));
+	}
+	
+	@Override
+	public UserBean loginUserNoComputePSW(String condition, String password) {	
+		logger.info("UserServiceImpl-->loginUserNoComputePSW():condition="+condition+",password="+password);
+		return userMapper.loginUser(condition, password);
 	}
 
 	@Override
@@ -432,7 +443,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 			if(!"null".equalsIgnoreCase(list.get(0))){
 				String createTime = list.get(1);
 				//有记录并且在一分钟以内的直接返false
-				if(DateUtil.isInOneMinute(DateUtil.stringToDate(createTime), new Date())){
+				if(DateUtil.isInMinutes(DateUtil.stringToDate(createTime), new Date(), 1)){
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作过于频繁.value));
 					message.put("responseCode", EnumUtil.ResponseCode.操作过于频繁.value);
 					return message;
@@ -489,7 +500,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 			if(list.get(0) != null){
 				String createTime = list.get(1);
 				//有记录并且在一分钟以内的直接返false
-				if(!StringUtil.isNull(createTime) && DateUtil.isInOneMinute(DateUtil.stringToDate(createTime), new Date())){
+				if(!StringUtil.isNull(createTime) && DateUtil.isInMinutes(DateUtil.stringToDate(createTime), new Date(), 1)){
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作过于频繁.value));
 					message.put("responseCode", EnumUtil.ResponseCode.操作过于频繁.value);
 					return message;
@@ -967,6 +978,65 @@ public class UserServiceImpl implements UserService<UserBean> {
 	@Override
 	public List<UserBean> getAllUsers(int status) {
 		return userMapper.getAllUsers(status);
+	}
+
+	@Override
+	public Map<String, Object> scanLogin(JSONObject jo,
+			UserBean userFromMessage, HttpServletRequest request) {
+		logger.info("UserServiceImpl-->scanLogin():jo=" +jo.toString());		
+		String noLoginCode = JsonUtil.getStringValue(jo, "no_login_code");//获取免登录码
+		String account = JsonUtil.getStringValue(jo, "account");//获取账号名称
+		final String cid = JsonUtil.getStringValue(jo, "cid");//获取连接ID
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
+		String password = userHandler.getNoLoginCode(noLoginCode);	
+		
+		if(StringUtil.isNull(cid)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.免登录码为空.value));
+			message.put("responseCode", EnumUtil.ResponseCode.免登录码为空.value);
+			return message;
+		}
+		
+		if(StringUtil.isNull(noLoginCode) || StringUtil.isNull(account) || StringUtil.isNull(password)
+				|| !StringUtil.checkNoLoginCode(noLoginCode, account, ConstantsUtil.NO_LOGIN_CODE_OUT_FORMAT)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先登录.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请先登录.value);
+			return message;
+		}
+		
+		if(AppStore.getInstance().get(cid) == null){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.登录页面已经过期.value));
+			message.put("responseCode", EnumUtil.ResponseCode.登录页面已经过期.value);
+			return message;
+		}
+		
+		
+		final UserBean user = loginUserNoComputePSW(account, password);
+		
+		if(user != null){
+			message.put("isSuccess", true);
+			//扫码校验成功，将信息推送给客户端
+			HttpSession session = (HttpSession) AppStore.getInstance().get(cid);
+			boolean result = false;
+			if(session != null){
+				CometEngine engine = CometContext.getInstance().getEngine();
+				Map<String, Object> map = new HashMap<String, Object>();
+				result = true;
+				map.put("isSuccess", result);
+				engine.sendTo(Comet4jServer.SCAN_LOGIN, engine.getConnection(cid), JSONObject.fromObject(map).toString());
+				session.setAttribute(UserController.USER_INFO_KEY, user);
+			}else{
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.登录页面已经过期.value));
+				message.put("responseCode", EnumUtil.ResponseCode.登录页面已经过期.value);
+			}
+			//保存操作日志
+			operateLogService.saveOperateLog(user, request, null, user.getAccount()+"进行扫码登陆，校验"+ StringUtil.getSuccessOrNoStr(result), "scanLogin()", ConstantsUtil.STATUS_NORMAL, 0);
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先登录.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请先登录.value);
+		}
+		return message;
 	}
 
 }
