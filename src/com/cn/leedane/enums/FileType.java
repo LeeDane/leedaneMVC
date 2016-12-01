@@ -10,6 +10,7 @@ public enum FileType {
 	IMAGE("image"), 
 	BASE64_60X60("base64_60X60"),
 	TEMPORARY("temporary"),  //临时
+	UEDITOR("ueditor"),  //临时
 	FILE("file"); //文件
 
 	public String value;

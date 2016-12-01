@@ -109,6 +109,16 @@
     <servlet-mapping>  
             <servlet-name>LoginQrCode</servlet-name>  
             <url-pattern>/loginQrCode</url-pattern>  
+    </servlet-mapping> 
+    
+    <servlet>  
+            <description>百度富文本编辑器上传文件</description>  
+            <servlet-name>UeditorFileUploadServlet</servlet-name>  
+            <servlet-class>com.cn.leedane.servlet.UeditorFileUploadServlet</servlet-class>  
+    </servlet>  
+    <servlet-mapping>  
+            <servlet-name>UeditorFileUploadServlet</servlet-name>  
+            <url-pattern>/UeditorFileUploadServlet</url-pattern>  
     </servlet-mapping>  
     
     
