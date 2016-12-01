@@ -148,6 +148,7 @@ public class CloudStoreHandler {
 		    	UploadManager uploadManager1 = new UploadManager();
 		    	Response r = uploadManager1.put(file, path, token1);
 				if(r.isOK() && r.statusCode == 200){
+					System.out.println("Single上传任务执行结束...............");
 					return ConstantsUtil.QINIU_SERVER_URL + path;
 				}else{
 					System.out.println("上传失败，返回的信息是--->"+r.bodyString());

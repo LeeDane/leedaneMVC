@@ -23,13 +23,16 @@ import org.springframework.web.context.ContextLoaderListener;
 import com.cn.leedane.cache.SystemCache;
 import com.cn.leedane.model.OptionBean;
 import com.cn.leedane.rabbitmq.RecieveMessage;
+import com.cn.leedane.rabbitmq.recieve.DeleteServerFileRecieve;
 import com.cn.leedane.rabbitmq.recieve.EmailRecieve;
 import com.cn.leedane.rabbitmq.recieve.FinancialMonthReportRecieve;
 import com.cn.leedane.rabbitmq.recieve.IRecieve;
 import com.cn.leedane.rabbitmq.recieve.LogRecieve;
 import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.utils.CommonUtil;
+import com.cn.leedane.utils.OptionUtil;
 import com.cn.leedane.utils.SpringUtil;
+import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.utils.sensitiveWord.SensitiveWordInit;
 public class CacheContextLoaderListener extends ContextLoaderListener{
 
@@ -44,6 +47,8 @@ public class CacheContextLoaderListener extends ContextLoaderListener{
 		checdRidesOpen();//检查redis服务器有没有打开
 		initCache();
 		loadOptionTable(); //加载选项表中的数据
+		new OptionUtil();//加载选项到内存中
+		
 		loadFilterUrls(); //加载过滤的url地址
 		loadLeeDaneProperties(); // 加载leedane.properties文件
 		
@@ -52,6 +57,14 @@ public class CacheContextLoaderListener extends ContextLoaderListener{
 			@Override
 			public void run() {
 				startRabbitMqLogListener(); //异步启动rabbitmq的操作日志队列的监听
+			}
+		}).start();
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				startRabbitMqDeleteFileListener(); //异步启动rabbitmq的操作删除临时文件的监听
 			}
 		}).start();
 		
@@ -98,6 +111,21 @@ public class CacheContextLoaderListener extends ContextLoaderListener{
 		try {
 			//日志队列的监听
 			IRecieve recieve = new LogRecieve();
+			RecieveMessage recieveMessage = new RecieveMessage(recieve);
+			recieveMessage.getMsg();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	/**
+	 * 启动rabbitmq删除临时文件的监听
+	 */
+	private void startRabbitMqDeleteFileListener() {
+		
+		try {
+			//日志队列的监听
+			IRecieve recieve = new DeleteServerFileRecieve();
 			RecieveMessage recieveMessage = new RecieveMessage(recieve);
 			recieveMessage.getMsg();
 		} catch (Exception e) {
