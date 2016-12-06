@@ -83,12 +83,13 @@ function loadUserInfo(){
 				var descHtml = '<div class="h3">'+ 
 									userinfo.account + (userinfo.is_admin ? '<span class="badge" style="margin-left:5px;">管理员</span>': '')+
 								'</div>'+
-								'<div class="h4" style="max-height: 38px;overflow-y:auto;">'+ userinfo.personal_introduction+'</div>'+
-								'<button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#edit-user-info">'+
-									  '<span class="glyphicon glyphicon-pencil" ></span> 编辑个人资料'+
-									'</button>';
+								'<div class="h4" style="max-height: 38px;overflow-y:auto;">'+ userinfo.personal_introduction+'</div>';
+								
 				if(isLoginUser){
-					descHtml += '<button id="sign_button" type="button" class="btn btn-primary btn-xs" style="margin-left:5px;" disabled="disabled">'+
+					descHtml +=	'<button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#edit-user-info">'+
+								  '<span class="glyphicon glyphicon-pencil" ></span> 编辑个人资料'+
+								'</button>'+
+								'<button id="sign_button" type="button" class="btn btn-primary btn-xs" style="margin-left:5px;" disabled="disabled">'+
 								  
 								'</button>';
 				}
@@ -647,7 +648,7 @@ function isTodaySignIn(){
 		},
 		success : function(data) {
 			if(data.isSuccess){
-				$("#sign_button").html('<span class="iconfont icon-signin" ></span> 已签到');
+				$("#sign_button").html('<span class="glyphicon glyphicon-time" ></span> 已签到');
 			}else{
 				$("#sign_button").removeAttr("disabled");
 				$("#sign_button").attr("onclick", "signin();");
@@ -925,7 +926,7 @@ function sendMood(){
 	$.ajax({
 		type : "post",
 		data: params,
-		url : getBasePath() +"leedane/transmit/add.action",
+		url : getBasePath() +"leedane/mood/sendWord.action",
 		dataType: 'json', 
 		beforeSend:function(){
 		},

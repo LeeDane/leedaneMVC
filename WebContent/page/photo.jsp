@@ -1,3 +1,4 @@
+<%@page import="com.cn.leedane.utils.CommonUtil"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <%@page import="java.util.UUID"%>
@@ -14,7 +15,7 @@
 	}else{
 		String bp = request.getScheme()+"://"+request.getServerName()
 				+":"+request.getServerPort()+request.getContextPath()+"/";
-		response.sendRedirect(bp +"page/login.jsp?ref="+request.getRequestURL()+"&t="+UUID.randomUUID().toString());
+		response.sendRedirect(bp +"page/login.jsp?ref="+ CommonUtil.getFullPath(request)+"&t="+UUID.randomUUID().toString());
 	}	
 %>
 <!DOCTYPE html>
@@ -149,6 +150,12 @@
 				var link = $(".gallery-link").val();
 				if(isEmpty(link)){
 					layer.msg("请输入图片的链接");
+					$(".gallery-link").focus();
+					return;
+				}
+				
+				if(!isLink(link)){
+					layer.msg("该图片的链接不合法");
 					$(".gallery-link").focus();
 					return;
 				}

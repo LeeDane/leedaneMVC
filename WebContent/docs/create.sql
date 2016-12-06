@@ -92,3 +92,43 @@ CREATE TABLE `t_financial_location` (
   CONSTRAINT `FK_financial_location_create_user` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`),
   CONSTRAINT `FK_financial_location_modify_user` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=336 DEFAULT CHARSET=utf8;
+
+<!-- 创建文章表 -->
+DROP TABLE IF EXISTS `t_blog`;
+CREATE TABLE `t_blog` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` int(11) NOT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `modify_time` datetime DEFAULT NULL,
+  `comment_number` int(11) DEFAULT '0',
+  `content` longtext NOT NULL,
+  `digest` varchar(255) DEFAULT NULL,
+  `froms` varchar(255) DEFAULT NULL,
+  `has_img` bit(1) DEFAULT b'0',
+  `img_url` longtext,
+  `is_index` bit(1) DEFAULT b'0',
+  `origin_link` longtext,
+  `is_publish_now` bit(1) DEFAULT b'0',
+  `is_read` bit(1) DEFAULT b'0',
+  `read_number` int(11) DEFAULT '0',
+  `share_number` int(11) DEFAULT '0',
+  `is_solr_index` bit(1) DEFAULT b'0',
+  `source` varchar(255) DEFAULT NULL,
+  `str1` varchar(255) DEFAULT NULL,
+  `str2` varchar(255) DEFAULT NULL,
+  `tag` varchar(255) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `transmit_number` int(11) DEFAULT '0',
+  `uuid` varchar(255) DEFAULT NULL,
+  `zan_number` int(11) DEFAULT '0',
+  `create_user_id` int(11) DEFAULT NULL,
+  `modify_user_id` int(11) DEFAULT NULL,
+  `can_comment` bit(1) DEFAULT b'1',
+  `can_transmit` bit(1) DEFAULT b'1',
+  `category` varchar(10) DEFAULT NULL COMMENT '分类',
+  PRIMARY KEY (`id`),
+  KEY `FK_82ogubia30gvvfbwa76x41ogj` (`create_user_id`),
+  KEY `FK_26d1pwob9u3l1qujbkmfjqf3o` (`modify_user_id`),
+  CONSTRAINT `FK_26d1pwob9u3l1qujbkmfjqf3o` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`),
+  CONSTRAINT `FK_82ogubia30gvvfbwa76x41ogj` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6526 DEFAULT CHARSET=utf8;

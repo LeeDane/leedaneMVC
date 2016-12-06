@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cn.leedane.utils.CollectionUtil;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
@@ -57,11 +58,34 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 		this.userHandler = userHandler;
 	}
 	
-	Map<String,Object> message = new HashMap<String,Object>();
+	
 	@Override
-	public Map<String,Object> addBlog(BlogBean blog) throws Exception{	
+	public Map<String,Object> addBlog(BlogBean blog, UserBean user) throws Exception{	
 		logger.info("BlogServiceImpl-->addBlog():blog="+blog);
-		if(blogMapper.save(blog) > 0){
+		Map<String,Object> message = new HashMap<String,Object>();
+		message.put("isSuccess",false);
+		int result = 0;
+		if(blog.getId() > 0 ){
+			//获取文章
+			BlogBean oldBean = blogMapper.findById(BlogBean.class, blog.getId());
+			if(oldBean == null){
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
+				message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);
+				return message;
+			}
+			
+			//获取文章的作者
+			int createUserId = oldBean.getCreateUserId();
+			if(createUserId < 1 || createUserId != user.getId()){
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+				message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+				return message;
+			}
+			result = blogMapper.update(blog);
+		}else {
+			result = blogMapper.save(blog);
+		}
+		if(result > 0){
 			message.put("isSuccess",true);
 			message.put("message","文章发布成功");
 		}else{
@@ -185,6 +209,23 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);
 			return message;
 		}
+		
+		//获取该文章
+		BlogBean oldBean = blogMapper.findById(BlogBean.class, id);
+		if(oldBean == null){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
+			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);
+			return message;
+		}
+		
+		//获取该文章的作者
+		int createUserId = oldBean.getCreateUserId();
+		if(createUserId < 1 || createUserId != user.getId()){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+			return message;
+		}
+		
 		boolean result = this.blogMapper.deleteById(BlogBean.class, id) > 0;
 		if(result){
 			message.put("isSuccess", true);
@@ -331,7 +372,7 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 		//String sql = "select content, read_number from "+DataTableType.博客.value+" where status = ? and id = ?";
 		StringBuffer sql = new StringBuffer();
 		sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time");
-		sql.append(" , b.digest, b.froms, b.create_user_id, u.account ");
+		sql.append(" , b.digest, b.froms, b.create_user_id, u.account, b.can_comment, b.can_transmit, b.origin_link, b.source, b.category ");
 		sql.append(" from "+DataTableType.博客.value+" b inner join "+DataTableType.用户.value+" u on b.create_user_id = u.id ");
 		sql.append(" where b.status = ?  and b.id = ? ");
 		
@@ -346,6 +387,60 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 		
 		//保存操作日志
 		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取文章ID为：", blogId, ",的基本信息", StringUtil.getSuccessOrNoStr(r.size() == 1)).toString(), "getInfo()", ConstantsUtil.STATUS_NORMAL, 0);
+		
+		return message;
+	}
+
+	@Override
+	public Map<String, Object> draftList(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("BlogServiceImpl-->draftList():jsonObject=" +jo.toString() +", user=" +user.getAccount());
+		Map<String, Object> message = new HashMap<String, Object>();		
+		StringBuffer sql = new StringBuffer();
+		sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time");
+		sql.append(" , b.digest, b.froms, b.content, b.can_comment, b.can_transmit, b.origin_link, b.source, b.category");
+		sql.append(" from "+DataTableType.博客.value+" b ");
+		sql.append(" where status = ? and create_user_id = ? order by id desc ");
+		
+		List<Map<String, Object>> r = blogMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_DRAFT, user.getId());				
+		message.put("message", r);
+		message.put("isSuccess", true);
+		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取草稿列表", StringUtil.getSuccessOrNoStr(r.size() == 1)).toString(), "draftList()", ConstantsUtil.STATUS_NORMAL, 0);
+		
+		return message;
+	}
+
+	@Override
+	public Map<String, Object> edit(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("BlogServiceImpl-->edit():jsonObject=" +jo.toString() +", user=" +user.getAccount());
+		
+		int blog_id = JsonUtil.getIntValue(jo, "blog_id");
+		Map<String,Object> message = new HashMap<String,Object>();
+		message.put("isSuccess", false);
+		if(blog_id < 1){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
+			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);
+			return message;
+		}
+		StringBuffer sql = new StringBuffer();
+		sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time");
+		sql.append(" , b.digest, b.froms, b.content, b.can_comment, b.can_transmit, b.origin_link, b.source, b.category");
+		sql.append(" from "+DataTableType.博客.value+" b ");
+		sql.append(" where id = ? and create_user_id = ? ");
+		
+		List<Map<String, Object>> r = blogMapper.executeSQL(sql.toString(), blog_id, user.getId());				
+		if(CollectionUtil.isNotEmpty(r)){
+			message.put("message", r);
+			message.put("isSuccess", true);
+		}else{
+			message.put("message", "该文章您没有操作权限或者已经被删除！");
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+		}
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取编辑博客Id为：", blog_id, StringUtil.getSuccessOrNoStr(r.size() == 1)).toString(), "edit()", ConstantsUtil.STATUS_NORMAL, 0);
 		
 		return message;
 	}

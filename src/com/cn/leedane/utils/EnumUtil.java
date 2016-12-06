@@ -175,10 +175,39 @@ public class EnumUtil {
 		private TimeScope(String value) {
 			this.value = value;
 		}
+		public final String value;
+	}
+	
+	/**
+	 * 文章分类
+	 * @author LeeDane
+	 * 2016年12月5日 下午1:41:58
+	 * Version 1.0
+	 */
+	public enum BlogCategory {
+		我的日志("note"), 学习笔记("study"), 我的日常("我的日常");
 
+		private BlogCategory(String value) {
+			this.value = value;
+		}
 		public final String value;
 
 	}
+	
+	/**
+	 * 获取BlogCategory对象
+	 * @param type
+	 * @return
+	 */
+	public static BlogCategory getBlogCategory(String type){
+		for(BlogCategory ts: BlogCategory.values()){
+			if(ts.value.equals(type)){
+				return ts;
+			}
+		}
+		return null;
+	}
+	
 
 	/**
 	 * 获取TimeScope对象

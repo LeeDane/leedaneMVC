@@ -5,9 +5,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import com.cn.leedane.handler.UserHandler;
 import com.cn.leedane.handler.ZXingCodeHandler;
+import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.MD5Util;
+import com.cn.leedane.utils.StringUtil;
 import com.google.zxing.WriterException;
 
 /**
@@ -19,22 +22,16 @@ import com.google.zxing.WriterException;
 public class MainTest {
 
 	public static void main(String[] args) throws IOException {
-		
-		String oldString = "14804709117126e31568670e51be42bc7978cc2066ea0339.53588594388793";
-		String newString = "148047091171266e31568670e51be42bc7978cc2066ea0";
-		System.err.println(MD5Util.compute("leedane"));
-		System.out.println(oldString.startsWith(newString));
-		//Desktop.getDesktop().open(new File("D:\\work\\project\\Caesar4_zhenzhou_xc\\web\\bin\\RMISearcherServer.bat"));
-		String ss = "kkd";
-		String[] array = ss.split(",");
-		for(String s: array)
-			System.out.println(s);
-		try {
-			System.out.println(ZXingCodeHandler.createQRCode("http://www.baidu.com", 300));
-		} catch (WriterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		RedisUtil redisUtil = new RedisUtil();
+		int number = 0;
+		String key = UserHandler.getRedisUserNameLoginErrorKey("leedane");
+		//redisUtil.delete(key);
+		if(redisUtil.hasKey(key)){
+			String string = redisUtil.getString(key);
+			//截取14位是因为前面14位被第一次错我的时间格式字符串
+			number = StringUtil.changeObjectToInt(string.substring(14, string.length()));
 		}
+		System.out.println("number="+number);
 	}
 	
 	private static void testImages() {

@@ -123,6 +123,11 @@ public class BlogBean extends RecordTimeBean{
 	private boolean isPublishNow;
 	
 	/**
+	 * 分类
+	 */
+	private String category;
+	
+	/**
 	 * 扩展字段1
 	 */
 	private String str1;
@@ -312,4 +317,12 @@ public class BlogBean extends RecordTimeBean{
 	public void setCanTransmit(boolean canTransmit) {
 		this.canTransmit = canTransmit;
 	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	
+	
 }

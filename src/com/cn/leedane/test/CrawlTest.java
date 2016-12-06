@@ -120,7 +120,7 @@ public class CrawlTest extends BaseTest {
 					blog.setIndex(true);//是否检索标记为true
 					
 					
-					Map<String,Object> result = blogService.addBlog(blog);
+					Map<String,Object> result = blogService.addBlog(blog, user);
 					if(Boolean.parseBoolean(String.valueOf(result.get("isSuccess"))) == true){
 						bean.setCrawl(true);
 						//将抓取标记为已经抓取
@@ -268,7 +268,7 @@ public class CrawlTest extends BaseTest {
 									blog.setOriginLink(bean.getUrl());
 								}
 									
-								Map<String,Object> result = blogService.addBlog(blog);
+								Map<String,Object> result = blogService.addBlog(blog, user);
 								if(Boolean.parseBoolean(String.valueOf(result.get("isSuccess"))) == true){
 									bean.setCrawl(true);
 									//将抓取标记为已经抓取

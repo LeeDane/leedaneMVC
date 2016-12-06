@@ -27,7 +27,14 @@ public interface BlogService <T extends IDBean>{
 	 */
 	public List<Map<String, Object>> executeSQL(String sql, Object ...params);
 	
-	public  Map<String,Object> addBlog(BlogBean blog) throws Exception;	
+	/**
+	 * 添加博客
+	 * @param blog
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public  Map<String,Object> addBlog(BlogBean blog, UserBean user) throws Exception;	
 	
 	/**
 	 * 根据条件查询记录，where语句，"where"需要用户自己写
@@ -148,4 +155,22 @@ public interface BlogService <T extends IDBean>{
 	 * @return
 	 */
 	public Map<String, Object> getInfo(JSONObject jo, UserBean user, HttpServletRequest request);
+
+	/**
+	 * 获取草稿列表
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> draftList(JSONObject json, UserBean user, HttpServletRequest request);
+
+	/**
+	 * 编辑文章
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> edit(JSONObject json, UserBean user, HttpServletRequest request);
 }

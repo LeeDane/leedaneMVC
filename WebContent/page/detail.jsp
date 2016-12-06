@@ -1,3 +1,4 @@
+<%@page import="com.cn.leedane.utils.CommonUtil"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <%@page import="java.util.UUID"%>
@@ -14,7 +15,7 @@
 	}else{
 		String bp = request.getScheme()+"://"+request.getServerName()
 				+":"+request.getServerPort()+request.getContextPath()+"/";
-		response.sendRedirect(bp +"page/login.jsp?ref="+request.getRequestURL()+"&t="+UUID.randomUUID().toString());
+		response.sendRedirect(bp +"page/login.jsp?ref="+ CommonUtil.getFullPath(request) +"&t="+UUID.randomUUID().toString());
 	}
 	
 	String bid = request.getParameter("bid");

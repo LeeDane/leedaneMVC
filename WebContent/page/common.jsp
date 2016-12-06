@@ -24,6 +24,7 @@
 	<script type="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
 	<script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
 	<link rel="stylesheet" href="<%=basePath %>page/other/bootstrap-3.3.0/css/bootstrap.min.css">
+	
 	<!-- 百度JQUERYCDN -->
 	<script type="text/javascript" src="<%=basePath %>page/other/jquery-1.9.1.min.js"></script>
 	<script src="<%=basePath %>page/other/bootstrap-3.3.0/js/bootstrap.min.js"></script>

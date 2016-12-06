@@ -150,6 +150,20 @@ public class CommonUtil {
 	}
 	
 	/**
+	 * 获取地址的完整路劲
+	 * @param request
+	 * @return
+	 */
+	public static String getFullPath(HttpServletRequest request){
+		StringBuffer url = request.getRequestURL();
+		if (request.getQueryString() != null) {
+		  url.append("?");
+		  url.append(request.getQueryString());
+		}
+		return url.toString();
+	}
+	
+	/**
 	 * 判断某个类是否实现了该接口
 	 * @param class
 	 * @param szInterface 接口的名称(全类名：包括包名)

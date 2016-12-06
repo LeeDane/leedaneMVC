@@ -33,6 +33,7 @@ import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.JsoupUtil;
+import com.cn.leedane.utils.OptionUtil;
 import com.cn.leedane.utils.StringUtil;
 
 @Controller
@@ -68,12 +69,11 @@ public class BlogController extends BaseController{
 				return null;
 			}
 			JSONObject json = getJsonFromMessage(message);
-			String adminId = (String) systemCache.getCache("admin-id");
-			int aid = 1;
-			if(!StringUtil.isNull(adminId)){
-				aid = Integer.parseInt(adminId);
-			}
-			UserBean user = userService.findById(aid);
+			
+			//获取登录用户，获取不到用管理员账号
+			UserBean user = getUserFromMessage(message);
+			if(user == null)
+				user = OptionUtil.adminUser;
 			
 			/**
 			 * 是否有主图
@@ -91,6 +91,11 @@ public class BlogController extends BaseController{
 			blog.setTag(JsonUtil.getStringValue(json, "tag"));
 			blog.setFroms(JsonUtil.getStringValue(json, "froms"));
 			blog.setStatus(JsonUtil.getIntValue(json, "status"));
+			
+			blog.setCanComment(JsonUtil.getBooleanValue(json, "can_comment"));
+			blog.setCanTransmit(JsonUtil.getBooleanValue(json, "can_transmit"));
+			blog.setCategory(JsonUtil.getStringValue(json, "category"));
+			
 			String imgUrl = JsonUtil.getStringValue(json, "img_url");
 			String digest = "";
 			if(hasImg){
@@ -100,7 +105,8 @@ public class BlogController extends BaseController{
 				if(StringUtil.isNull(imgUrl)){
 					Document h = Jsoup.parse(content);
 					Elements a = h.getElementsByTag("img");
-					imgUrl= a.get(0).attr("src");
+					if(a != null && a.size() > 0)
+						imgUrl= a.get(0).attr("src");
 				}
 				
 				if(StringUtil.isNotNull(imgUrl))
@@ -138,7 +144,11 @@ public class BlogController extends BaseController{
 			}
 			
 			blog.setDigest(digest);
-			message.putAll(blogService.addBlog(blog));   
+			if(JsonUtil.getIntValue(json, "bid") > 0){
+				blog.setId(JsonUtil.getIntValue(json, "bid"));
+			}
+			
+			message.putAll(blogService.addBlog(blog, user));   
 			printWriter(message, response);
 			return null;
 		}catch (Exception e) {
@@ -197,7 +207,7 @@ public class BlogController extends BaseController{
 			//下刷新
 			if(method.equalsIgnoreCase("lowloading")){
 				sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time");
-				sql.append(" , b.digest, b.froms, b.create_user_id, u.account ");
+				sql.append(" , b.digest, b.froms, b.create_user_id, b.category, u.account ");
 				sql.append(" from "+DataTableType.博客.value+" b inner join "+DataTableType.用户.value+" u on b.create_user_id = u.id ");
 				sql.append(" where b.status = ?  and b.id < ? order by b.id desc limit 0,?");
 				r = blogService.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, lastId, pageSize);
@@ -205,7 +215,7 @@ public class BlogController extends BaseController{
 			//上刷新
 			}else if(method.equalsIgnoreCase("uploading")){
 				sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
-				sql.append(" , b.digest, b.froms, b.create_user_id, u.account ");
+				sql.append(" , b.digest, b.froms, b.create_user_id, b.category, u.account ");
 				sql.append(" from "+DataTableType.博客.value+" b inner join "+DataTableType.用户.value+" u on b.create_user_id = u.id ");
 				sql.append(" where b.status = ? and b.id > ?  limit 0,?");
 				r = blogService.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, firstId, pageSize);
@@ -213,7 +223,7 @@ public class BlogController extends BaseController{
 			//第一次刷新
 			}else if(method.equalsIgnoreCase("firstloading")){
 				sql.append("select b.id, b.img_url, b.title, b.has_img, b.tag, date_format(b.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
-				sql.append(" , b.digest, b.froms, b.create_user_id, u.account ");
+				sql.append(" , b.digest, b.froms, b.create_user_id, b.category, u.account ");
 				sql.append(" from "+DataTableType.博客.value+" b inner join "+DataTableType.用户.value+" u on b.create_user_id = u.id ");
 				sql.append(" where b.status = ?  order by b.id desc limit 0,?");
 				r = blogService.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, pageSize);
@@ -557,6 +567,54 @@ public class BlogController extends BaseController{
 	@RequestMapping("/managerBlog")
 	public String managerBlog(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
+	 * 查看草稿列表
+	 * @return
+	 */
+	@RequestMapping("/draftList")
+	public String draftList(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(blogService.draftList(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
+	 * 编辑文章
+	 * @return
+	 */
+	@RequestMapping("/edit")
+	public String edit(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(blogService.edit(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
 		printWriter(message, response);
 		return null;
 	}

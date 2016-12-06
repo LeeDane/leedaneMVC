@@ -74,7 +74,6 @@ public class JsoupUtil {
 		String text = content.text().trim();
 		//去掉所有的空格
 		text = text.replaceAll(" ", "");
-		System.out.println(text.length());
 		text = text.substring(text.length() > start ? start : 0, text.length() > end ? end : text.length());
 		/*text.replaceAll("/", "");
 		text.replaceAll(".", "");*/

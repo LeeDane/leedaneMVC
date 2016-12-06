@@ -1,3 +1,4 @@
+<%@page import="com.cn.leedane.utils.CommonUtil"%>
 <%@page import="com.cn.leedane.utils.StringUtil"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
@@ -16,7 +17,7 @@
 	}else{
 		String bp = request.getScheme()+"://"+request.getServerName()
 				+":"+request.getServerPort()+request.getContextPath()+"/";
-		response.sendRedirect(bp +"page/login.jsp?ref="+request.getRequestURL()+"&t="+UUID.randomUUID().toString());
+		response.sendRedirect(bp +"page/login.jsp?ref="+CommonUtil.getFullPath(request)+"&t="+UUID.randomUUID().toString());
 	}
 	String uid = request.getParameter("uid");
 	
@@ -133,6 +134,10 @@
 		#comment-or-transmit-item .badge{
 			background-color: #3071a9 !important;
 			margin-right: 5px;
+		}
+		
+		#push-mood{
+			padding-top: 150px;
 		}
 	</style>
 </head>
@@ -427,15 +432,6 @@
 					发布心情
 				</h4>
 			</div>
-			<div class="modal-body">
-				<ul>
-					<li>发布规则</li>
-					<li>发布规则</li>
-					<li>发布规则</li>
-					<li>发布规则</li>
-					<li>发布规则</li>
-				</ul>
-			</div>
 			<div class="modal-footer">
 				<!-- <div class="form-group">
 					<input type="text" class="form-control">
@@ -481,6 +477,14 @@
 			getMoods();
 			
 			$(".edit-user-info-btn").on("click", function(){
+				//检验手机号码
+				var phone = $('[name="mobile_phone"]').val();
+				if(isEmpty(phone)){
+					layer.msg("请输入手机号码");
+					$('[name="mobile_phone"]').focus();
+					return;
+				}
+				
 				var json = serializeArrayToJsonObject($(".myForm").serializeArray());
 				editUserinfo(json);
 			});

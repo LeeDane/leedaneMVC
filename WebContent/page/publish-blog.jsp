@@ -1,3 +1,6 @@
+<%@page import="com.cn.leedane.utils.CommonUtil"%>
+<%@page import="com.cn.leedane.utils.EnumUtil.BlogCategory"%>
+<%@page import="com.cn.leedane.utils.EnumUtil"%>
 <%@page import="com.cn.leedane.utils.StringUtil"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
@@ -16,7 +19,7 @@
 	}else{
 		String bp = request.getScheme()+"://"+request.getServerName()
 				+":"+request.getServerPort()+request.getContextPath()+"/";
-		response.sendRedirect(bp +"page/login.jsp?ref="+request.getRequestURL()+"&t="+UUID.randomUUID().toString());
+		response.sendRedirect(bp +"page/login.jsp?ref="+CommonUtil.getFullPath(request)+"&t="+UUID.randomUUID().toString());
 	}
 	String uid = request.getParameter("uid");
 	
@@ -25,6 +28,11 @@
 	
 	if(userBean != null && StringUtil.isNotNull(uid))
 		isLoginUser = (Integer.parseInt(uid) == userBean.getId());
+	
+	int blogId = 0;
+	String bidStr = request.getParameter("bid");
+	if(StringUtil.isNotNull(bidStr))
+		blogId = StringUtil.changeObjectToInt(bidStr);
 %>
 <!DOCTYPE html>
 <html>
@@ -39,34 +47,189 @@
 		.clearFloat{
 			clear: both;
 		}
-		.baidu-editor-container{
+		.container{
 			margin-top: 50px;
 		}
+		.blog-info{
+			margin-top: 15px;
+		}
+		.must-not-null{
+			margin-left: 2px;
+			color: red;
+		}
+		.tag-list{
+		}
+		.tag-item{
+			 margin-right: 10px;
+		}
+		.badge {
+	    	background-color: #3071a9 !important;
+	    	margin-right: 5px;
+	    }
 	</style>
 </head>
 <body>
 <%@ include file="common.jsp" %>
-
 <script type="text/javascript" src="<%=basePath %>page/other/layui/layui.js"></script>
 <script type="text/javascript" src="<%=basePath %>page/other/layui/lay/dest/layui.all.js"></script>
-<script src="<%=basePath %>page/js/publish-blog.js"></script>
 <script type="text/javascript" src="<%=basePath %>page/other/jquery.md5.js"></script>
 <script type="text/javascript" charset="utf-8" src="<%=basePath %>page/other/ueditor1_4_3_3-utf8-jsp/ueditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="<%=basePath %>page/other/ueditor1_4_3_3-utf8-jsp/ueditor.all.min.js"> </script>
 <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
 <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
 <script type="text/javascript" charset="utf-8" src="<%=basePath %>page/other/ueditor1_4_3_3-utf8-jsp/lang/zh-cn/zh-cn.js"></script>
-    
+<script src="<%=basePath %>page/js/publish-blog.js"></script>
 <div class="main clearFloat">	
 	<div class="container">
+		<div class="row blog-info">
+	   		<div class="col-lg-9">
+	   			<div class="form-group">
+	   				<label for="name">标题<font class="must-not-null">*</font></label>
+				    <input class="form-control" type="text" name="title" placeholder="请输入标题">
+				 </div>
+				 <div class="form-group">
+				    <label for="name">摘要(<font class="must-not-null">为空将从内容中摘取</font>)</label>
+				    <textarea class="form-control" rows="3" name="digest"></textarea>
+				  </div>
+	   		</div>
+	   		<!-- 分类 -->
+	   		<div class="col-lg-3">
+	   			<div class="form-group" style="width: 70%;float: right;">
+					<select class="form-control" name="category">
+						<%
+							for(BlogCategory ts: EnumUtil.BlogCategory.values()){
+						%>
+								<option value="<%=ts.name() %>" text="<%=ts.name() %>"><%=ts.name() %></option>
+						<%} %>
+					</select>
+				</div>
+				<button type="button" class="btn btn-primary btn-sm" style="width: 70%;float: right;" onclick="draftlist();">查看草稿列表</button>
+	   		</div>
+	   </div>
 	   <div class="row baidu-editor-container">
 	   		<div class="col-lg-12">
-	   			<script id="editor" type="text/plain" style="width:1024px;height:500px;"></script>
+	   			<script id="editor" type="text/plain" style="width:100%;"></script>
+	   		</div>
+	   </div>
+	   <div class="row" style="margin-top: 5px;">
+	   		<div class="col-lg-12">
+	   			<label for="name">标签</label>
+	   		</div>
+	   </div>
+	   <div class="row">
+	   		<div class="col-lg-4">
+	   			<div class="form-group">
+				    <input type="text" class="form-control tag-input" placeholder="请输入标签，最多3个，每个限制5位，回车添加" onkeypress="if (event.keyCode == 13) addTag(this);">
+				 </div>
+	   		</div>
+	   		<div class="col-lg-8">
+	   			<div class="tag-list">
+	   			
+	   			</div>
+	   		</div>
+	   </div>
+	   <div class="row">
+	   		<div class="col-lg-12">
+	   			<div class="checkbox">
+					<label>
+						<input type="checkbox" name="has_img">是否有图
+					</label>
+				</div>
+	   		</div>
+	   </div>
+	   <div class="row hidden img-url-row">
+	   		<div class="col-lg-4">
+	   			<input type="text" class="form-control" name="img_url" placeholder="请输入能直接访问的网络图片链接">
+	   		</div>
+	   </div>
+	   <div class="row">
+	   		<div class="col-lg-12">
+	   			<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="checked" name="is_original">是否原创
+					</label>
+				</div>
+	   		</div>
+	   </div>
+	   <div class="row hidden is-original-row">
+	   		<div class="col-lg-4">
+	   			<input type="text" class="form-control" name="origin_link" placeholder="请输入能直接访问的原文的路径">
+	   		</div>
+	   		<div class="col-lg-4">
+	   			<input type="text" class="form-control" name="source" placeholder="请输入网站的名称(别名)">
+	   		</div>
+	   </div>
+	   <div class="row">
+	   		<div class="col-lg-12">
+	   			<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="checked" name="can_comment" title="该功能暂时不能使用" disabled>是否能评论
+					</label>
+				</div>
+	   		</div>
+	   </div>
+	   <div class="row">
+	   		<div class="col-lg-12">
+	   			<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="checked" name="can_transmit" title="该功能暂时不能使用" disabled>是否能转发
+					</label>
+				</div>
+	   		</div>
+	   </div>
+	   <div class="row">
+	   		<div class="col-lg-12">
+	   			<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="checked" name="public" title="该功能暂时不能使用" disabled>是否公开
+					</label>
+				</div>
+	   		</div>
+	   </div>
+	   <div class="row" style="margin-bottom: 20px;">
+	   		<div class="col-lg-12" style="text-align: center;">
+	   			<button type="button" class="btn btn-primary btn-sm" style="margin-right: 10px;" onclick="release();">发布文章</button>
+	   			<button type="button" class="btn btn-primary btn-sm" onclick="draft();">存为草稿</button>
 	   		</div>
 	   </div>
 	</div>
 </div>
 
+<!-- 模态框发布心情列表 -->
+<div class="modal fade" id="load-draft" tabindex="-1" role="dialog" aria-labelledby="loadDraftListModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="loadDraftListModalLabel">
+					草稿列表
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="list-group" id="draft-group-list">
+					<!-- <div class="list-group-item">
+						<div class="row">
+							<div class="col-lg-1 col-sm-1">
+								<span class="badge">1</span>
+							</div>
+							<div class="col-lg-7 col-sm-7">
+								你啊，怎么这么逗你啊，怎么这么逗你啊，怎么这么逗你啊，么这么逗你啊，怎么这么逗你啊，么这么逗你啊，怎么这么逗你啊，么这么逗你啊，怎么这么逗你啊，么这么逗你啊，怎么这么逗你啊，么这么逗你啊，怎么这么逗你啊，怎么这么逗你啊，怎么这么逗你啊，怎么这么逗你啊，怎么这么逗
+							</div>
+							<div class="col-lg-4 col-sm-4">
+								2016-10-10 10:00:00
+							</div>
+						</div>
+					</div> -->
+				</div> 
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
 </body>
 	<script type="text/javascript">
 	var isLogin = <%=isLogin %>; //是否已经登录
@@ -84,12 +247,42 @@
 	              'directionalityltr', 'directionalityrtl', 'indent', '|',
 	              'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
 	              'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
-	              'simpleupload', 'insertimage', 'emotion', 'scrawl', 'insertvideo'/* , 'music' MP3*/, 'attachment', 'map', /* 'gmap', 谷歌地图 */ 'insertframe', 'insertcode', 'webapp', 'pagebreak', 'template', 'background', '|',
+	              'simpleupload', 'insertimage', 'emotion', 'scrawl', 'insertvideo'/* , 'music' MP3*/, 'attachment', 'map', /* 'gmap', 谷歌地图 */ 'insertframe', 'insertcode'/* , 'webapp' 百度应用 */, 'pagebreak', 'template', 'background', '|',
 	              'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
 	              'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
-	              'print', 'preview', 'searchreplace', 'drafts', 'help'
+	              'print', 'preview', 'searchreplace', 'drafts'/* , 'help' 帮助 */
 	          ]],
         enterTag: "&nbsp;"
     });
+    var bid = <%=blogId %>;
+    $(function(){
+    	if(bid > 0){
+    		ue.addListener("ready", function () {
+    			// editor准备好之后才可以使用,不然要是ue还没有初始化完成就调用就会报错
+    			getEditBlog(bid);
+    		});
+    		
+    	}
+    	
+    	//是否有主图
+    	$('[name="has_img"]').click(function(){ 
+    		if(this.checked){
+    			$(".img-url-row").removeClass("hidden");
+    		}else{
+    			$(".img-url-row").addClass("hidden");
+    		}
+    	}); 
+		
+    	//是否原创
+    	$('[name="is_original"]').click(function(){ 
+    		if(!this.checked){
+    			$(".is-original-row").removeClass("hidden");
+    		}else{
+    			$(".is-original-row").addClass("hidden");
+    		}
+    	}); 
+	});
+    
+    
 	</script>
 </html>

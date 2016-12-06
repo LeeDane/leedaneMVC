@@ -1011,7 +1011,26 @@ public class UserServiceImpl implements UserService<UserBean> {
 			return message;
 		}
 		
-		
+		//获取登录失败的数量
+		int number = userHandler.getLoginErrorNumber(account);
+		if(number > 5){
+			Date date = userHandler.getLoginErrorTime(account);
+			if(date != null){
+				//是否在禁止5分钟内
+				if(DateUtil.isInMinutes(new Date(), date, 5)){
+					//计算还剩下几分钟
+					int minutes = DateUtil.leftMinutes(new Date(), date);
+					if(minutes > 1){
+						message.put("message", "由于您的账号失败连续超过5次，系统已限制您5分钟内不能登录,大概还剩余"+ minutes +"分钟");
+					}else{
+						message.put("message", "由于您的账号失败连续超过5次，系统已限制您5分钟内不能登录,大概还剩余"+ DateUtil.leftSeconds(new Date(), date) +"秒");
+					}
+					
+					message.put("responseCode", EnumUtil.ResponseCode.您的账号登录失败太多次.value);
+					return message;
+				}
+			}
+		}
 		final UserBean user = loginUserNoComputePSW(account, password);
 		
 		if(user != null){
@@ -1026,6 +1045,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 				map.put("isSuccess", result);
 				engine.sendTo(Comet4jServer.SCAN_LOGIN, engine.getConnection(cid), JSONObject.fromObject(map).toString());
 				session.setAttribute(UserController.USER_INFO_KEY, user);
+				userHandler.removeLoginErrorNumber(user.getAccount());
 			}else{
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.登录页面已经过期.value));
 				message.put("responseCode", EnumUtil.ResponseCode.登录页面已经过期.value);
@@ -1041,7 +1061,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 	
 	@Override
 	public Map<String, Object> cancelScanLogin(JSONObject jo,
-			UserBean userFromMessage, HttpServletRequest request) {
+			UserBean user, HttpServletRequest request) {
 		logger.info("UserServiceImpl-->cancelScanLogin():jo=" +jo.toString());		
 		String cid = JsonUtil.getStringValue(jo, "cid");//获取连接ID
 		Map<String, Object> message = new HashMap<String, Object>();
@@ -1069,7 +1089,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 			session.removeAttribute(UserController.USER_INFO_KEY);
 		}
 		engine.sendTo(Comet4jServer.SCAN_LOGIN, engine.getConnection(cid), JSONObject.fromObject(map).toString());
-		
+		userHandler.removeLoginErrorNumber(user.getAccount());
 		return message;
 	}
 

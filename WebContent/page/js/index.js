@@ -174,7 +174,7 @@ function buildHasImgRow(index, blog){
 										'</small>'+
 								    '</h1>'+
 								    '<ol class="breadcrumb">'+
-								    	'<li>文章</li>'+
+								    	'<li>'+ changeNotNullString(blog.category) +'</li>'+
 										'<li class="active">'+ blog.create_time +'</li>'+
 									'</ol>';
 									if(isNotEmpty(blog.tag)){
@@ -194,8 +194,8 @@ function buildHasImgRow(index, blog){
 									
 						html += '</div>'+
 							'</div>'+
-							'<div class="panel-body">'+ blog.digest +
-							'...</div>'+
+							'<div class="panel-body">'+ (blog.digest.length > 100 ? (blog.digest + '...') : blog.digest)+
+							'</div>'+
 							'<div class="panel-footer">';
 								if(isLogin){
 									html += '<div class="btn-group dropup">'+
@@ -205,9 +205,9 @@ function buildHasImgRow(index, blog){
 												'<ul class="dropdown-menu" role="menu">'+
 													'<li><a class="attention" href="javascript:void(0);" onclick="attention('+ blog.id+','+ index+ ');">关注</a></li>'+
 													'<li><a class="collection" href="javascript:void(0);" onclick="collect('+ blog.id+','+ index+ ');">收藏</a></li>'+
-													'<li><a class="delete-blog" href="javascript:void(0);" onclick="deleteBlog('+ blog.id+','+ index+ ');">Delete</a></li>'+
+													'<li><a class="delete-blog" href="javascript:void(0);" onclick="updateBlog('+ blog.id+','+ index+ ');">编辑</a></li>'+
 													'<li class="divider"></li>'+
-													'<li><a href="javascript:void(0);">Delete</a></li>'+
+													'<li><a href="javascript:void(0);" onclick="deleteBlog('+ blog.id+','+ index+ ');">删除</a></li>'+
 												'</ul>'+
 											'</div>';
 								}
@@ -239,7 +239,7 @@ function buildNotHasImgRow(index, blog){
 									'</small>'+
 							    '</h1>'+
 							    '<ol class="breadcrumb">'+
-							    	'<li>文章</li>'+
+							    	'<li>' +changeNotNullString(blog.category)+ '</li>'+
 									'<li class="active">'+ blog.create_time +'</li>'+
 								'</ol>';
 								if(isNotEmpty(blog.tag)){
@@ -258,8 +258,8 @@ function buildNotHasImgRow(index, blog){
 								}
 					html += '</div>'+
 						'</div>'+
-						'<div class="panel-body">'+ blog.digest +
-						'...</div>'+
+						'<div class="panel-body">'+ (blog.digest.length > 100 ? (blog.digest + '...') : blog.digest)+
+						'</div>'+
 						'<div class="panel-footer">';
 							if(isLogin){
 								html += '<div class="btn-group dropup">'+
@@ -269,9 +269,9 @@ function buildNotHasImgRow(index, blog){
 											'<ul class="dropdown-menu" role="menu">'+
 												'<li><a class="attention" href="javascript:void(0);" onclick="attention('+ blog.id+','+ index+ ');">关注</a></li>'+
 												'<li><a class="collection" href="javascript:void(0);" onclick="collection('+ blog.id+','+ index+ ');">收藏</a></li>'+
-												'<li><a class="delete-blog" href="javascript:void(0);" onclick="deleteBlog('+ blog.id+','+ index+ ');">Delete</a></li>'+
+												'<li><a class="delete-blog" href="javascript:void(0);" onclick="updateBlog('+ blog.id+','+ index+ ');">编辑</a></li>'+
 												'<li class="divider"></li>'+
-												'<li><a href="#">Delete</a></li>'+
+												'<li><a href="javascript:void(0);" onclick="deleteBlog('+ blog.id+','+ index+ ');">删除</a></li>'+
 											'</ul>'+
 										'</div>';
 							}
@@ -414,7 +414,15 @@ function deleteBlog(id, index){
 		}
 	});
 }
-
+/**
+ * 
+ * @param id
+ * @param index
+ * @returns
+ */
+ function updateBlog(id, index){
+	window.open(getBasePath() + "page/publish-blog.jsp?bid="+id, "_self");
+ }
 /**
  * 链接到个人中心
  * @param create_user_id

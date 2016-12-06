@@ -15,6 +15,14 @@ function isNotEmpty(str){
 }
 
 /**
+ * 校验连接是否合法
+ * @param link
+ */
+function isLink(link){
+	return true;
+}
+
+/**
  * 对空的字符串，以""输出
  * @param str
  * @returns
