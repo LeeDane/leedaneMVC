@@ -31,16 +31,21 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title><%=account %>的个人中心</title>
 	<link rel="stylesheet" href="other/layui/css/layui.css">
 	<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_733gvu39kn265hfr.css">
 	
 	<script src="js/base.js"></script>
 	<style type="text/css">
-		
+		.clearFloat{
+			clear: both;
+		}
+		body{
+			background-color: #f5f5f5 !important;
+		}
 		.mainContainer{
 			padding-top: 60px;
-			width: 1300px !important;
 		}
 		. mainContainer .row{
 			margin-top: 15px;
@@ -139,6 +144,14 @@
 		#push-mood{
 			padding-top: 150px;
 		}
+		#mood-container .list-group{
+			margin-bottom: 16px !important;
+		}
+		#mood-container .list-group-item{
+			background-color: #fff !important;
+			border-color: #f5f5f5 !important;
+			color: #000 !important;
+		}
 	</style>
 </head>
 <body data-spy="scroll" data-target="#myScrollspy" data-offset="90">
@@ -146,9 +159,9 @@
 <script type="text/javascript" src="other/layui/layui.js"></script>
 <script type="text/javascript" src="other/layui/lay/dest/layui.all.js"></script>
 <script src="<%=basePath %>page/js/my.js"></script>
-<div class="container mainContainer">
+<div class="container mainContainer clearFloat">
 	   <div class="row">
-		   <div class="col-lg-3">
+		   <div class="col-lg-3" style="border: 1px solid #fff;background-color: #fff;">
 		   		<div class="row" id="user_img">
 		   			<!-- <img src="images/main_content_img.jpg" width="200px" height="200px" class="img-circle"> -->
 		   		</div>
@@ -457,21 +470,6 @@
 				$(this).removeClass("active");
 			});
 			$(".nav-my").addClass("active");
-			
-			$(window).scroll(function (e) {
-				e = e || window.event;
-			    if (e.wheelDelta) {  //判断浏览器IE，谷歌滑轮事件             
-			        if (e.wheelDelta > 0) { //当滑轮向上滚动时
-			            return;
-			        }
-			    } else if (e.detail) {  //Firefox滑轮事件
-			        if (e.detail> 0) { //当滑轮向上滚动时
-			            return;
-			        }
-			    }
-			    var scrollT = $(window).scrollTop(); //滚动条top 
-			    console.log("scrollT==="+scrollT);
-			}); 
 			
 			loadUserInfo();
 			getMoods();

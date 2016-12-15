@@ -30,6 +30,8 @@ import com.cn.leedane.rabbitmq.recieve.IRecieve;
 import com.cn.leedane.rabbitmq.recieve.LogRecieve;
 import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.utils.CommonUtil;
+import com.cn.leedane.utils.FinancialCategoryUtil;
+import com.cn.leedane.utils.FinancialWebImeiUtil;
 import com.cn.leedane.utils.OptionUtil;
 import com.cn.leedane.utils.SpringUtil;
 import com.cn.leedane.utils.StringUtil;
@@ -85,6 +87,10 @@ public class CacheContextLoaderListener extends ContextLoaderListener{
 		}).start();
 		
 		SensitiveWordInit.getInstance(); //加载敏感词库
+		
+		FinancialCategoryUtil.getInstance();
+		
+		FinancialWebImeiUtil.getInstance();
 	}
 	
 

@@ -22,14 +22,17 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title><%=account %>的相册</title>
 	<link rel="stylesheet" href="other/layui/css/layui.css">
 	<script src="js/base.js"></script>
 	<style type="text/css">
-		
+		body{
+			background-color: #f5f5f5 !important;
+		}
 		.container{
 			margin-top: 50px;
-			width: 1170px;
+			background-color: #fff !important;
 		}
 		.row{
 			margin-top: 15px;
@@ -63,16 +66,16 @@
 
 <div class="container">
 	   <div class="row">
-	      <div class="col-lg-3" id="column-01">
+	      <div class="col-lg-3 col-sm-12" id="column-01">
 	      
 	      </div>
-	      <div class="col-lg-3" id="column-02">
+	      <div class="col-lg-3 col-sm-12" id="column-02">
 	      
 	      </div>     
-	      <div class="col-lg-3" id="column-03">
+	      <div class="col-lg-3 col-sm-12" id="column-03">
 	      
 	      </div>
-	      <div class="col-lg-3 right-col">
+	      <div class="col-lg-3 col-sm-12 right-col">
 	      		<div class="panel panel-default">
 				    <div class="panel-heading">
 				        <div class="panel-title">温馨提示</div>

@@ -3,7 +3,7 @@
  * @param str
  */
 function isEmpty(str){
-	return str == null || str == undefined || str == '' || str.trim == '';
+	return typeof(str) == 'undefined' || str == null || str == undefined || str == '' || str.trim == '';
 }
 
 /**
@@ -32,6 +32,54 @@ function changeNotNullString(str){
 		return "";
 	return str;
 }
+
+/**
+ * 对空的字符串，以""输出
+ * @param str
+ * @param key
+ * @returns
+ */
+function changeObjNotNullString(obj, key){
+	if(typeof(obj) == 'undefined')
+		return '';
+	if(isEmpty(obj[key]))
+		return "";
+	return obj[key];
+}
+
+
+/**
+ * 展示图片的链接
+ * @param index  当前心情的索引
+ * @param imgIndex 当前心情图片的索引
+ */
+function showSingleImg(obj){
+	var path = $(obj).attr("src");
+	if(isNotEmpty(path)){
+		var json = {
+				  "title": "相册标题", //相册标题
+				  "id": 0, //相册id
+				  "start": 0 //初始显示的图片序号，默认0
+				};
+		var datas = new Array();
+		var each = {};
+		each.src = path;//原图地址
+		each.alt = path;//缩略图地址
+		datas.push(each);
+		
+		
+		json.data = datas;
+		
+		layer.photos({
+		    photos: json
+		    ,shift: 1 //0-6的选择，指定弹出图片动画类型，默认随机
+		  });
+	}else{
+		layer.msg("无法获取当前图片的路径");
+	}
+	
+}
+
 
 /**
  * 将form的serializeArray数组转化成json对象
@@ -73,4 +121,25 @@ function getCookie(value){
 		}
 	}
 	return ""
+}
+
+
+/**
+ * 对数组对象进行排序，格式[{name: 'name', total: 0}, {name: 'name1', total: 100}]
+ * @param key  根据上面格式，total可以传进去排序
+ * @param desc  是否倒序排序(从大到小)，默认是
+ * @returns {Function}
+ */
+function sortByObjectKey(key, desc) {
+	return function(a,b){
+		var value1 = a[key];
+		var value2 = b[key];
+		if(value1 < value2){
+	        return desc ? 1 : -1;
+	    }else if(value1 > value2){
+	        return desc ? -1 : 1;
+	    }else{
+	        return 0;
+	    }
+	}
 }

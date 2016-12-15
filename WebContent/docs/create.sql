@@ -132,3 +132,53 @@ CREATE TABLE `t_blog` (
   CONSTRAINT `FK_26d1pwob9u3l1qujbkmfjqf3o` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`),
   CONSTRAINT `FK_82ogubia30gvvfbwa76x41ogj` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6526 DEFAULT CHARSET=utf8;
+
+<!-- 创建一级分类表 -->
+DROP TABLE IF EXISTS `t_financial_one_category`;
+CREATE TABLE `t_financial_one_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` int(11) NOT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `modify_time` datetime DEFAULT NULL,
+  `create_user_id` int(11) DEFAULT NULL,
+  `modify_user_id` int(11) DEFAULT NULL,
+  
+  `category_value` varchar(8) NOT NULL COMMENT '展示的大类名称',
+  `icon_name` varchar(8) COMMENT '显示的图标名称',
+  `model` int(1) NOT NULL DEFAULT '1' COMMENT '1表示收入, 2表示支出',
+  `budget` float(11) DEFAULT '0.00' COMMENT ' 一级分类的预算',
+  `category_order` int(2) NOT NULL DEFAULT '1' COMMENT '排序的位置',
+  `is_default` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否是默认的分类',
+  `is_system` bit(1) NOT NULL DEFAULT b'1' COMMENT '是否是系统默认的(禁止删除，修改)',
+
+  PRIMARY KEY (`id`),
+  KEY `FK_financial_one_category_create_user` (`create_user_id`),
+  KEY `FK_financial_one_category_modify_user` (`modify_user_id`),
+  CONSTRAINT `FK_financial_one_category_modify_user` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`),
+  CONSTRAINT `FK_financial_one_category_create_user` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6526 DEFAULT CHARSET=utf8;
+
+<!-- 创建二级分类表 -->
+DROP TABLE IF EXISTS `t_financial_two_category`;
+CREATE TABLE `t_financial_two_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` int(11) NOT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `modify_time` datetime DEFAULT NULL,
+  `create_user_id` int(11) DEFAULT NULL,
+  `modify_user_id` int(11) DEFAULT NULL,
+  
+  `one_level_id` int(11) DEFAULT NULL COMMENT '一级分类的ID',
+  `category_value` varchar(8) NOT NULL COMMENT '展示的大类名称',
+  `icon_name` varchar(8) COMMENT '显示的图标名称',
+  `budget` float(11) DEFAULT '0.00' COMMENT ' 一级分类的预算',
+  `category_order` int(2) NOT NULL DEFAULT '1' COMMENT '排序的位置',
+  `is_default` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否是默认的分类',
+  `is_system` bit(1) NOT NULL DEFAULT b'1' COMMENT '是否是系统默认的(禁止删除，修改)',
+
+  PRIMARY KEY (`id`),
+  KEY `FK_financial_two_category_create_user` (`create_user_id`),
+  KEY `FK_financial_two_category_modify_user` (`modify_user_id`),
+  CONSTRAINT `FK_financial_two_category_modify_user` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`),
+  CONSTRAINT `FK_financial_two_category_create_user` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6526 DEFAULT CHARSET=utf8;

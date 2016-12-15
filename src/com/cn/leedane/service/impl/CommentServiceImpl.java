@@ -128,9 +128,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 				
 			}
 			if(createUserId > 0 && createUserId != user.getId()){
-				Set<Integer> ids = new HashSet<Integer>();
-				ids.add(createUserId);
-				notificationHandler.sendNotificationByIds(false, user, ids, content, NotificationType.评论, tableName, tableId, bean);
+				notificationHandler.sendNotificationById(false, user, createUserId, content, NotificationType.评论, tableName, tableId, bean);
 			}
 			//当一个人既有评论也有@时候，@不做处理
 			//有@人通知相关人员

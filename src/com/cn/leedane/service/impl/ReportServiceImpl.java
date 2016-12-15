@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,16 +17,20 @@ import org.springframework.stereotype.Service;
 
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
+import com.cn.leedane.utils.EnumUtil.NotificationType;
 import com.cn.leedane.utils.SqlUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.StringUtil;
+import com.cn.leedane.handler.CommonHandler;
+import com.cn.leedane.handler.NotificationHandler;
 import com.cn.leedane.mapper.ReportMapper;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.ReportBean;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.OperateLogService;
 import com.cn.leedane.service.ReportService;
+import com.sun.istack.internal.FinalArrayList;
 /**
  * 举报service的实现类
  * @author LeeDane
@@ -42,26 +47,36 @@ public class ReportServiceImpl implements ReportService<ReportBean>{
 	@Autowired
 	private OperateLogService<OperateLogBean> operateLogService;
 	
+	@Autowired
+	private NotificationHandler notificationHandler;
+	
+	@Autowired
+	private CommonHandler commonHandler;
+	
 	@Override
-	public Map<String, Object> addReport(JSONObject jo, UserBean user,
+	public Map<String, Object> addReport(JSONObject jo, final UserBean user,
 			HttpServletRequest request) throws Exception {
 		//{\"table_name\":\"t_mood\", \"table_id\":2334, 'reason':'青色'}
 		logger.info("ReportServiceImpl-->addReport():jsonObject=" +jo.toString() +", user=" +user.getAccount());
-		String tableName = JsonUtil.getStringValue(jo, "table_name");
-		int tableId = JsonUtil.getIntValue(jo, "table_id");
+		final String tableName = JsonUtil.getStringValue(jo, "table_name");
+		final int tableId = JsonUtil.getIntValue(jo, "table_id");
 		int type = JsonUtil.getIntValue(jo, "type", 0);
 		String reason = JsonUtil.getStringValue(jo, "reason");
+		final boolean anonymous = JsonUtil.getBooleanValue(jo, "anonymous", true); //是否匿名举报，默认是匿名
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
-		if(type == 0){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.缺少参数.value));
-			message.put("responseCode", EnumUtil.ResponseCode.缺少参数.value);
+		
+		if(SqlUtil.getBooleanByList(reportMapper.exists(ReportBean.class, tableName, tableId, user.getId()))){
+			message.put("message", "您已经对此举报过，请稍待我们审核！");
+			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;
 		}
 		
-		if(SqlUtil.getBooleanByList(reportMapper.exists(ReportBean.class, tableName, tableId, user.getId()))){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
-			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
+		final int resourcesCreateUserId = SqlUtil.getCreateUserIdByList(reportMapper.getObjectCreateUserId(tableName, tableId));
+		
+		if(user.getId() == resourcesCreateUserId){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.不能举报自己发布的资源.value));
+			message.put("responseCode", EnumUtil.ResponseCode.不能举报自己发布的资源.value);
 			return message;
 		}
 		
@@ -87,6 +102,21 @@ public class ReportServiceImpl implements ReportService<ReportBean>{
 		if(!result){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库保存失败.value));
 			message.put("responseCode", EnumUtil.ResponseCode.数据库保存失败.value);
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.举报成功.value));
+			
+			//通知相关人员有资源被举报
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					String content = "您发布的《"+commonHandler.getContentByTableNameAndId(tableName, tableId, user)+"》被用户"+ (anonymous ? "" : user.getAccount())+"举报";
+					//Object beanObject = commonHandler.getBeanByTableNameAndId(tableName, tableId, user);
+					Object beanObject = null;
+					notificationHandler.sendNotificationById(false, user, resourcesCreateUserId, content , NotificationType.通知, tableName, tableId, beanObject);
+					
+				}
+			}).start();
 		}
 		
 		//保存操作日志

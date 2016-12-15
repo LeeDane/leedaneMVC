@@ -28,9 +28,9 @@ import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.CollectionUtil;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.DateUtil;
+import com.cn.leedane.utils.EnumUtil.EmailType;
 import com.cn.leedane.utils.SpringUtil;
 import com.cn.leedane.utils.StringUtil;
-import com.cn.leedane.utils.EnumUtil.EmailType;
 
 /**
  * 处理记账周报
@@ -90,12 +90,12 @@ class SingleTask implements Callable<Boolean>{
 		this.mUser = user;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean call() throws Exception {
 		
 		try{
 			//找用户的记账记录
-			@SuppressWarnings("unchecked")
 			FinancialService<FinancialBean> financialService = (FinancialService<FinancialBean>) SpringUtil.getBean("financialService");
 			
 			Date startTime = DateUtil.getLastMonthStart();
@@ -142,25 +142,23 @@ class SingleTask implements Callable<Boolean>{
 			SendMessage sendMessage = new SendMessage(send);
 			sendMessage.sendMsg();//发送日志到消息队列
 			
-			
-				SystemCache systemCache = (SystemCache) SpringUtil.getBean("systemCache");
-				int adminId = StringUtil.changeObjectToInt(systemCache.getCache("admin-id"));
-				UserService<UserBean> userService = (UserService<UserBean>) SpringUtil.getBean("userService");
-				UserBean adminUser = userService.findById(adminId);
-				EmailBean emailBean = new EmailBean();
-				emailBean.setContent(report.getDesc());
-				emailBean.setCreateTime(new Date());
-				emailBean.setFrom(adminUser);
-				emailBean.setSubject(DateUtil.DateToString(startTime, "yyyy-MM-dd") +"到"+ DateUtil.DateToString(endTime, "yyyy-MM-dd") +"记账月报");
-				Set<UserBean> set = new HashSet<UserBean>();
-				set.add(mUser);
-				emailBean.setReplyTo(set);
-				emailBean.setType(EmailType.新邮件.value); //新邮件
-				if(mUser.getId() == 1){
-					ISend sendEmain = new EmailSend(emailBean);
-					SendMessage sendEmailMessage = new SendMessage(sendEmain);
-					sendEmailMessage.sendMsg();//发送日志到消息队列
-
+			SystemCache systemCache = (SystemCache) SpringUtil.getBean("systemCache");
+			int adminId = StringUtil.changeObjectToInt(systemCache.getCache("admin-id"));
+			UserService<UserBean> userService = (UserService<UserBean>) SpringUtil.getBean("userService");
+			UserBean adminUser = userService.findById(adminId);
+			EmailBean emailBean = new EmailBean();
+			emailBean.setContent(report.getDesc());
+			emailBean.setCreateTime(new Date());
+			emailBean.setFrom(adminUser);
+			emailBean.setSubject(DateUtil.DateToString(startTime, "yyyy-MM-dd") +"到"+ DateUtil.DateToString(endTime, "yyyy-MM-dd") +"记账月报");
+			Set<UserBean> set = new HashSet<UserBean>();
+			set.add(mUser);
+			emailBean.setReplyTo(set);
+			emailBean.setType(EmailType.新邮件.value); //新邮件
+			if(mUser.getId() == 1){
+				ISend sendEmain = new EmailSend(emailBean);
+				SendMessage sendEmailMessage = new SendMessage(sendEmain);
+				sendEmailMessage.sendMsg();//发送日志到消息队列
 			}
 			return true;
 		}catch(Exception e){

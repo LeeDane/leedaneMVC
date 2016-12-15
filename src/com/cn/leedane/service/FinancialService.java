@@ -97,4 +97,23 @@ public interface FinancialService<T extends IDBean>{
 	 * @return
 	 */
 	public List<FinancialBean> getByTimeRange(int createUserId, int status, Date startTime, Date endTime);
+
+	/**
+	 * 查询
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> query(JSONObject json, UserBean user, HttpServletRequest request);
+
+	
+	/**
+	 * 分页获取记账列表
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> paging(JSONObject json, UserBean user,HttpServletRequest request);
 }

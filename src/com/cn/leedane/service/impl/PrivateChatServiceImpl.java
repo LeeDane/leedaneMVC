@@ -99,10 +99,8 @@ public class PrivateChatServiceImpl implements PrivateChatService<PrivateChatBea
 		if(result){
 			
 			Map<String, Object> chatMap = privateChatBeanToMap(privateChatBean);
-			Set<Integer> ids = new HashSet<Integer>();
-			ids.add(toUserId);
 			//给对方发送通知
-			notificationHandler.sendNotificationByIds(false, user, ids, content, NotificationType.私信, DataTableType.私信.value, privateChatBean.getId(), null);
+			notificationHandler.sendNotificationById(false, user, toUserId, content, NotificationType.私信, DataTableType.私信.value, privateChatBean.getId(), null);
 			
 			message.put("isSuccess", result);
 			message.put("message", chatMap);

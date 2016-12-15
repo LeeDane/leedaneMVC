@@ -68,7 +68,7 @@ public class GalleryServiceImpl implements GalleryService<GalleryBean> {
 		}
 		
 		if(isExist(user, path)){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+			message.put("message", "您已添加过该链接，请勿重复操作！");
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;
 		}

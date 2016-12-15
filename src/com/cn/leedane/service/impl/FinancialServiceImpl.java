@@ -25,6 +25,7 @@ import com.cn.leedane.service.FinancialService;
 import com.cn.leedane.service.OperateLogService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
+import com.cn.leedane.utils.FinancialWebImeiUtil;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.StringUtil;
 /**
@@ -64,7 +65,7 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		}else{
 			String imei = JsonUtil.getStringValue(jo, "imei");
 			if(checkExists(imei, financialBean.getLocalId(), financialBean.getAdditionTime())){
-				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+				message.put("message", "您已添加过该记账记录，请勿重复操作！");
 				message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 				message.put("isSuccess", false);
 				return message;
@@ -143,9 +144,15 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
 		if(fid < 1){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有要同步的数据.value));
-			message.put("responseCode", EnumUtil.ResponseCode.没有要同步的数据.value);
-			message.put("isSuccess", true);
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.参数不存在或为空.value));
+			message.put("responseCode", EnumUtil.ResponseCode.参数不存在或为空.value);
+			return message;
+		}
+		
+		FinancialBean bean = financialMapper.findById(FinancialBean.class, fid);
+		if(bean.getCreateUserId() != user.getId()){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;
 		}
 		
@@ -332,7 +339,12 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 					financialBean.setCreateTime(new Date());
 					financialBean.setModifyUserId(user.getId());
 					financialBean.setModifyTime(new Date());
-					financialBean.setImei(JsonUtil.getStringValue(object, "imei"));
+					if(!JsonUtil.hasKey(object, "imei") && financialBean.getLocalId() < 1){
+						financialBean.setImei(FinancialWebImeiUtil.DEFAULT_IMEI);
+						financialBean.setLocalId(FinancialWebImeiUtil.getInstance().getLocalId());
+						FinancialWebImeiUtil.getInstance().addLocalId();
+					}else
+						financialBean.setImei(JsonUtil.getStringValue(object, "imei"));
 				}
 				return financialBean;
 			}
@@ -410,5 +422,99 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 	public List<FinancialBean> getByTimeRange(int createUserId, int status,
 			Date startTime, Date endTime) {
 		return this.financialMapper.getByTimeRange(createUserId, status, startTime, endTime);
+	}
+
+	@Override
+	public Map<String, Object> query(JSONObject json, UserBean user,
+			HttpServletRequest request) {
+		logger.info("FinancialServiceImpl-->query():jsonObject=" +json.toString() +", user=" +user.getAccount());
+		
+		String key = JsonUtil.getStringValue(json, "key");
+		String start = JsonUtil.getStringValue(json, "start");
+		String end = JsonUtil.getStringValue(json, "end");
+		String level = JsonUtil.getStringValue(json, "levels");
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		StringBuffer sqlBuffer = new StringBuffer();
+		sqlBuffer.append("select local_id, id, status, model, money, one_level, two_level, has_img, path");
+		sqlBuffer.append("	, location, longitude, latitude, financial_desc, create_user_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(addition_time,'%Y-%m-%d %H:%i:%s') addition_time");
+		sqlBuffer.append(" from t_financial ");
+		sqlBuffer.append(" where create_user_id=? ");
+		if(StringUtil.isNotNull(key))
+			sqlBuffer.append(" and (one_level like '%"+ key +"%' or two_level like '%"+ key +"%' or location like '%"+ key +"%' or financial_desc like '%"+ key +"%')");
+		if(StringUtil.isNotNull(start))
+			sqlBuffer.append(" and addition_time >= date_format('" + start+ "', '%Y-%m-%d')");
+		if(StringUtil.isNotNull(end))
+			sqlBuffer.append(" and addition_time <= date_format('" + end+ "', '%Y-%m-%d')");
+		
+		if(StringUtil.isNotNull(level)){
+			String[] levels = level.split(">>>");
+			sqlBuffer.append(" and one_level = '" + levels[0] +"'");
+			sqlBuffer.append(" and two_level = '" + levels[1] +"'");
+		}
+		if(StringUtil.isNull(key) && StringUtil.isNull(start) && StringUtil.isNull(end) && StringUtil.isNull(level)){
+			sqlBuffer.append(" order by addition_time desc");
+			sqlBuffer.append(" limit 15");
+		}else {
+			sqlBuffer.append(" and status = " + ConstantsUtil.STATUS_NORMAL);
+			sqlBuffer.append(" order by addition_time desc");
+		}
+		List<Map<String, Object>> list = financialMapper.executeSQL(sqlBuffer.toString(), user.getId());
+		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"查询记账列表，查询条件：", json.toString()).toString(), "query()", ConstantsUtil.STATUS_NORMAL, 0);
+		message.put("message", list);
+		message.put("isSuccess", true);
+		return message;
+	}
+
+	@Override
+	public Map<String, Object> paging(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("FinancialServiceImpl-->paging():jo=" +jo.toString());
+		long start = System.currentTimeMillis();
+		List<Map<String, Object>> rs = new ArrayList<Map<String,Object>>();
+		int pageSize = JsonUtil.getIntValue(jo, "pageSize", ConstantsUtil.DEFAULT_PAGE_SIZE); //每页的大小
+		int lastId = JsonUtil.getIntValue(jo, "last_id"); //开始的页数
+		int firstId = JsonUtil.getIntValue(jo, "first_id"); //结束的页数
+		String method = JsonUtil.getStringValue(jo, "method", "firstloading"); //操作方式
+				
+		StringBuffer sql = new StringBuffer();
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
+		if("firstloading".equalsIgnoreCase(method)){
+			sql.append("select local_id, id, status, model, money, one_level, two_level, has_img, path");
+			sql.append("	, location, longitude, latitude, financial_desc, create_user_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(addition_time,'%Y-%m-%d %H:%i:%s') addition_time");
+			sql.append(" from t_financial ");
+			sql.append(" where create_user_id = ?");
+			sql.append(" order by addition_time desc limit 0,?");
+			rs = financialMapper.executeSQL(sql.toString(), user.getId(), pageSize);
+		//下刷新
+		}else if("lowloading".equalsIgnoreCase(method)){
+			sql.append("select local_id, id, status, model, money, one_level, two_level, has_img, path");
+			sql.append("	, location, longitude, latitude, financial_desc, create_user_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(addition_time,'%Y-%m-%d %H:%i:%s') addition_time");
+			sql.append(" from t_financial ");
+			sql.append(" where create_user_id = ?");
+			sql.append(" and id < ? order by addition_time desc limit 0,? ");
+			rs = financialMapper.executeSQL(sql.toString(), user.getId(), lastId, pageSize);
+		//上刷新
+		}else if("uploading".equalsIgnoreCase(method)){
+			sql.append("select local_id, id, status, model, money, one_level, two_level, has_img, path");
+			sql.append("	, location, longitude, latitude, financial_desc, create_user_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(addition_time,'%Y-%m-%d %H:%i:%s') addition_time");
+			sql.append(" from t_financial ");
+			sql.append(" where create_user_id = ?");
+			sql.append(" and id > ? limit 0,? ");
+			rs = financialMapper.executeSQL(sql.toString(), user.getId(), firstId, pageSize);
+		}
+
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, user.getAccount()+"获取记账列表：", "paging()", ConstantsUtil.STATUS_NORMAL, 0);
+		
+		long end = System.currentTimeMillis();
+		logger.info("获取记账列表总计耗时：" +(end - start) +"毫秒, 总数是："+rs.size());
+		message.put("message", rs);
+		message.put("isSuccess", true);
+		return message;
 	}
 }

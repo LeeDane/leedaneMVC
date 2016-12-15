@@ -67,7 +67,7 @@ public class AttentionServiceImpl implements AttentionService<AttentionBean>{
 		message.put("isSuccess", false);
 	
 		if(SqlUtil.getBooleanByList(attentionMapper.exists(AttentionBean.class, tableName, tableId, user.getId()))){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+			message.put("message", "您已关注，请勿重复关注！");
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;
 		}

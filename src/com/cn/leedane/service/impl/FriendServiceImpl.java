@@ -109,10 +109,8 @@ public class FriendServiceImpl implements FriendService<FriendBean> {
 			friendHandler.delete(fromUserId, toUserId);
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.解除好友关系成功.value));
 			//发送通知给相应的用户
-			Set<Integer> ids = new HashSet<Integer>();
-			ids.add(user.getId() == fromUserId ? toUserId: fromUserId);
 			String content = "您的好友" +user.getAccount() +"已经解除了您们的好友关系";
-			notificationHandler.sendNotificationByIds(false, user, ids, content, NotificationType.通知, DataTableType.好友.value, fid, null);
+			notificationHandler.sendNotificationById(false, user, (user.getId() == fromUserId ? toUserId: fromUserId), content, NotificationType.通知, DataTableType.好友.value, fid, null);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库删除数据失败.value));
 			message.put("responseCode", EnumUtil.ResponseCode.数据库删除数据失败.value);
@@ -183,10 +181,8 @@ public class FriendServiceImpl implements FriendService<FriendBean> {
 			return message;	
 		}
 		//发送通知给相应的用户
-		Set<Integer> ids = new HashSet<Integer>();
-		ids.add(toUserId);
 		String content = user.getAccount() +"请求与您成为好友";
-		notificationHandler.sendNotificationByIds(false, user, ids, content, NotificationType.通知, DataTableType.好友.value, friendBean.getId(), null);
+		notificationHandler.sendNotificationById(false, user, toUserId, content, NotificationType.通知, DataTableType.好友.value, friendBean.getId(), null);
 	
 		message.put("message", "等待对方确认..."); 
 		message.put("isSuccess", true);
@@ -250,10 +246,8 @@ public class FriendServiceImpl implements FriendService<FriendBean> {
 		message.put("message", "恭喜，TA已经是好友"); 
 		
 		//发送通知给相应的用户
-		Set<Integer> ids = new HashSet<Integer>();
-		ids.add(friendBean.getFromUserId());
 		String content = user.getAccount() +"已经同意您的好友请求";
-		notificationHandler.sendNotificationByIds(false, user, ids, content, NotificationType.通知, DataTableType.好友.value, friendBean.getId(), null);
+		notificationHandler.sendNotificationById(false, user, friendBean.getFromUserId(), content, NotificationType.通知, DataTableType.好友.value, friendBean.getId(), null);
 	
 		//保存操作日志
 		operateLogService.saveOperateLog(user, request, null, user.getAccount()+"同意好友关系"+fid, "addAgree()", ConstantsUtil.STATUS_NORMAL, 0);

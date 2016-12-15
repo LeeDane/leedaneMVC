@@ -94,7 +94,7 @@
 	   		</div>
 	   		<!-- 分类 -->
 	   		<div class="col-lg-3">
-	   			<div class="form-group" style="width: 70%;float: right;">
+	   			<div class="form-group" style="width: 100%; margin-top: 24px;">
 					<select class="form-control" name="category">
 						<%
 							for(BlogCategory ts: EnumUtil.BlogCategory.values()){
@@ -103,7 +103,7 @@
 						<%} %>
 					</select>
 				</div>
-				<button type="button" class="btn btn-primary btn-sm" style="width: 70%;float: right;" onclick="draftlist();">查看草稿列表</button>
+				<button type="button" class="btn btn-primary btn-sm" style="width: 100%; margin-bottom: 8px;" onclick="draftlist();">查看草稿列表</button>
 	   		</div>
 	   </div>
 	   <div class="row baidu-editor-container">
@@ -119,7 +119,7 @@
 	   <div class="row">
 	   		<div class="col-lg-4">
 	   			<div class="form-group">
-				    <input type="text" class="form-control tag-input" placeholder="请输入标签，最多3个，每个限制5位，回车添加" onkeypress="if (event.keyCode == 13) addTag(this);">
+				    <input type="text" class="form-control tag-input" placeholder="请输入标签，最多3个，每个限制10位，回车添加" onkeypress="if (event.keyCode == 13) addTag(this);">
 				 </div>
 	   		</div>
 	   		<div class="col-lg-8">

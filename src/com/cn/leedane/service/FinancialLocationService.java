@@ -1,5 +1,4 @@
 package com.cn.leedane.service;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,7 +51,16 @@ public interface FinancialLocationService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
-	public List<Map<String, Object>> paging(JSONObject jo, UserBean user,
+	public Map<String, Object> paging(JSONObject jo, UserBean user,
 			HttpServletRequest request);
+
+	/**
+	 * 获取所有记账位置列表
+	 * @param jsone
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> getAll(JSONObject jsone, UserBean user, HttpServletRequest request);
 	
 }

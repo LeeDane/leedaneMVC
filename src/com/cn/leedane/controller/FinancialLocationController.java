@@ -1,7 +1,6 @@
 package com.cn.leedane.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -118,10 +117,7 @@ public class FinancialLocationController extends BaseController{
 				printWriter(message, response);
 				return null;
 			}
-			List<Map<String, Object>> result= financialLocationService.paging(getJsonFromMessage(message), getUserFromMessage(message), request);
-			System.out.println("获得记账位置的数量：" +result.size());
-			message.put("isSuccess", true);
-			message.put("message", result);
+			message.putAll(financialLocationService.paging(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {
@@ -131,5 +127,25 @@ public class FinancialLocationController extends BaseController{
 		return null;
 	}
 	
-
+	/**
+	 * 获取所有的位置列表
+	 * @return
+	 */
+	@RequestMapping("/getAll")
+	public String getAll(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(financialLocationService.getAll(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		printWriter(message, response);
+		return null;
+	}
 }

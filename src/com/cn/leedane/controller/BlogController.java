@@ -267,7 +267,7 @@ public class BlogController extends BaseController{
 				printWriter(message, response);
 				return null;
 			}
-			int blogId = Integer.parseInt(blog_id);
+			int blogId = StringUtil.changeObjectToInt(blog_id);
 			
 			if(blogId < 1){
 				printWriter(message, response);

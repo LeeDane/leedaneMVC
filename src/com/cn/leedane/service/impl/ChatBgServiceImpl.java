@@ -170,7 +170,7 @@ public class ChatBgServiceImpl implements ChatBgService<ChatBgBean> {
 		
 		//检查是否有数据存在
 		if(this.chatBgMapper.executeSQL("select id from "+DataTableType.聊天背景.value+" where create_user_id = ? and path=?", user.getId(), path).size() > 0 ){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+			message.put("message", "您已发布过该聊天背景，请勿重复发布！");
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;
 		}
@@ -323,10 +323,8 @@ public class ChatBgServiceImpl implements ChatBgService<ChatBgBean> {
 			
 			if(result){
 				//发送通知给相应的用户
-				Set<Integer> ids = new HashSet<Integer>();
-				ids.add(chatBg.getCreateUserId());
 				String content = user.getAccount() +"下载您的聊天背景资源，您获得"+bgScore +"积分";
-				notificationHandler.sendNotificationByIds(false, user, ids, content, NotificationType.通知, DataTableType.积分.value, scoreBean1.getId(), null);
+				notificationHandler.sendNotificationById(false, user, chatBg.getCreateUserId(), content, NotificationType.通知, DataTableType.积分.value, scoreBean1.getId(), null);
 			}
 		}
 		return result;

@@ -100,6 +100,23 @@ public class NotificationHandler {
 	
 	/**
 	 * 发送通知
+	 * @param notifyMySelf  是否需要通知自己
+	 * @param user
+	 * @param id  单个用户
+	 * @param content
+	 * @param notificationType
+	 * @param tableName
+	 * @param tableId
+	 * @param objectBean ids没有机器人的Id的时候可以为空
+	 */
+	public void sendNotificationById(boolean notifyMySelf, UserBean user, int id, String content, NotificationType notificationType, String tableName, int tableId, Object objectBean){
+		Set<Integer> ids = new HashSet<Integer>();
+		ids.add(id);
+		sendNotificationByIds(notifyMySelf, user, ids, content, notificationType, tableName, tableId, objectBean);
+	}
+	
+	/**
+	 * 发送通知
 	 * @param notifyMySelf 是否需要通知自己
 	 * @param user
 	 * @param ids
@@ -284,9 +301,7 @@ public class NotificationHandler {
 						//更新评论数
 						commentHandler.addComment(tableName, tableId);
 						String notificationContent = robotName +"回复您："+robotReply;
-						Set<Integer> ids = new HashSet<Integer>();
-						ids.add(user.getId());
-						sendNotificationByIds(true, robotUser, ids, notificationContent, NotificationType.艾特我, tableName, tableId, objectBean);
+						sendNotificationById(true, robotUser, user.getId(), notificationContent, NotificationType.艾特我, tableName, tableId, objectBean);
 					}else{
 						System.out.println("失败");
 					}

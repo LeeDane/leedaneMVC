@@ -1,5 +1,6 @@
 package com.cn.leedane.utils;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -574,6 +575,15 @@ public class DateUtil {
 		return DateToString(calendar.getTime(), "yyyy-MM-dd HH:mm:ss");
 	}
 	
+	/**
+	 * 将日期转化成Timestamp
+	 * @param date
+	 * @return
+	 */
+	public static Timestamp getTimestamp(Date date){
+		Timestamp timestamp = new Timestamp(date.getTime());
+		return timestamp;
+	}
 	public static void main(String[] args) {
 		try {
 			int i = leftMinutes(stringToDate("2016-11-03 18:59:00"), new Date());

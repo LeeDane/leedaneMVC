@@ -22,16 +22,10 @@ import com.google.zxing.WriterException;
 public class MainTest {
 
 	public static void main(String[] args) throws IOException {
-		RedisUtil redisUtil = new RedisUtil();
-		int number = 0;
-		String key = UserHandler.getRedisUserNameLoginErrorKey("leedane");
-		//redisUtil.delete(key);
-		if(redisUtil.hasKey(key)){
-			String string = redisUtil.getString(key);
-			//截取14位是因为前面14位被第一次错我的时间格式字符串
-			number = StringUtil.changeObjectToInt(string.substring(14, string.length()));
-		}
-		System.out.println("number="+number);
+		System.out.println(DateUtil.DateToString(new Date(), "yyyyMM"));
+		System.out.println(DateUtil.DateToString(new Date(), "yyyy年MM月"));
+		System.out.println(DateUtil.DateToString(new Date(), "MM月dd日"));
+		System.out.println(DateUtil.DateToString(new Date(), "dd日HH时"));
 	}
 	
 	private static void testImages() {

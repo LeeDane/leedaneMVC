@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONArray;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cn.leedane.utils.CollectionUtil;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.StringUtil;
@@ -79,6 +82,35 @@ public class CommonHandler {
 		
 		//System.out.println("tableName:"+tableName+",tableId:"+tableId+",content:"+content);
 		return content;
+	}
+	
+	/**
+	 * 获取实体对象
+	 * @param tableName
+	 * @param tableId
+	 * @param user
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	public Object getBeanByTableNameAndId(String tableName, int tableId, UserBean user){
+		List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+		
+		//只支持心情和博客获取源
+		if(DataTableType.心情.value.equalsIgnoreCase(tableName)){
+			list = moodHandler.getMoodDetail(tableId, user, true);
+			if(CollectionUtil.isNotEmpty(list)){
+				JSONArray.toList(net.sf.json.JSONArray.fromObject(list));
+			}
+		}else if(DataTableType.博客.value.equalsIgnoreCase(tableName)){
+			list = blogHandler.getBlogDetail(tableId, user, true);
+			if(CollectionUtil.isNotEmpty(list)){
+				JSONArray.toList(net.sf.json.JSONArray.fromObject(list));
+			}
+		}else{
+			return null;
+		}
+		
+		return null;
 	}
 	
 	/**

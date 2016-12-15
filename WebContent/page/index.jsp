@@ -4,6 +4,11 @@
 <%
 	Object obj = session.getAttribute(UserController.USER_INFO_KEY);
 	boolean isLogin = obj != null;
+	int loginUserId = 0;
+	if(isLogin){
+		UserBean user = (UserBean)obj;
+		loginUserId = user.getId();
+	}
 %>
 <!DOCTYPE html>
 <html>
@@ -19,6 +24,7 @@
 		}
 		.main{
 			margin-top: 50px;
+			background-color: #f5f5f5;
 		}
 		.main_bg{
 			width: 100%;
@@ -38,6 +44,47 @@
 		.tag{
 			margin-right: 5px;
 		}
+		#main-container .page-header{
+			padding-bottom: 0px !important;
+			margin: 0 0 0 !important;
+			border-bottom: 0px !important;
+		}
+		#main-container .breadcrumb{
+			margin-bottom: 10px !important;
+		}
+		#main-container .panel{
+			margin-bottom: 2px !important;
+		}
+		#main-container .panel-info{
+			border-color: #f5f5f5 !important;
+		}
+		#main-container .has-img-panel-info{
+			min-height: 324px;
+		}
+		#main-container .panel-footer{
+			background-color: #fff !important;
+		}
+		#main-container .panel-info>.panel-heading{
+			background-color: #fff !important;
+			border-color: #f5f5f5 !important;
+		}
+		.col-padding-eight{
+			padding-right: 8px !important;
+			padding-left: 8px !important;
+		}
+		#main-container .panel-body{
+			overflow: hidden;
+		}
+		
+		#report-blog{
+			margin-top: 60px;
+		}
+		.checkbox-inline{
+			padding-left: 0px !important;
+		}
+		.background-white{
+			background-color: #fff !important;
+		}
 	</style>
 </head>
 <body>
@@ -50,7 +97,7 @@
 <div class="main clearFloat">
 	<div class="main_bg"></div>
 	
-	<div class="container">
+	<div class="container" id="main-container">
 	   <!-- <div class="row">
 	      <div class="col-lg-4">
 	      	  	<img width="100%" height="100%" class="img-rounded" alt="" src="images/main_content_img.jpg">
@@ -209,11 +256,81 @@
 	      </div>      
 	   </div> -->
 	</div>
-	<i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="font-size: 30px; color: #1E9FFF;">&#xe63e;</i>  
+	<!-- <i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="font-size: 30px; color: #1E9FFF;">&#xe63e;</i>  --> 
 </div>
-
+<!-- 模态框举报列表 -->
+<div class="modal fade" id="report-blog" tabindex="-1" role="dialog" aria-labelledby="reportBlogModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="reportBlogModalLabel">
+					举报
+				</h4>
+			</div>
+			<div class="modal-body" id="report-modal-body">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="btn-group" data-toggle="buttons">
+							<label class="btn btn-primary report-btn">
+								<input type="radio" name="options" id="option1" type-value="1"> 色情低俗
+							</label>
+							<label class="btn btn-primary report-btn">
+								<input type="radio" name="options" id="option2" type-value="2"> 广告骚扰
+							</label>
+							<label class="btn btn-primary report-btn">
+								<input type="radio" name="options" id="option3" type-value="3"> 政治敏感
+							</label>
+							<label class="btn btn-primary report-btn">
+								<input type="radio" name="options" id="option3" type-value="4"> 违法
+							</label>
+							<label class="btn btn-primary report-btn">
+								<input type="radio" name="options" id="option3" type-value="5"> 倾诉投诉
+							</label>
+							<label class="btn btn-primary report-btn default-report-btn active">
+								<input type="radio" name="options" id="option3" type-value="0"> 其他
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="form-group">
+						  <label for="report-reason">描述信息<font color="red">*</font></label>
+						  <textarea class="form-control" name="reason" placeholder="请输入详细的举报内容"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="form-group">
+						  	<label for="anonymous">是否匿名</label>
+						  	<div>
+								<label class="checkbox-inline">
+									<input type="radio" name="anonymous" value="true" checked="checked"> 匿名举报
+								</label>
+								<label class="checkbox-inline">
+									<input type="radio" name="anonymous" value="false"> 实名举报
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary " onclick="doReport(this);">
+					举报
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
 </body>
 	<script type="text/javascript">
 	var isLogin = <%=isLogin %>; //是否已经登录
+	var loginUserId = <%=loginUserId %>; //获取登录用户Id
 	</script>
 </html>

@@ -59,7 +59,7 @@ public class FinancialLocationServiceImpl implements FinancialLocationService<Fi
 		}
 		
 		if(exists(location, user)){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+			message.put("message", "您已添加过该记账位置记录，请勿重复操作！");
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;
 		}
@@ -127,7 +127,7 @@ public class FinancialLocationServiceImpl implements FinancialLocationService<Fi
 	}
 
 	@Override
-	public List<Map<String, Object>> paging(JSONObject jo, UserBean user,
+	public Map<String, Object> paging(JSONObject jo, UserBean user,
 			HttpServletRequest request) {
 		logger.info("FinancialLocationServiceImpl-->paging():jsonObject=" +jo.toString() +", user=" +user.getAccount());
 		String method = JsonUtil.getStringValue(jo, "method", "firstloading"); //操作方式
@@ -136,7 +136,9 @@ public class FinancialLocationServiceImpl implements FinancialLocationService<Fi
 		int firstId = JsonUtil.getIntValue(jo, "first_id"); //结束的页数
 		StringBuffer sql = new StringBuffer();
 		List<Map<String, Object>> rs = new ArrayList<Map<String,Object>>();
-			
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
 		if("firstloading".equalsIgnoreCase(method)){
 			sql.append("select f.id, f.status, f.location, f.location_desc, f.create_user_id, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
 			sql.append(" from "+tableName+" f where f.create_user_id = ?");
@@ -159,7 +161,10 @@ public class FinancialLocationServiceImpl implements FinancialLocationService<Fi
 		//保存操作日志
 		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"用户ID为：",user.getId() , "获取记账位置列表").toString(), "paging()", ConstantsUtil.STATUS_NORMAL, 0);
 				
-		return rs;
+		message.put("isSuccess", true);
+		message.put("message", rs);
+		System.out.println("获得记账位置的数量：" +rs.size());
+		return message;
 	}
 
 	@Override
@@ -197,6 +202,27 @@ public class FinancialLocationServiceImpl implements FinancialLocationService<Fi
 		return message;
 	}
 	
+	@Override
+	public Map<String, Object> getAll(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("FinancialLocationServiceImpl-->getAll():jsonObject=" +jo.toString() +", user=" +user.getAccount());
+		StringBuffer sql = new StringBuffer();
+		List<Map<String, Object>> rs = new ArrayList<Map<String,Object>>();
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		sql.append("select f.id, f.status, f.location, f.location_desc, f.create_user_id, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
+		sql.append(" from "+tableName+" f where f.create_user_id = ?");
+		sql.append(" order by f.id desc");
+		rs = financialLocationMapper.executeSQL(sql.toString(), user.getId());
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"用户ID为：",user.getId() , "获取所有记账位置列表").toString(), "getAll()", ConstantsUtil.STATUS_NORMAL, 0);
+				
+		message.put("isSuccess", true);
+		message.put("message", rs);
+		System.out.println("获得记账位置的数量：" +rs.size());
+		return message;
+	}
+	
 	/**
 	 * 判断记录是否存在
 	 * @param location
@@ -206,4 +232,6 @@ public class FinancialLocationServiceImpl implements FinancialLocationService<Fi
 	private boolean exists(String location, UserBean user){
 		return SqlUtil.getBooleanByList(financialLocationMapper.executeSQL("select id from "+ tableName +" where create_user_id = ? and location = ?", user.getId(), location));
 	}
+	
+	
 }

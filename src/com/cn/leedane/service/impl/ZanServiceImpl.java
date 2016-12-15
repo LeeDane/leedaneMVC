@@ -78,7 +78,7 @@ public class ZanServiceImpl implements ZanService<ZanBean>{
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
 		if(SqlUtil.getBooleanByList(zanMapper.exists(ZanBean.class, tableName, tableId, user.getId()))){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+			message.put("message", "您已点赞，请勿重复操作！");
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;
 		}

@@ -125,7 +125,7 @@ function getMoods(){
 		success : function(data) {
 			layer.close(loadi);
 			if(data != null && data.isSuccess){
-				if(method == 'firstloading')
+				//if(method == 'firstloading')
 					//$("#float-month").empty();
 					//$("#mood-container").empty();
 				
@@ -225,10 +225,16 @@ function buildMoodRow(index, mood, ifFlagNew, flagMonth){
 						        '</span>'+
 							'</div>'+
 							'<div class="col-lg-4">'+
-								'<span class="list-group-item-heading" style="margin-right: 5px;">'+ changeNotNullString(mood.create_time) +
-						        '</span>'+
-								'<span class="list-group-item-heading glyphicon glyphicon-chevron-down cursor" onclick="showItemListModal('+ index +')">'+
-						        '</span> '+
+								'<div class="row">'+
+									'<div class="col-lg-10 col-sm-10">'+
+										'<span class="list-group-item-heading" style="margin-right: 5px;">'+ changeNotNullString(mood.create_time) +
+								        '</span>'+
+									'</div>'+
+									'<div class="col-lg-2 col-sm-2">'+
+										'<span class="list-group-item-heading glyphicon glyphicon-chevron-down cursor" onclick="showItemListModal('+ index +')">'+
+								        '</span> '+
+									'</div>'+
+								'</div>'+
 							'</div>'+
 						'</div>'+
 					'</div>'+
@@ -533,25 +539,30 @@ function addZan(id){
  * @param id
  */
 function deleteMood(id){
-	var loadi = layer.load('努力加载中…');
-	$.ajax({
-		type : "post",
-		data: {mid: id},
-		url : getBasePath() +"leedane/mood/delete.action",
-		dataType: 'json', 
-		beforeSend:function(){
-		},
-		success : function(data) {
+	layer.confirm('您要删除该条心情记录吗？', {
+		  btn: ['确定','点错了'] //按钮
+	}, function(){
+		var loadi = layer.load('努力加载中…');
+		$.ajax({
+			type : "post",
+			data: {mid: id},
+			url : getBasePath() +"leedane/mood/delete.action",
+			dataType: 'json', 
+			beforeSend:function(){
+			},
+			success : function(data) {
+					layer.close(loadi);
+					layer.msg(data.message);
+					if(data.isSuccess){
+						window.location.reload();
+					}
+			},
+			error : function() {
 				layer.close(loadi);
-				layer.msg(data.message);
-				if(data.isSuccess){
-					window.location.reload();
-				}
-		},
-		error : function() {
-			layer.close(loadi);
-			layer.msg("网络请求失败");
-		}
+				layer.msg("网络请求失败");
+			}
+		});
+	}, function(){
 	});
 }
 
@@ -846,6 +857,7 @@ function buildCommentOrTransmitRow(index, ct){
 function reply(index){
 	ct_click_index = index;
 	$('#comment-or-transmit-text').attr('placeholder','@'+ changeNotNullString(cts[ct_click_index].account));
+	$('#comment-or-transmit-text').focus();
 }
 
 /**

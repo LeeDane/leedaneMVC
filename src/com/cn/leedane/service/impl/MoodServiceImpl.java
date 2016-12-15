@@ -332,7 +332,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		operateLogService.saveOperateLog(user, request, null, user.getAccount()+"查看用户id为"+toUserId+"个人中心", "getMoodByLimit()", ConstantsUtil.STATUS_NORMAL, 0);
 		
 		long end = System.currentTimeMillis();
-		System.out.println("获取心情列表总计耗时：" +(end - start) +"毫秒, 总数是："+rs.size());
+		logger.info("获取心情列表总计耗时：" +(end - start) +"毫秒, 总数是："+rs.size());
 		message.put("message", rs);
 		message.put("isSuccess", true);
 		return message;

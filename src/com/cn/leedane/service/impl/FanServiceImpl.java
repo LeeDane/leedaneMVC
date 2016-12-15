@@ -418,7 +418,7 @@ public class FanServiceImpl implements FanService<FanBean> {
 		
 		
 		if(cheakIsAddFan(user.getId(), toUserId)){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+			message.put("message", "您已关注过TA，请勿重复操作！");
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;	
 		}
@@ -435,10 +435,8 @@ public class FanServiceImpl implements FanService<FanBean> {
 			return message;	
 		}else{
 			//发送通知给相应的用户
-			Set<Integer> ids = new HashSet<Integer>();
-			ids.add(toUserId);
 			String content = user.getAccount() +"关注您";
-			notificationHandler.sendNotificationByIds(false, user, ids, content, NotificationType.通知, DataTableType.粉丝.value, fanBean.getId(), null);
+			notificationHandler.sendNotificationById(false, user, toUserId, content, NotificationType.通知, DataTableType.粉丝.value, fanBean.getId(), null);
 		}
 		
 		fanHandler.addAttention(user, toUser);

@@ -29,8 +29,11 @@
 	<script type="text/javascript" src="<%=basePath %>page/other/jquery-1.9.1.min.js"></script>
 	<script src="<%=basePath %>page/other/bootstrap-3.3.0/js/bootstrap.min.js"></script>
 	<style type="text/css">
+		::-webkit-scrollbar {
+			  width: 5px;
+		} /* 这是针对缺省样式 (必须的) */
 		::-webkit-scrollbar-track {
-		  background-color: #666699;
+		  background-color: #f5f5f5;
 		} /* 滚动条的滑轨背景颜色 */
 	
 		::-webkit-scrollbar-thumb {
@@ -82,7 +85,7 @@
 </head>
 <input type="hidden" value="<%=basePath%>" id="basePath"/>
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
+    <div class=" ">
     <div class="navbar-header">
         <span class="side-open glyphicon glyphicon-align-justify"></span>
     </div>
@@ -92,6 +95,7 @@
             <li class="nav-photo nav-main-li"><a href="<%=basePath %>page/photo.jsp">相册</a></li>
             <% if(login) { %>
             	<li class="nav-my nav-main-li"><a href="<%=basePath %>page/my.jsp">个人中心</a></li>
+            	<li class="nav-financial nav-main-li"><a href="<%=basePath %>page/financial.jsp">记账</a></li>
             <%} %>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -103,6 +107,9 @@
                     	 <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
+                <% if(login) { %>
+                	<li><a href="<%=basePath %>page/publish-blog.jsp">记一博</a></li>
+               	<%} %>
                     <li><a href="#">关于我</a></li>
                     <li><a href="http://7xnv8i.com1.z0.glb.clouddn.com/1_leedaneba1cc32e-da82-4aa4-b4f0-d1aebe868994_20160608140830_app-release.apk">app下载</a></li>
                	<% if(login) { %>
@@ -116,10 +123,10 @@
     </div>
     </div>
 </nav>
-<div class="left-sider-bg" onclick="sideClick()"></div>
+<%-- <div class="left-sider-bg" onclick="sideClick()"></div>
 <div class="left-sider">
-	<%-- <iframe width="100%" height="100%" src="<%=basePath %>page/jsp/index-sider.jsp"></iframe> --%>
-</div>
+	 <iframe width="100%" height="100%" src="<%=basePath %>page/jsp/index-sider.jsp"></iframe> 
+</div> --%>
 
 <script type="text/javascript">
 	

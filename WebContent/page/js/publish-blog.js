@@ -38,8 +38,8 @@ function addTag(obj){
 		return;
 	}
 	
-	if(text.length > 5){
-		layer.msg("标签长度不能超过5位");
+	if(text.length > 10){
+		layer.msg("标签长度不能超过10位");
 		return;
 	}
 	addTagItem(obj, text);
@@ -329,16 +329,18 @@ function clearTag(obj){
   */
  function buildDraftList(blogs){
 	 draftList = blogs;
+	 $("#draft-group-list").empty();
 	 for(var i = 0 ; i < blogs.length; i++){
-		 var itemsHtml = '<div class="list-group-item draft-item" style="cursor:pointer;" onclick="addDraftToEdit('+i+');">'+
+		 var itemsHtml = '<div class="list-group-item draft-item" style="cursor:pointer;">'+
 									'<div class="row">'+
-								'<div class="col-lg-1 col-sm-1">'+
+								'<div class="col-lg-1 col-sm-1" onclick="addDraftToEdit('+i+');">'+
 									'<span class="badge">' + (i + 1) + '</span>'+
 								'</div>'+
-								'<div class="col-lg-7 col-sm-7">'+ blogs[i].title +
+								'<div class="col-lg-6 col-sm-6" onclick="addDraftToEdit('+i+');">'+ blogs[i].title +
 								'</div>'+
-								'<div class="col-lg-4 col-sm-4">'+ blogs[i].create_time +
+								'<div class="col-lg-4 col-sm-4" onclick="addDraftToEdit('+i+');">'+ blogs[i].create_time +
 								'</div>'+
+								'<div class="col-lg-1 col-sm-1"  onclick="deleteDraft(this, '+i+');"><button type="button" class="close" aria-hidden="true">×</button></div>'+
 							'</div>'+
 						'</div>';
 		$("#draft-group-list").append(itemsHtml);
@@ -346,6 +348,10 @@ function clearTag(obj){
 	 
  }
  
+ /**
+  * 将草稿加载到编辑列表
+  * @param index
+  */
  function addDraftToEdit(index){
 	 if(!draftList || draftList.length < 1){
 		 layer.msg("草稿列表为空");
@@ -358,6 +364,49 @@ function clearTag(obj){
 	 }
 	 addToEdit(draftList[index]);
 	 $("#load-draft").modal("hide");
+ }
+ 
+ /**
+  * 删除草稿
+  * @param index
+  */
+ function deleteDraft(obj, index){
+	 if(!draftList || draftList.length < 1){
+		 layer.msg("草稿列表为空");
+		 return;
+	 }
+	 
+	 if(draftList.length <= index){
+		 layer.msg("编辑的草稿索引越界，请刷新");
+		 return;
+	 }
+	 
+	 layer.confirm('您要删除该条草稿记录吗？', {
+		  btn: ['确定','点错了'] //按钮
+	}, function(){
+		var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
+		$.ajax({
+			type : "post",
+			data : {b_id: draftList[index].id, t: Math.random()},
+			url : getBasePath() +"leedane/blog/deleteBlog.action",
+			dataType: 'json', 
+			beforeSend:function(){
+			},
+			success : function(data) {
+				layer.close(loadi);
+				if(data.isSuccess){
+					draftList.splice(index,1);
+					buildDraftList(draftList);
+				}
+				layer.msg(data.message);
+			},
+			error : function() {
+				layer.msg("网络请求失败");
+				layer.close(loadi);
+			}
+		});
+	}, function(){
+	});
  }
  
  /**

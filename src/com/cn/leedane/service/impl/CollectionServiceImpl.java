@@ -66,7 +66,7 @@ public class CollectionServiceImpl implements CollectionService<CollectionBean>{
 		message.put("isSuccess", false);
 		
 		if(SqlUtil.getBooleanByList(collectionMapper.exists(CollectionBean.class, tableName, tableId, user.getId()))){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加的记录已经存在.value));
+			message.put("message", "您已收藏，请勿重复操作！");
 			message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
 			return message;
 		}

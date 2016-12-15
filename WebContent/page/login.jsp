@@ -53,7 +53,7 @@
     	body {
 		  padding-top: 40px;
 		  padding-bottom: 40px;
-		  background-color: #eee;
+		  background-color: #f5f5f5;
 		}
 		
 		.form-signin {
@@ -157,38 +157,7 @@
   var connId = ""; //当前页面的连接ID
   $(function () {	  
       $(".login-btn").on("click", function(){
-    	  var account = $("#account").val();
-    	  if(isEmpty(account)){
-    		  layer.msg("请输入账号");
-    		  return;
-    	  }
-    	  
-    	  var password = $("#password").val();
-    	  if(isEmpty(password)){
-    		  layer.msg("请输入密码");
-    		  return;
-    	  }
-    	  var params = {account: account, password: $.md5(password), t: Math.random()};
-    	  var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
-    	  $.ajax({
-    			type : "post",
-    			data : params,
-    			url : "<%=basePath %>leedane/user/login.action",
-    			dataType: 'json',
-    			withCredentials:true,
-    			beforeSend:function(request){
-    			},
-    			success : function(data) {
-    				layer.close(loadi);
-    				layer.msg(data.message);
-    				if(data.isSuccess)
-    					window.location.href="<%= ref%>";
-    			},
-    			error : function() {
-    				layer.close(loadi);
-    				layer.msg("网络请求失败");
-    			}
-    		});
+    	  doLogin();
       });
       
       $("#show-login-qr-code-btn").on("click", function(){
@@ -197,6 +166,41 @@
       });
       
   });
+  
+  function doLogin(){
+	  var account = $("#account").val();
+	  if(isEmpty(account)){
+		  layer.msg("请输入账号");
+		  return;
+	  }
+	  
+	  var password = $("#password").val();
+	  if(isEmpty(password)){
+		  layer.msg("请输入密码");
+		  return;
+	  }
+	  var params = {account: account, password: $.md5(password), t: Math.random()};
+	  var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
+	  $.ajax({
+			type : "post",
+			data : params,
+			url : "<%=basePath %>leedane/user/login.action",
+			dataType: 'json',
+			withCredentials:true,
+			beforeSend:function(request){
+			},
+			success : function(data) {
+				layer.close(loadi);
+				layer.msg(data.message);
+				if(data.isSuccess)
+					window.location.href="<%= ref%>";
+			},
+			error : function() {
+				layer.close(loadi);
+				layer.msg("网络请求失败");
+			}
+		});
+  }
   
   function init(){
       JS.Engine.on({  
@@ -241,6 +245,14 @@
       });
 	}
   
+//回车执行登录
+document.onkeydown=function(event){
+    var e = event || window.event || arguments.callee.caller.arguments[0];
+    if(e && e.keyCode==13){ // enter 键
+    	doLogin();
+   }
+}
+ 
 //页面关闭和刷新执行方法
   window.onbeforeunload = onbeforeunload_handler;
   window.onunload = onunload_handler;
