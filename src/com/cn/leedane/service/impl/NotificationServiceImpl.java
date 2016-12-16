@@ -134,7 +134,7 @@ public class NotificationServiceImpl implements NotificationService<Notification
 		boolean result = notificationHandler.sendBroadcast(broadcast);
 		
 		//保存操作日志
-		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"向所有在线用户发送通知", StringUtil.getSuccessOrNoStr(result)).toString(), "sendBroadcast()", ConstantsUtil.STATUS_NORMAL, 0);
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"向所有在线用户发送通知", StringUtil.getSuccessOrNoStr(result)).toString(), "sendBroadcast()", StringUtil.changeBooleanToInt(result), 0);
 		message.put("isSuccess", result);
 		return message;
 	}
@@ -153,6 +153,12 @@ public class NotificationServiceImpl implements NotificationService<Notification
 		}
 		NotificationBean notificationBean = notificationMapper.findById(NotificationBean.class, nid);
 		
+		if(!user.isAdmin() && (notificationBean == null || notificationBean.getFromUserId() != user.getId())){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+			return message;
+		}
+		
 		boolean result = false;
 		if(notificationBean != null){
 			result = notificationMapper.deleteById(NotificationBean.class, nid) > 0;
@@ -169,7 +175,7 @@ public class NotificationServiceImpl implements NotificationService<Notification
 		}
 		
 		//保存操作日志
-		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"刪除通知Id为：", nid , StringUtil.getSuccessOrNoStr(result)).toString(), "deleteNotification()", ConstantsUtil.STATUS_NORMAL, 0);
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"刪除通知Id为：", nid , StringUtil.getSuccessOrNoStr(result)).toString(), "deleteNotification()", StringUtil.changeBooleanToInt(result), 0);
 		message.put("isSuccess", result);
 		return message;
 	}

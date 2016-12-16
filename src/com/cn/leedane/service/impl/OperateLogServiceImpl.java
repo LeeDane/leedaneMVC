@@ -103,19 +103,19 @@ public class OperateLogServiceImpl implements OperateLogService<OperateLogBean>{
 		//查找该用户所有的积分历史列表(该用户必须是登录用户)
 		if("firstloading".equalsIgnoreCase(method)){
 			sql.append("select o.id, o.method, o.browser, o.ip, o.status, date_format(o.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
-			sql.append(" from "+DataTableType.操作日志.value+" o where o.create_user_id = ? and (method ='手机号码登录' or method='账号登录')");
+			sql.append(" from "+DataTableType.操作日志.value+" o where o.create_user_id = ? and (method ='手机号码登录' or method='账号登录' or method='扫码登录')");
 			sql.append(" order by o.id desc limit 0,?");
 			rs = operateLogMapper.executeSQL(sql.toString(), user.getId(), pageSize);
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
 			sql.append("select o.id, o.method, o.browser, o.ip, o.status, date_format(o.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
-			sql.append(" from "+DataTableType.操作日志.value+" o where o.create_user_id = ? and (method ='手机号码登录' or method='账号登录')");
+			sql.append(" from "+DataTableType.操作日志.value+" o where o.create_user_id = ? and (method ='手机号码登录' or method='账号登录' or method='扫码登录')");
 			sql.append(" and o.id < ? order by o.id desc limit 0,? ");
 			rs = operateLogMapper.executeSQL(sql.toString(), user.getId(), lastId, pageSize);
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
 			sql.append("select o.id, o.method, o.browser, o.ip, o.status, date_format(o.create_time,'%Y-%m-%d %H:%i:%s') create_time ");
-			sql.append(" from "+DataTableType.操作日志.value+" o where o.create_user_id = ? and (method ='手机号码登录' or method='账号登录')");
+			sql.append(" from "+DataTableType.操作日志.value+" o where o.create_user_id = ? and (method ='手机号码登录' or method='账号登录' or method='扫码登录')");
 			sql.append(" and o.id > ? limit 0,?  ");
 			rs = operateLogMapper.executeSQL(sql.toString() , user.getId(), firstId, pageSize);
 		}

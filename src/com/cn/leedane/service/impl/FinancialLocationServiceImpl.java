@@ -103,7 +103,7 @@ public class FinancialLocationServiceImpl implements FinancialLocationService<Fi
 		
 		FinancialLocationBean bean = financialLocationMapper.findById(FinancialLocationBean.class, flid);
 		
-		if(bean == null || bean.getCreateUserId() != user.getId()){
+		if(!user.isAdmin() && (bean == null || bean.getCreateUserId() != user.getId())){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;
@@ -183,7 +183,7 @@ public class FinancialLocationServiceImpl implements FinancialLocationService<Fi
 		
 		boolean result = false;
 		FinancialLocationBean bean = financialLocationMapper.findById(FinancialLocationBean.class, flid);
-		if(bean == null || bean.getCreateUserId() != user.getId()){
+		if(!user.isAdmin() && (bean == null || bean.getCreateUserId() != user.getId())){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;

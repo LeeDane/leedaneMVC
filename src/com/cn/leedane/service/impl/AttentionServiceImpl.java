@@ -103,17 +103,10 @@ public class AttentionServiceImpl implements AttentionService<AttentionBean>{
 			HttpServletRequest request) {
 		logger.info("AttentionServiceImpl-->deleteAttention():jsonObject=" +jo.toString() +", user=" +user.getAccount());
 		int aid = JsonUtil.getIntValue(jo, "aid");
-		int createUserId = JsonUtil.getIntValue(jo, "create_user_id");
+		//int createUserId = JsonUtil.getIntValue(jo, "create_user_id");
 		
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
-		
-		//非登录用户不能删除操作
-		if(createUserId != user.getId()){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先登录.value));
-			message.put("responseCode", EnumUtil.ResponseCode.请先登录.value);
-			return message;
-		}
 		
 		if(aid < 1){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作实例.value));
@@ -121,21 +114,25 @@ public class AttentionServiceImpl implements AttentionService<AttentionBean>{
 			return message;
 		}
 		
-		boolean result = false;
 		AttentionBean attentionBean = attentionMapper.findById(AttentionBean.class, aid);
-		if(attentionBean != null && attentionBean.getCreateUserId() == createUserId){
-			result = attentionMapper.deleteById(AttentionBean.class, attentionBean.getId()) > 0;
-		}else{
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
-			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);
+		
+		//非登录用户不能删除操作
+		if(!user.isAdmin() && (attentionBean == null || attentionBean.getCreateUserId() != user.getId())){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+			return message;
 		}
 		
+		boolean result = attentionMapper.deleteById(AttentionBean.class, attentionBean.getId()) > 0;
 		if(result){
-			//保存操作日志
-			operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"删除关注ID为", aid, "的数据", StringUtil.getSuccessOrNoStr(result)).toString(), "deleteAttention()", ConstantsUtil.STATUS_NORMAL, 0);
 			message.put("isSuccess", true);
-		}			
-		
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除成功.value));
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除失败.value));
+			message.put("responseCode", EnumUtil.ResponseCode.删除失败.value);
+		}	
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"删除关注ID为", aid, "的数据", StringUtil.getSuccessOrNoStr(result)).toString(), "deleteAttention()", ConstantsUtil.STATUS_NORMAL, 0);
 		return message;
 	}
 

@@ -233,13 +233,12 @@ public class ZanServiceImpl implements ZanService<ZanBean>{
 		}
 		
 		if(result){
-			//保存操作日志
-			operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"删除赞ID为", zid, "的数据", StringUtil.getSuccessOrNoStr(result)).toString(), "deleteZan()", ConstantsUtil.STATUS_NORMAL, 0);
 			//取消赞的数据
 			zanHandler.cancelZan(zanBean.getTableId(), zanBean.getTableName(), user);
 			message.put("isSuccess", true);
 		}			
-		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"删除赞ID为", zid, "的数据", StringUtil.getSuccessOrNoStr(result)).toString(), "deleteZan()", StringUtil.changeBooleanToInt(result), 0);
 		return message;
 	}
 

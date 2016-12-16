@@ -215,12 +215,11 @@ public class TransmitServiceImpl implements TransmitService<TransmitBean>{
 		}
 		
 		if(result){
-			//保存操作日志
-			operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"删除转发ID为", tid, "的数据", StringUtil.getSuccessOrNoStr(result)).toString(), "deleteTransmit()", ConstantsUtil.STATUS_NORMAL, 0);
 			transmitHandler.deleteTransmit(transmitBean.getTableId(), transmitBean.getTableName());
 			message.put("isSuccess", true);
 		}			
-		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"删除转发ID为", tid, "的数据", StringUtil.getSuccessOrNoStr(result)).toString(), "deleteTransmit()", StringUtil.changeBooleanToInt(result), 0);
 		return message;
 	}
 
@@ -305,8 +304,6 @@ public class TransmitServiceImpl implements TransmitService<TransmitBean>{
 		
 		//保存操作日志
 		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取用户ID为：",toUserId,",表名：",tableName,"，表id为：",tableId,"的转发列表").toString(), "getLimit()", ConstantsUtil.STATUS_NORMAL, 0);
-						
-		
 		return rs;
 	}
 
@@ -325,6 +322,13 @@ public class TransmitServiceImpl implements TransmitService<TransmitBean>{
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
 		
+		int createUserId = SqlUtil.getCreateUserIdByList(transmitMapper.getObjectCreateUserId(tableName, tableId));
+		if(!user.isAdmin() && (user.getId() != createUserId)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+			return message;
+		}
+		
 		boolean result = transmitMapper.updateSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(tableName)), " set can_transmit=? where id=?", canTransmit, tableId) > 0;
 		
 		if(result){
@@ -335,7 +339,7 @@ public class TransmitServiceImpl implements TransmitService<TransmitBean>{
 		}
 		
 		//保存操作日志
-		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"更新表名为：", tableName ,",表ID为：", tableId, "转发状态为", canTransmit, "，结果更新", StringUtil.getSuccessOrNoStr(result)).toString(), "updateTransmitStatus()", ConstantsUtil.STATUS_NORMAL, 0);
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"更新表名为：", tableName ,",表ID为：", tableId, "转发状态为", canTransmit, "，结果更新", StringUtil.getSuccessOrNoStr(result)).toString(), "updateTransmitStatus()", StringUtil.changeBooleanToInt(result), 0);
 		message.put("isSuccess", result);
 		return message;
 	}

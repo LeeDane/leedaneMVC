@@ -148,12 +148,7 @@ public class SignInServiceImpl implements SignInService<SignInBean> {
 		
 		// 保存操作日志信息
 		String subject = user.getAccount()+"签到" + StringUtil.getSuccessOrNoStr(isSave);
-		try {
-			this.operateLogService.saveOperateLog(user, request, new Date(), subject, "saveSignIn", 1, 0);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "saveSignIn", StringUtil.changeBooleanToInt(isSave), 0);
 		return isSave;
 	}
 
@@ -189,12 +184,7 @@ public class SignInServiceImpl implements SignInService<SignInBean> {
 		rs = signInMapper.executeSQL(sql.toString(), uid, ConstantsUtil.STATUS_NORMAL, startDate, endDate);
 		
 		//保存操作日志
-		try {
-			operateLogService.saveOperateLog(user, request, null, user.getAccount()+"查看签到列表", "getSignInByLimit()", ConstantsUtil.STATUS_NORMAL, 0);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+		operateLogService.saveOperateLog(user, request, null, user.getAccount()+"查看签到列表", "getSignInByLimit()", ConstantsUtil.STATUS_NORMAL, 0);
 		long end = System.currentTimeMillis();
 		System.out.println("获取签到列表总计耗时：" +(end - start) +"毫秒");
 		return rs;

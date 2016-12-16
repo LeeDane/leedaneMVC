@@ -76,7 +76,7 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 			
 			//获取文章的作者
 			int createUserId = oldBean.getCreateUserId();
-			if(createUserId < 1 || createUserId != user.getId()){
+			if(!user.isAdmin() && (createUserId < 1 || createUserId != user.getId())){
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
 				message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 				return message;
@@ -220,7 +220,7 @@ public class BlogServiceImpl implements BlogService<BlogBean> {
 		
 		//获取该文章的作者
 		int createUserId = oldBean.getCreateUserId();
-		if(createUserId < 1 || createUserId != user.getId()){
+		if(!user.isAdmin() && createUserId < 1 || createUserId != user.getId()){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;

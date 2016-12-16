@@ -180,7 +180,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		}
 		// 保存发表心情日志信息
 		String subject = user.getAccount() + "发表了心情" + StringUtil.getSuccessOrNoStr(result);
-		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "saveMood()", ConstantsUtil.STATUS_NORMAL, 0);
+		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "saveMood()", StringUtil.changeBooleanToInt(result), 0);
 		return message;
 	}
 
@@ -195,6 +195,12 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		if(mid < 1){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
 			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);
+			return message;
+		}
+		MoodBean oldMoodBean = moodMapper.findById(MoodBean.class, mid);
+		if(!user.isAdmin() && (oldMoodBean == null || oldMoodBean.getCreateUserId() != user.getId())){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;
 		}
 		try {
@@ -231,6 +237,13 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			return message;
 		}
 		MoodBean moodBean = moodMapper.findById(MoodBean.class, mid);
+		
+		if(!user.isAdmin() && (moodBean == null || moodBean.getCreateUserId() != user.getId())){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+			return message;
+		}
+		
 		String tableUuid = moodBean.getUuid();
 		//有图片的先删掉图片
 		if(moodBean != null && moodBean.isHasImg()){
@@ -250,7 +263,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		boolean result = moodMapper.deleteById(MoodBean.class, mid) > 0;
 		// 删除心情日志信息
 		String subject = user.getAccount() + "删除了心情，心情id为:" + mid+StringUtil.getSuccessOrNoStr(result);
-		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "deleteMood()", 1 , 0);
+		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "deleteMood()", StringUtil.changeBooleanToInt(result) , 0);
 	
 		if(result){
 			moodHandler.delete(mid, DataTableType.心情.value, tableUuid);

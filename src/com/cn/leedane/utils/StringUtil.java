@@ -280,6 +280,15 @@ public class StringUtil {
 		}
 	}
 	
+	/**
+	 * 将boolean转成1或者0
+	 * @param result
+	 * @return
+	 */
+	public static int changeBooleanToInt(boolean result) {
+		return result? ConstantsUtil.STATUS_NORMAL: ConstantsUtil.STATUS_DISABLE;
+	}
+	
 	 /**
      * 将对象转化成long类型
      * @param obj  长整形的对象

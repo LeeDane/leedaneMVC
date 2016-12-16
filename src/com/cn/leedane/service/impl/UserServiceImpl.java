@@ -1051,7 +1051,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 				message.put("responseCode", EnumUtil.ResponseCode.登录页面已经过期.value);
 			}
 			//保存操作日志
-			operateLogService.saveOperateLog(user, request, null, user.getAccount()+"进行扫码登陆，校验"+ StringUtil.getSuccessOrNoStr(result), "scanLogin()", ConstantsUtil.STATUS_NORMAL, 0);
+			operateLogService.saveOperateLog(user, request, null, user.getAccount()+"进行扫码登陆，校验"+ StringUtil.getSuccessOrNoStr(result), "扫码登录", ConstantsUtil.STATUS_NORMAL, 0);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先登录.value));
 			message.put("responseCode", EnumUtil.ResponseCode.请先登录.value);

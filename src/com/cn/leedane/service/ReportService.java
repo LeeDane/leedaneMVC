@@ -37,7 +37,7 @@ public interface ReportService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
-	public boolean cancel(JSONObject jo, UserBean user, HttpServletRequest request) ;
+	public Map<String, Object> cancel(JSONObject jo, UserBean user, HttpServletRequest request) ;
 
 
 

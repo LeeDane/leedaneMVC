@@ -134,15 +134,14 @@ public class FinancialTwoCategoryServiceImpl implements FinancialTwoCategoryServ
 		
 		result = r.size() > 0;
 		if(result){
-			//保存操作日志
-			operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取全部二级分类列表", StringUtil.getSuccessOrNoStr(result)).toString(), "getAll()", ConstantsUtil.STATUS_NORMAL, 0);
 			message.put("message", r);
 			message.put("isSuccess", true);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.获取不到二级分类列表.value));
 			message.put("responseCode", EnumUtil.ResponseCode.获取不到二级分类列表.value);
 		}
-		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取全部二级分类列表", StringUtil.getSuccessOrNoStr(result)).toString(), "getAll()", StringUtil.changeBooleanToInt(result), 0);
 		return message;
 	}
 	

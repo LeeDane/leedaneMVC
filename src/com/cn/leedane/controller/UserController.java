@@ -64,6 +64,8 @@ public class UserController extends BaseController{
 	@RequestMapping("/login")
 	public String login(HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		Map<String, Object> message = new HashMap<String, Object>();
+		
+		boolean isSuccess = false;
 		try {
 			checkParams(message, request);
 			JSONObject json = getJsonFromMessage(message);
@@ -143,7 +145,8 @@ public class UserController extends BaseController{
 								message.put("userinfo", userHandler.getUserInfo(user, true));
 								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.恭喜您登录成功.value));
 								message.put("responseCode", EnumUtil.ResponseCode.恭喜您登录成功.value);
-								message.put("isSuccess", true);
+								isSuccess = true;
+								message.put("isSuccess", isSuccess);
 								/*printWriter(message, response);
 								return null;*/
 							}
@@ -155,7 +158,7 @@ public class UserController extends BaseController{
 					
 					// 保存用户登录日志信息
 					String subject = user != null ? user.getAccount()+"登录系统": "账号"+json.get("account")+"登录系统失败";
-					this.operateLogService.saveOperateLog(user, request, new Date(), subject, "账号登录", 0, 0);
+					this.operateLogService.saveOperateLog(user, request, new Date(), subject, "账号登录", (isSuccess ? 1: 0), 0);
 				}else{
 					//RedisUtil redisUtil = RedisUtil.getInstance();
 					number = userHandler.addLoginErrorNumber(account);	

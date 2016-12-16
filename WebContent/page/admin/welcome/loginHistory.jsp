@@ -12,11 +12,40 @@
 		    padding-bottom: 8px;
 		    padding-top: 8px;
 		}
+		.cut-text{
+			white-space:nowrap; 
+			text-overflow:ellipsis; 
+			-o-text-overflow:ellipsis; 
+			overflow: hidden; 
+		}
    </style>
  </head>
 <body>
 	<%@ include file="../adminCommon.jsp" %>
   	<div class="container mainContainer clearFloat">
+	   <div class="row list-row">
+	   		<div class="col-lg-12">
+		   		<div class="row">
+		   			<div class="col-lg-5">
+		   				登录方式：扫码登录
+		   			</div>
+		   			<div class="col-lg-5">
+		   				登录时间：2016-12-12 12:12
+		   			</div>
+		   			<div class="col-lg-2">
+		   				状态：正常
+		   			</div>
+		   		</div>
+		   		<div class="row">
+		   			<div class="col-lg-6 cut-text" title="">
+		   				浏览器：Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36
+		   			</div>
+		   			<div class="col-lg-6">
+		   				IP地址：127.0.0.1
+		   			</div>
+		   		</div>
+		   	</div>
+	   </div>
 	</div>
 <body>
 <script type="text/javascript">
@@ -29,7 +58,7 @@
 	var canLoadData = true;
 	var isLoad = false;
 	
-	var appVersions;
+	var loginHostorys;
 	$(function(){			
 		queryPaging();
 		
@@ -64,7 +93,7 @@
 		$.ajax({
 			type : "post",
 			data : getQueryPagingParams(),
-			url : getBasePath() +"leedane/appVersion/paging.action",
+			url : getBasePath() +"leedane/operatelog/loginPaging.action",
 			dataType: 'json', 
 			beforeSend:function(){
 			},
@@ -80,18 +109,18 @@
 					if(method == 'firstloading'){
 						//清空原来的数据
 						$(".list-row").remove();
-						appVersions = data.message;
-						for(var i = 0; i < appVersions.length; i++){
-							buildEachRow(appVersions[i], i);
+						loginHostorys = data.message;
+						for(var i = 0; i < loginHostorys.length; i++){
+							buildEachRow(loginHostorys[i], i);
 							if(i == 0)
-								first_id = appVersions[i].id;
-							if(i == appVersions.length -1)
-								last_id = appVersions[i].id;		
+								first_id = loginHostorys[i].id;
+							if(i == loginHostorys.length -1)
+								last_id = loginHostorys[i].id;		
 						}
 					}else{
-						var currentIndex = appVersions.length;
+						var currentIndex = loginHostorys.length;
 						for(var i = 0; i < data.message.length; i++){
-							appVersions.push(data.message[i]);
+							loginHostorys.push(data.message[i]);
 							buildEachRow(data.message[i], currentIndex);
 							if(i == data.message.length -1)
 								last_id = data.message[i].id;
@@ -121,27 +150,20 @@
 	/**
 	 * 构建每一行数据
 	 */
-	function buildEachRow(appVersion, index){
+	function buildEachRow(loginHistory, index){
 		var html = '<div class="row list-row">'+
-				   		'<div class="col-lg-12">'+
-						 	'<div class="row">'+
-						 		'<div class="col-lg-12">'+
-							 		'<div class="col-lg-4">版本号：'+ appVersion.file_version +'</div>'+
-					  			 	'<div class="col-lg-4">文件大小：'+ (appVersion.lenght/1024/1024).toFixed(2) +'M</div>'+
-					  			 	'<div class="col-lg-4">发布时间：'+ appVersion.create_time +'</div>'+
-							 	'</div>'+
-							 '</div>'+
-							'<div class="row">'+
-					  			 '<div class="col-lg-12">'+ appVersion.file_desc +'</div>'+
-							 '</div>'+
-							 '<div class="row">'+
-					  			 '<div class="col-lg-12">'+
-					  			 	'<a type="button" class="btn btn-primary" href="'+ appVersion.path+'">下载</a>'+
-					  			 '</div>'+
-						 	'</div>'+
-					'</div>'+
-			'</div>';
-		
+	   					'<div class="col-lg-12">'+
+					   		'<div class="row">'+
+					   			'<div class="col-lg-5">登录方式：'+ loginHistory.method +'</div>'+
+					   			'<div class="col-lg-5">登录时间：'+ loginHistory.create_time +'</div>'+
+					   			'<div class="col-lg-2">状态：'+ (loginHistory.status == 1? '正常': '异常') +'</div>'+
+					   		'</div>'+
+					   		'<div class="row">'+
+					   			'<div class="col-lg-6 cut-text" title='+ changeNotNullString(loginHistory.browser) +'">浏览器：'+ changeNotNullString(loginHistory.browser) +'</div>'+
+					   			'<div class="col-lg-6">IP地址：'+ changeNotNullString(loginHistory.ip) +'</div>'+
+					   		'</div>'+
+					   	'</div>'+
+					'</div>';
 		$(".mainContainer").append(html);
 	}
 	</script>

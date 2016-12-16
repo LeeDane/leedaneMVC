@@ -133,9 +133,9 @@ public class GalleryServiceImpl implements GalleryService<GalleryBean> {
 			return message;
 		}
 		GalleryBean galleryBean = galleryMapper.findById(GalleryBean.class, galleryId);
-		if(galleryBean == null){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
-			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);
+		if(!user.isAdmin() && (galleryBean == null || galleryBean.getCreateUserId() != user.getId())){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;
 		}
 		
@@ -149,7 +149,7 @@ public class GalleryServiceImpl implements GalleryService<GalleryBean> {
 		
 		//保存操作日志
 		String subject = user.getAccount() + "删除图库ID为："+galleryId+"的数据"+StringUtil.getSuccessOrNoStr(result);
-		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "delete()", 1 , 0);
+		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "delete()", StringUtil.changeBooleanToInt(result) , 0);
 		return message;
 	}
 	

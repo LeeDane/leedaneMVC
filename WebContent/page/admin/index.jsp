@@ -107,7 +107,7 @@
               text:'基本操作',
               items:[
                 {id:'welcome',text:'欢迎页面',href:'welcome/welcome.jsp'},
-                {id:'history',text:'登录历史',href:'welcome/history.jsp'},
+                {id:'history',text:'登录历史',href:'welcome/loginHistory.jsp'},
                 {id:'about',text:'关于我们',href:'welcome/about.jsp'},
                 {id:'contact',text:'联系我们',href:'welcome/contact.jsp'},
                 {id:'appdownload',text:'APP下载',href:'welcome/appdownload.jsp'}

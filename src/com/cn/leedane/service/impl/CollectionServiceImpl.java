@@ -84,10 +84,8 @@ public class CollectionServiceImpl implements CollectionService<CollectionBean>{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库保存失败.value));
 			message.put("responseCode", EnumUtil.ResponseCode.数据库保存失败.value);
 		}
-		
 		//保存操作日志
-		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"收藏表ID为：", tableId, ",表名为：", tableName, "的记录", StringUtil.getSuccessOrNoStr(result)).toString(), "addCollect()", ConstantsUtil.STATUS_NORMAL, 0);
-				
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"收藏表ID为：", tableId, ",表名为：", tableName, "的记录", StringUtil.getSuccessOrNoStr(result)).toString(), "addCollect()", StringUtil.changeBooleanToInt(result), 0);		
 		return message;
 	}
 	
@@ -96,39 +94,33 @@ public class CollectionServiceImpl implements CollectionService<CollectionBean>{
 			HttpServletRequest request) {
 		logger.info("CollectionServiceImpl-->deleteCollection():jsonObject=" +jo.toString() +", user=" +user.getAccount());
 		int cid = JsonUtil.getIntValue(jo, "cid");
-		int createUserId = JsonUtil.getIntValue(jo, "create_user_id");
-		
+		//int createUserId = JsonUtil.getIntValue(jo, "create_user_id");
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
-		
-		//非登录用户不能删除操作
-		if(createUserId != user.getId()){
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先登录.value));
-			message.put("responseCode", EnumUtil.ResponseCode.请先登录.value);
-			return message;
-		}
-		
 		if(cid < 1){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作实例.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有操作实例.value);
 			return message;
 		}
 		
-		boolean result = false;
 		CollectionBean collectionBean = collectionMapper.findById(CollectionBean.class, cid);
-		if(collectionBean != null && collectionBean.getCreateUserId() == createUserId){
-			result = collectionMapper.deleteById(CollectionBean.class, collectionBean.getId()) > 0;
-		}else{
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作对象不存在.value));
-			message.put("responseCode", EnumUtil.ResponseCode.操作对象不存在.value);
+		//非登录用户不能删除操作
+		if(!user.isAdmin() && (collectionBean == null || collectionBean.getCreateUserId() != user.getId())){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+			return message;
 		}
-		
+		boolean result = collectionMapper.deleteById(CollectionBean.class, collectionBean.getId()) > 0;
+
 		if(result){
-			//保存操作日志
-			operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"删除收藏ID为", cid, "的数据", StringUtil.getSuccessOrNoStr(result)).toString(), "deleteCollection()", ConstantsUtil.STATUS_NORMAL, 0);
 			message.put("isSuccess", true);
-		}			
-		
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除成功.value));
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除失败.value));
+			message.put("responseCode", EnumUtil.ResponseCode.删除失败.value);
+		}
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"删除收藏ID为", cid, "的数据", StringUtil.getSuccessOrNoStr(result)).toString(), "deleteCollection()", StringUtil.changeBooleanToInt(result), 0);
 		return message;
 	}
 

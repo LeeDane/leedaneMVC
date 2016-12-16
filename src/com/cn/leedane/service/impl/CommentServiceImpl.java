@@ -471,12 +471,11 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 		}
 		
 		if(result){
-			//保存操作日志
-			operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"删除评论ID为", cid, "的数据", StringUtil.getSuccessOrNoStr(result)).toString(), "deleteComment()", ConstantsUtil.STATUS_NORMAL, 0);
 			commentHandler.deleteComment(commentBean.getTableId(), commentBean.getTableName());
 			message.put("isSuccess", true);
 		}			
-		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"删除评论ID为", cid, "的数据", StringUtil.getSuccessOrNoStr(result)).toString(), "deleteComment()", StringUtil.changeBooleanToInt(result), 0);
 		return message;
 	}
 
@@ -495,6 +494,13 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
 		
+		int createUserId = SqlUtil.getCreateUserIdByList(commentMapper.getObjectCreateUserId(tableName, tableId));
+		if(!user.isAdmin() && (user.getId() != createUserId)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+			return message;
+		}
+		
 		boolean result = commentMapper.updateSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(tableName)), " set can_comment=? where id=?", canComment, tableId) > 0;
 		
 		if(result){
@@ -505,7 +511,7 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 		}
 		
 		//保存操作日志
-		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"更新表名为：", tableName ,",表ID为：", tableId, "评论状态为", canComment, "，结果更新", StringUtil.getSuccessOrNoStr(result)).toString(), "updateCommentStatus()", ConstantsUtil.STATUS_NORMAL, 0);
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"更新表名为：", tableName ,",表ID为：", tableId, "评论状态为", canComment, "，结果更新", StringUtil.getSuccessOrNoStr(result)).toString(), "updateCommentStatus()", StringUtil.changeBooleanToInt(result), 0);
 		message.put("isSuccess", result);
 		return message;
 	}

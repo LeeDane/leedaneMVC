@@ -150,7 +150,7 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		}
 		
 		FinancialBean bean = financialMapper.findById(FinancialBean.class, fid);
-		if(bean.getCreateUserId() != user.getId()){
+		if(!user.isAdmin() && bean.getCreateUserId() != user.getId()){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;

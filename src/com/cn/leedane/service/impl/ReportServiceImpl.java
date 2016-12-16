@@ -121,23 +121,39 @@ public class ReportServiceImpl implements ReportService<ReportBean>{
 		
 		//保存操作日志
 		String subject = user.getAccount() + "举报，表名："+tableName+",表ID:"+tableId+StringUtil.getSuccessOrNoStr(result);
-		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "addReport()", 1 , 0);
+		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "addReport()", StringUtil.changeBooleanToInt(result) , 0);
 		return message;
 	}
 
 	@Override
-	public boolean cancel(JSONObject jo, UserBean user,
+	public Map<String, Object> cancel(JSONObject jo, UserBean user,
 			HttpServletRequest request) {
 		logger.info("ReportServiceImpl-->cancel():jsonObject=" +jo.toString() +", user=" +user.getAccount());
 		String tableName = JsonUtil.getStringValue(jo, "table_name");
 		int tableId = JsonUtil.getIntValue(jo, "table_id");
-			
-		try {
-			return reportMapper.deleteSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(DataTableType.举报.value)), " where table_id = ? and table_name = ? and create_user_id=?", tableId, tableName, user.getId()) > 0;
-		} catch (Exception e) {
-			e.printStackTrace();
+		
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+	
+		int createUserId = SqlUtil.getCreateUserIdByList(reportMapper.getObjectCreateUserId(tableName, tableId));
+		if(!user.isAdmin() && (user.getId() != createUserId)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+			return message;
 		}
-		return false;
+		
+		boolean result = reportMapper.deleteSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(DataTableType.举报.value)), " where table_id = ? and table_name = ? and create_user_id=?", tableId, tableName, user.getId()) > 0;
+		if(result){
+			message.put("isSuccess", true);
+			message.put("message", "取消举报成功");
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据删除失败.value));
+			message.put("responseCode", EnumUtil.ResponseCode.数据删除失败.value);
+		}
+		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, user.getAccount()+"取消举报，表名是"+tableName+",表ID为："+ tableId, "cancel()", StringUtil.changeBooleanToInt(result), 0);
+		return message;
 	}
 
 	@Override
