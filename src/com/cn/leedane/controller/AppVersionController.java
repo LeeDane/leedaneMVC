@@ -51,4 +51,26 @@ public class AppVersionController extends BaseController{
 		printWriter(message, response);
 		return null;
 	}
+	
+	/**
+	 * 获取APP的版本列表信息
+	 * @return
+	 */
+	@RequestMapping("/paging")
+	public String paging(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			checkParams(message, request);
+			
+			message.putAll(appVersionService.paging(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
 }

@@ -6,8 +6,10 @@
 	Object o = session.getAttribute(UserController.USER_INFO_KEY);
 	String ac = "";
 	boolean login = o != null;
+	UserBean loginUser = null;
 	if(login){
-		ac = ((UserBean)o).getAccount();
+		loginUser = (UserBean)o;
+		ac = loginUser.getAccount();
 	}
 	String basePath = request.getScheme()+"://"+request.getServerName()
 			+":"+request.getServerPort()+request.getContextPath()+"/"; 
@@ -81,6 +83,10 @@
 			margin-right: 10px;
 			margin-top: 15px;
 		}
+		
+		.hand{
+			cursor: pointer;
+		}
 	</style>
 </head>
 <input type="hidden" value="<%=basePath%>" id="basePath"/>
@@ -112,6 +118,9 @@
                	<%} %>
                     <li><a href="#">关于我</a></li>
                     <li><a href="http://7xnv8i.com1.z0.glb.clouddn.com/1_leedaneba1cc32e-da82-4aa4-b4f0-d1aebe868994_20160608140830_app-release.apk">app下载</a></li>
+               	<% if(loginUser != null && loginUser.isAdmin()){ %>
+               		<li><a href="<%=basePath %>page/admin/index.jsp">系统后台</a></li>
+               	<%} %>
                	<% if(login) { %>
                 	<li><a href="javascript:void(0);" onclick="logout()">退出</a></li>
                	<%}else{ %>

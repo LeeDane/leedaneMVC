@@ -227,7 +227,7 @@ function buildMoodRow(index, mood, ifFlagNew, flagMonth){
 							'<div class="col-lg-4">'+
 								'<div class="row">'+
 									'<div class="col-lg-10 col-sm-10">'+
-										'<span class="list-group-item-heading" style="margin-right: 5px;">'+ changeNotNullString(mood.create_time) +
+										'<span class="list-group-item-heading" style="margin-right: 5px;">'+ changeNotNullString(mood.create_time).substring(0, 16) +
 								        '</span>'+
 									'</div>'+
 									'<div class="col-lg-2 col-sm-2">'+
@@ -837,7 +837,7 @@ function buildCommentOrTransmitRow(index, ct){
 							'<div class="col-lg-10 col-sm-10">'+
 								'<div class="row">'+
 									'<div class="col-lg-6 col-sm-6 text-muted"><span class="badge">'+ (index +1) +'</span>来自：'+ ct.froms +' </div>'+
-									'<div class="col-lg-6 col-sm-6 text-muted" style="text-align: right;">'+ ct.create_time +
+									'<div class="col-lg-6 col-sm-6 text-muted" style="text-align: right;">'+ ct.create_time.substring(0, 16) +
 										'<button type="button" class="btn btn-primary btn-xs" '+
 											    'data-toggle="button" style="margin-left: 5px;" onclick="reply('+index+');">回复'+
 											'</button>'+

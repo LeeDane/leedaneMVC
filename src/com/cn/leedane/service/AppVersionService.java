@@ -31,6 +31,13 @@ public interface AppVersionService <T extends IDBean>{
 	 * @return
 	 */
 	public List<Map<String, Object>> getNewestVersion();
-	
-	
+
+	/**
+	 * 获取app版本列表信息
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> paging(JSONObject json, UserBean user, HttpServletRequest request);	
 }

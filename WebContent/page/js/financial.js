@@ -175,7 +175,7 @@ function getLocations(){
 }
 
 /**
- * s搜索获取当前用户的基本信息
+ * 搜索获取当前用户的基本信息
  * @param uid
  */
 function querySearch(params){
@@ -280,6 +280,7 @@ function queryPaging(params){
 		error : function() {
 			layer.close(loadi);
 			layer.msg("网络请求失败");
+			isLoad = false;
 		}
 	});
 }
@@ -296,10 +297,10 @@ function buildEachRow(financial, index){
 	if(financial.has_img && isNotEmpty(financial.path)){
 		rowHtml += '<div class="row financial-list-row">'+
 					   		'<div class="col-lg-2">'+
-							'<img width="100%" height="130" class="img-rounded hand" alt="" src="'+financial.path+'"  onclick="showSingleImg(this);"/>'+
+							'<img width="100%" height="160" class="img-rounded hand" alt="" src="'+financial.path+'"  onclick="showSingleImg(this);"/>'+
 						'</div>'+
 						'<div class="col-lg-9">'+
-							'<div class="row" style="font-family: \'微软雅黑\'; font-size: 15px;">'+
+							'<div class="row" style="font-family: \'微软雅黑\'; font-size: 15px; margin-top: 10px;">'+
 								'<div class="col-lg-4">'+ financial.one_level + '>>' + financial.two_level + '</div>'+
 								'<div class="col-lg-3">金额：¥ '+ financial.money + '</div>'+
 								'<div class="col-lg-5">'+ '记账时间：'+ financial.addition_time +'</div>'+

@@ -168,7 +168,7 @@ function buildHasImgRow(index, blog){
 						'<div class="panel panel-info has-img-panel-info">'+
 							'<div class="panel-heading">'+
 								'<div class="page-header">'+
-								    '<h1>'+ blog.title +
+								    '<h1 class="hand" onclick="goToReadFull('+ blog.id+')">'+ blog.title +
 								        '<small>'+
 								        	
 										'</small>'+
@@ -194,7 +194,7 @@ function buildHasImgRow(index, blog){
 									
 						html += '</div>'+
 							'</div>'+
-							'<div class="panel-body">'+ (blog.digest.length > 100 ? (blog.digest + '...') : blog.digest)+
+							'<div class="panel-body hand" onclick="goToReadFull('+ blog.id+')">'+ (blog.digest.length > 100 ? (blog.digest + '...') : blog.digest)+
 							'</div>'+
 							'<div class="panel-footer">';
 								if(isLogin){
@@ -223,7 +223,7 @@ function buildHasImgRow(index, blog){
 								'<button type="button" class="btn btn-primary btn-default" href="javascript:void(0);" onclick="my('+ blog.create_user_id + ');">'+
 									  			'<span class="glyphicon glyphicon-user"></span> '+ blog.account +
 												'</button>'+
-								'<button type="button" class="btn btn-primary" onclick="goToReadFull('+ blog.id+')">阅读全文</button>'+
+								/*'<button type="button" class="btn btn-primary" onclick="goToReadFull('+ blog.id+')">阅读全文</button>'+*/
 							'</div>'+
 						'</div>'+
 			      '</div>'+
@@ -238,7 +238,7 @@ function buildNotHasImgRow(index, blog){
 		      	  	'<div class="panel panel-info">'+
 						'<div class="panel-heading">'+
 							'<div class="page-header">'+
-							    '<h1>'+ blog.title +
+							    '<h1 class="hand" onclick="goToReadFull('+ blog.id+')">'+ blog.title +
 							        '<small>'+
 							        	
 									'</small>'+
@@ -263,7 +263,7 @@ function buildNotHasImgRow(index, blog){
 								}
 					html += '</div>'+
 						'</div>'+
-						'<div class="panel-body">'+ (blog.digest.length > 100 ? (blog.digest + '...') : blog.digest)+
+						'<div class="panel-body hand" onclick="goToReadFull('+ blog.id+')">'+ (blog.digest.length > 100 ? (blog.digest + '...') : blog.digest)+
 						'</div>'+
 						'<div class="panel-footer">';
 							if(isLogin){
@@ -292,7 +292,7 @@ function buildNotHasImgRow(index, blog){
 							'<button type="button" class="btn btn-primary btn-default" href="javascript:void(0);" onclick="my('+ blog.create_user_id + ');">'+
 								  			'<span class="glyphicon glyphicon-user"></span> '+ blog.account +
 											'</button>'+
-							'<button type="button" class="btn btn-primary" onclick="goToReadFull('+ blog.id+')">阅读全文</button>'+
+							/*'<button type="button" class="btn btn-primary" onclick="goToReadFull('+ blog.id+')">阅读全文</button>'+*/
 						'</div>'+
 					'</div>'+
 		      '</div>'+

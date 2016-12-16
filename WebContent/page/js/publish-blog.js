@@ -208,6 +208,8 @@ function clearTag(obj){
   		ue.focus();
   		return false;
   	}
+  	
+  	console.log(ue.getAllHtml());
   	jsonParams.content = content;
   	
   	//是否有图

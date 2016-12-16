@@ -13,16 +13,16 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cn.leedane.utils.ConstantsUtil;
-import com.cn.leedane.utils.EnumUtil.DataTableType;
-import com.cn.leedane.utils.JsonUtil;
-import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.mapper.FilePathMapper;
 import com.cn.leedane.model.FilePathBean;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.AppVersionService;
 import com.cn.leedane.service.OperateLogService;
+import com.cn.leedane.utils.ConstantsUtil;
+import com.cn.leedane.utils.EnumUtil.DataTableType;
+import com.cn.leedane.utils.JsonUtil;
+import com.cn.leedane.utils.StringUtil;
 
 /**
  * App版本service实现类
@@ -103,6 +103,48 @@ public class AppVersionServiceImpl implements AppVersionService<FilePathBean> {
 		sql.append(" where f.status=? and f.is_upload_qiniu = ? and f.table_name=? order by f.id desc limit 1");
 		list = filePathMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, true, ConstantsUtil.UPLOAD_APP_VERSION_TABLE_NAME);
 		return list;
+	}
+
+	@Override
+	public Map<String, Object> paging(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("AppVersionServiceImpl-->paging():jsonObject=" +jo.toString() +", user=" +user.getAccount());
+		String method = JsonUtil.getStringValue(jo, "method", "firstloading"); //操作方式
+		int pageSize = JsonUtil.getIntValue(jo, "pageSize", ConstantsUtil.DEFAULT_PAGE_SIZE); //每页的大小
+		int lastId = JsonUtil.getIntValue(jo, "last_id"); //开始的页数
+		int firstId = JsonUtil.getIntValue(jo, "first_id"); //结束的页数
+		StringBuffer sql = new StringBuffer();
+		List<Map<String, Object>> rs = new ArrayList<Map<String,Object>>();
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		if("firstloading".equalsIgnoreCase(method)){
+			sql.append("select f.id, f.file_desc, f.file_version, f.qiniu_path path, f.lenght, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time");
+			sql.append(" from "+DataTableType.文件.value+" f");
+			sql.append(" where status=? and f.is_upload_qiniu = ? and f.table_name=?");
+			sql.append(" order by f.id desc limit 0,?");
+			rs = filePathMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, true, ConstantsUtil.UPLOAD_APP_VERSION_TABLE_NAME, pageSize);
+		//下刷新
+		}else if("lowloading".equalsIgnoreCase(method)){
+			sql.append("select f.id, f.file_desc, f.file_version, f.qiniu_path path, f.lenght, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time");
+			sql.append(" from "+DataTableType.文件.value+" f");
+			sql.append(" where status=? and f.is_upload_qiniu = ? and f.table_name=?");
+			sql.append(" and f.id < ? order by f.id desc limit 0,? ");
+			rs = filePathMapper.executeSQL(sql.toString(), ConstantsUtil.STATUS_NORMAL, true, ConstantsUtil.UPLOAD_APP_VERSION_TABLE_NAME, lastId, pageSize);
+		//上刷新
+		}else if("uploading".equalsIgnoreCase(method)){
+			sql.append("select f.id, f.file_desc, f.file_version, f.qiniu_path path, f.lenght, date_format(f.create_time,'%Y-%m-%d %H:%i:%s') create_time");
+			sql.append(" from "+DataTableType.文件.value+" f");
+			sql.append(" where status=? and f.is_upload_qiniu = ? and f.table_name=?");
+			sql.append(" and f.id > ? limit 0,?  ");
+			rs = filePathMapper.executeSQL(sql.toString() , ConstantsUtil.STATUS_NORMAL, true, ConstantsUtil.UPLOAD_APP_VERSION_TABLE_NAME, firstId, pageSize);
+		}
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取app版本列表").toString(), "paging()", ConstantsUtil.STATUS_NORMAL, 0);
+				
+		message.put("isSuccess", true);
+		message.put("message", rs);
+		System.out.println("获得记账位置的数量：" +rs.size());
+		return message;
 	}
 	
 }

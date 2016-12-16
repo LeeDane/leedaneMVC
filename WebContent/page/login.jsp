@@ -10,20 +10,21 @@
 	String account = "";
 	boolean isLogin = obj != null;
 	String ref = request.getParameter("ref");
+	String basePath = request.getScheme()+"://"+request.getServerName()
+			+":"+request.getServerPort()+request.getContextPath()+"/"; 
 	if(isLogin){
 		userBean = (UserBean)obj;
 		account = userBean.getAccount();
 		//已经登录，直接跳转
 		if(StringUtil.isNull(ref)){
-			String bp = request.getScheme()+"://"+request.getServerName()
+			basePath = request.getScheme()+"://"+request.getServerName()
 					+":"+request.getServerPort()+request.getContextPath()+"/";
 			//跳转回到首页
-			ref = bp +"page/index.jsp?&t="+UUID.randomUUID().toString();
+			ref = basePath +"page/index.jsp?&t="+UUID.randomUUID().toString();
 		}
 		response.sendRedirect(ref);
 	}
-	String basePath = request.getScheme()+"://"+request.getServerName()
-			+":"+request.getServerPort()+request.getContextPath()+"/"; 
+	
 %>
 <!DOCTYPE html>
 <html lang="en">

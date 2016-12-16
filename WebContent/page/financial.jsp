@@ -47,9 +47,7 @@
 			padding-bottom: 8px;
 			padding-top: 8px;
 		}
-		.hand{
-			cursor: pointer;
-		}
+		
 	</style>
 </head>
 <body data-spy="scroll" data-target="#myScrollspy" data-offset="90">
