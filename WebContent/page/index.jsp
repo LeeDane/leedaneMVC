@@ -5,9 +5,18 @@
 	Object obj = session.getAttribute(UserController.USER_INFO_KEY);
 	boolean isLogin = obj != null;
 	int loginUserId = 0;
+	boolean isAdmin = false;
 	if(isLogin){
 		UserBean user = (UserBean)obj;
 		loginUserId = user.getId();
+		isAdmin = user.isAdmin();
+	}
+	
+	//是否隐藏头部
+	String noHeaderStr1 = request.getParameter("noHeader");
+	boolean noHeader1 = false;
+	if(StringUtil.isNotNull(noHeaderStr1)){
+		noHeader1 = StringUtil.changeObjectToBoolean(noHeaderStr1);
 	}
 %>
 <!DOCTYPE html>
@@ -23,17 +32,20 @@
 			clear: both;
 		}
 		.main{
+			<% if(!noHeader1){ %>
 			margin-top: 50px;
+			<% }%>
 			background-color: #f5f5f5;
 		}
 		.main_bg{
 			width: 100%;
 			height: 200px;
 		}
-		
+		<% if(!noHeader1){ %>
 		.container{
 			margin-top: -80px;
 		}
+		<% }%>
 		.row{
 			margin-top: 15px;
 		}
@@ -95,8 +107,9 @@
 <script src="<%=basePath %>page/js/index.js"></script>
 <script type="text/javascript" src="<%=basePath %>page/other/jquery.md5.js"></script>
 <div class="main clearFloat">
+	<% if(!noHeader1){ %>
 	<div class="main_bg"></div>
-	
+	<%} %>
 	<div class="container" id="main-container">
 	   <!-- <div class="row">
 	      <div class="col-lg-4">
@@ -332,5 +345,6 @@
 	<script type="text/javascript">
 	var isLogin = <%=isLogin %>; //是否已经登录
 	var loginUserId = <%=loginUserId %>; //获取登录用户Id
+	var isAdmin = <%=isAdmin %>; //是否是管理员
 	</script>
 </html>

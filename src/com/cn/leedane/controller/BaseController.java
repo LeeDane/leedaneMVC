@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
@@ -20,6 +21,7 @@ import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.JsonUtil;
+import com.cn.leedane.utils.SessionManagerUtil;
 import com.cn.leedane.utils.StringUtil;
 
 public class BaseController {
@@ -94,6 +96,10 @@ public class BaseController {
 		if(sessionUserInfo != null){
 			result = true;
 			user = (UserBean)sessionUserInfo;
+			HttpSession session = SessionManagerUtil.getInstance().getSession(user.getId());
+			if(session == null){
+				user = null;
+			}
 		}
 		
 		//请求参数

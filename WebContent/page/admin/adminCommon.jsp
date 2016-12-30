@@ -14,6 +14,7 @@
    <link rel="stylesheet" href="<%=basePath %>page/other/layui/css/layui.css">
    <!-- 百度JQUERYCDN -->
    <script type="text/javascript" src="<%=basePath %>page/other/jquery-1.9.1.min.js"></script>
+   <script src="<%=basePath %>page/other/bootstrap-3.3.0/js/bootstrap.min.js"></script>
    <script type="text/javascript" src="<%=basePath %>page/other/layui/layui.js"></script>
    <script type="text/javascript" src="<%=basePath %>page/other/layui/lay/dest/layui.all.js"></script>
    <script type="text/javascript" src="<%=basePath %>page/js/base.js"></script>

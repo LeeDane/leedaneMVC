@@ -42,4 +42,8 @@
 	<select id="getUserByNoLoginCode" resultType="UserBean">
 		select * from t_user where account = #{account} and no_login_code = #{noLoginCode} and status = #{status}
 	</select>
+	
+	<select id="shakeSearch" resultType="UserBean">
+		select * from t_user where status = #{status} and create_user_id != #{createUserId} order by rand() limit 1
+	</select>
 </mapper>

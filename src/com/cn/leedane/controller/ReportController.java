@@ -64,7 +64,7 @@ public class ReportController extends BaseController{
 				printWriter(message, response);
 				return null;
 			}
-			message.putAll(reportService.cancel(getJsonFromMessage(message), getUserFromMessage(message), request);
+			message.putAll(reportService.cancel(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {

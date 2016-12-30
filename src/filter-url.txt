@@ -27,3 +27,6 @@
 /tool/fanyi.action
 /tool/getNetwordImage.action
 /webConfig/background.action
+/appVersion/getNewest.action
+/blog/getOneBlog.action
+/comment/paging.action

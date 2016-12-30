@@ -748,6 +748,30 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 	}
 
 	@Override
+	public Map<String, Object> shakeSearch(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("MoodServiceImpl-->shakeSearch():jo="+jo.toString());
+		int moodId = 0; //获取到的心情的ID
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
+		moodId = moodMapper.shakeSearch(user.getId(), ConstantsUtil.STATUS_NORMAL);
+		if(moodId > 0 ){
+			message.put("isSuccess", true);
+			message.put("message", moodHandler.getMoodDetail(moodId, user));
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+	
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有更多数据.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有更多数据.value);
+		}
+			
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr("账号为", user.getAccount() , "摇一摇搜索，得到心情Id为"+ moodId, StringUtil.getSuccessOrNoStr(moodId > 0)).toString(), "shakeSearch()", StringUtil.changeBooleanToInt(moodId > 0), 0);		
+		return message;
+	}
+	
+	@Override
 	public List<Map<String, Object>> executeSQL(String sql, Object... params) {
 		return moodMapper.executeSQL(sql, params);
 	}
@@ -841,5 +865,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		message.put("isSuccess", true);
 		return message;
 	}
+
+	
 
 }

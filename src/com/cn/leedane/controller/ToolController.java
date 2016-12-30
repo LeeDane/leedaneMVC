@@ -144,6 +144,32 @@ public class ToolController extends BaseController{
 	}
 	
 	/**
+	 * 发送信息
+	 * @return
+	 */
+	@RequestMapping("/sendMessage")
+	public String sendMessage(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			//type: 1为通知，2为邮件，3为私信，4为短信
+			message.put("isSuccess", false);
+			message.putAll(userService.sendMessage(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
 	 * 获取七牛服务器的token凭证
 	 * @return
 	 */

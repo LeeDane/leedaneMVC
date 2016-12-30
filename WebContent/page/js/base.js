@@ -97,6 +97,18 @@ function serializeArrayToJsonObject(array){
 }
 
 /**
+ * 跳转到我的个人中心
+ * @param id
+ */
+function linkToMy(id){
+	if(isEmpty(id)){
+		layer.msg("该用户不存在，请联系管理员核实");
+		return;
+	}
+	window.open(getBasePath() +"page/my.jsp?uid="+id, "_self");
+}
+
+/**
  * 添加cookie
  * @param key
  * @param value
@@ -142,4 +154,28 @@ function sortByObjectKey(key, desc) {
 	        return 0;
 	    }
 	}
+}
+
+/**
+ * 将日期字符串转成日期时间格式
+ * @param time
+ */
+function formatStringToDateFormattime(str){
+	return str.replace("T", " ") + ":00";
+}
+/**
+ * 格式化日期格式
+ * @param time
+ */
+function formatDateTime(time){
+	var now;
+	if(isNotEmpty(time))
+		now = new Date(time);
+	else
+		now = new Date();
+	
+	return now.getFullYear() + "-" + fix((now.getMonth() + 1),2) + "-" + fix(now.getDate(),2) + "T" + fix(now.getHours(),2) + ":" + fix(now.getMinutes(),2);
+}
+function fix(num, length) {
+	 return ('' + num).length < length ? ((new Array(length + 1)).join('0') + num).slice(-length) : '' + num;
 }

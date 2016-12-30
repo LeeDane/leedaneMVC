@@ -5,10 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,18 +24,16 @@ import com.cn.leedane.service.BlogService;
 import com.cn.leedane.service.MoodService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
-import com.cn.leedane.utils.JsonUtil;
-import com.cn.leedane.utils.StringUtil;
 
 /**
- * 搜索相关的controller处理类
+ * 摇一摇相关的controller处理类
  * @author LeeDane
- * 2016年12月21日 上午11:40:40
+ * 2016年12月21日 上午11:40:20
  * Version 1.0
  */
 @Controller
-@RequestMapping("/leedane/search")
-public class SearchController extends BaseController{
+@RequestMapping("/leedane/shake")
+public class ShakeController extends BaseController{
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
@@ -48,71 +42,6 @@ public class SearchController extends BaseController{
 	
 	@Autowired
 	private BlogService<BlogBean> blogService;
-	
-	/**
-	 * 执行搜索
-	 */
-	@RequestMapping("/execute")
-	public String execute(HttpServletRequest request, HttpServletResponse response){
-		Map<String, Object> message = new HashMap<String, Object>();
-		try {
-			if(!checkParams(message, request)){
-				printWriter(message, response);
-				return null;
-			}
-			//查询的类型，目前支持0、全部，1、博客（正文和标题），2、说说(正文)，3、用户(姓名，中文名，邮件，手机号码，证件号码)
-			int type = JsonUtil.getIntValue(getJsonFromMessage(message), "type", 0);
-			String keyword = JsonUtil.getStringValue(getJsonFromMessage(message), "keyword"); //搜索关键字
-			if(StringUtil.isNull(keyword)){
-				message.put("message", "请检索关键字为空");
-				printWriter(message, response);
-				return null;
-			}
-			List<QueryResponse> responses = new ArrayList<QueryResponse>();
-			List<Integer> tempIds = new ArrayList<Integer>();
-			//获取全部
-			if(type == 0){
-				tempIds.add(1);
-				tempIds.add(2);
-				tempIds.add(3);
-			}else{
-				tempIds.add(type);
-			}
-			//启动多线程
-			List<Future<QueryResponse>> futures = new ArrayList<Future<QueryResponse>>();
-			SingleSearchTask searchTask;
-			//派发5个线程执行
-			ExecutorService threadpool = Executors.newFixedThreadPool(5);
-			for(int tempId: tempIds){
-				searchTask = new SingleSearchTask(tempId, keyword, 0);
-				futures.add(threadpool.submit(searchTask));
-			}
-			threadpool.shutdown();
-			
-			for(int i = 0; i < futures.size() ;i++){
-				try {
-					//保存每次请求执行后的结果
-					if(futures.get(i).get() != null)
-							responses.add(futures.get(i).get());
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					futures.get(i).cancel(true);
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-					futures.get(i).cancel(true);
-				}
-			}
-			
-			for(QueryResponse response1: responses){
-				//搜索得到的结果数
-			    System.out.println("Find:" + response1.getResults().getNumFound());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		printWriter(message, response);
-		return null;
-	}
 	
 	/**
 	 * 搜索用户
@@ -126,7 +55,7 @@ public class SearchController extends BaseController{
 				printWriter(message, response);
 				return null;
 			}
-			message.putAll(userService.search(getJsonFromMessage(message), getUserFromMessage(message), request));
+			message.putAll(userService.shakeSearch(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {
@@ -150,7 +79,7 @@ public class SearchController extends BaseController{
 				printWriter(message, response);
 				return null;
 			}
-			message.putAll(moodService.search(getJsonFromMessage(message), getUserFromMessage(message), request));
+			message.putAll(moodService.shakeSearch(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {
@@ -174,7 +103,7 @@ public class SearchController extends BaseController{
 				printWriter(message, response);
 				return null;
 			}
-			message.putAll(blogService.search(getJsonFromMessage(message), getUserFromMessage(message), request));
+			message.putAll(blogService.shakeSearch(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {

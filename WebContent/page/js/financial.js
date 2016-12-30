@@ -5,7 +5,7 @@ var locations; //位置信息
 
 var emptySearch = true;//是否是空查询(没有任何条件去查询)
 var last_id = 0;
-var first_id = 0;
+var last_addition_time = '';
 var method = 'firstloading';
 //浏览器可视区域页面的高度
 var winH = $(window).height(); 
@@ -224,7 +224,7 @@ function getQueryPagingParaams(){
 	var pageSize = 15;
 	if(method != 'firstloading')
 		pageSize = 10;
-	return {pageSize: pageSize, last_id: last_id, first_id: first_id, method: method, t: Math.random()};
+	return {pageSize: pageSize, last_id: last_id, last_addition_time: last_addition_time, method: method, t: Math.random()};
 }
 /**
  * 查询获取当前用户的基本信息
@@ -257,18 +257,20 @@ function queryPaging(params){
 					financials = data.message;
 					for(var i = 0; i < financials.length; i++){
 						buildEachRow(financials[i], i);
-						if(i == 0)
-							first_id = financials[i].id;
-						if(i == financials.length -1)
-							last_id = financials[i].id;		
+						if(i == financials.length -1){
+							last_id = financials[i].id;	
+							last_addition_time = financials[i].addition_time;
+						}
 					}
 				}else{
 					var currentIndex = financials.length;
 					for(var i = 0; i < data.message.length; i++){
 						financials.push(data.message[i]);
 						buildEachRow(data.message[i], currentIndex);
-						if(i == data.message.length -1)
+						if(i == data.message.length -1){
 							last_id = data.message[i].id;
+							last_addition_time = data.message[i].addition_time;
+						}	
 					}
 				}
 				notifyChartOrListChange();
@@ -357,7 +359,6 @@ function buildEachRow(financial, index){
  * 搜索
  */
 function search(){
-	var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
 	emptySearch = true;
 	var params = {};
 	params.t = Math.random();
@@ -389,7 +390,7 @@ function search(){
 		querySearch(params);
 	else{
 		last_id = 0;
-		first_id = 0;
+		last_addition_time = '';
 		method = 'firstloading';
 		queryPaging();
 	}	
@@ -659,29 +660,6 @@ function buildParams(obj, params){
 	return true;
 }
 
-/**
- * 将日期字符串转成日期时间格式
- * @param time
- */
-function formatStringToDateFormattime(str){
-	return str.replace("T", " ") + ":00";
-}
-/**
- * 格式化日期格式
- * @param time
- */
-function formatDateTime(time){
-	var now;
-	if(isNotEmpty(time))
-		now = new Date(time);
-	else
-		now = new Date();
-	
-	return now.getFullYear() + "-" + fix((now.getMonth() + 1),2) + "-" + fix(now.getDate(),2) + "T" + fix(now.getHours(),2) + ":" + fix(now.getMinutes(),2);
-}
-function fix(num, length) {
-	 return ('' + num).length < length ? ((new Array(length + 1)).join('0') + num).slice(-length) : '' + num;
-}
 
 var bartType;
 var endTime;

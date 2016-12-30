@@ -291,6 +291,10 @@ function clearTag(obj){
   	
   	if(bid && bid > 0)
   		jsonParams.bid = bid;
+  	
+  	var createUserId = $('[name="create_user_id"]').val();
+  	if(isNotEmpty(createUserId))
+  		jsonParams.create_user_id = createUserId;
 
   	return true;
  }
@@ -462,5 +466,7 @@ function clearTag(obj){
   	
   	//转发
   	$('[name="can_transmit"]').attr('checked', blog.can_transmit);
+  	
+  	$('[name="create_user_id"]').val(""+blog.create_user_id);
   		
  }

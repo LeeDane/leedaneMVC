@@ -25,6 +25,7 @@ import com.cn.leedane.mapper.NotificationMapper;
 import com.cn.leedane.model.NotificationBean;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.UserBean;
+import com.cn.leedane.service.AdminRoleCheckService;
 import com.cn.leedane.service.NotificationService;
 import com.cn.leedane.service.OperateLogService;
 /**
@@ -34,7 +35,7 @@ import com.cn.leedane.service.OperateLogService;
  * Version 1.0
  */
 @Service("notificationService")
-public class NotificationServiceImpl implements NotificationService<NotificationBean>{
+public class NotificationServiceImpl extends AdminRoleCheckService implements NotificationService<NotificationBean>{
 	Logger logger = Logger.getLogger(getClass());
 	@Autowired
 	private NotificationMapper notificationMapper;
@@ -152,26 +153,26 @@ public class NotificationServiceImpl implements NotificationService<Notification
 			return message;
 		}
 		NotificationBean notificationBean = notificationMapper.findById(NotificationBean.class, nid);
+		if(notificationBean == null){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除的通知不存在.value));
+			message.put("responseCode", EnumUtil.ResponseCode.删除的通知不存在.value);
+			return message;
+		}
 		
-		if(!user.isAdmin() && (notificationBean == null || notificationBean.getFromUserId() != user.getId())){
+		if(!checkAdmin(user, notificationBean.getToUserId())){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;
 		}
 		
 		boolean result = false;
-		if(notificationBean != null){
-			result = notificationMapper.deleteById(NotificationBean.class, nid) > 0;
-			if(result){
-				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除通知成功.value));
-			}else{
-				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除通知失败.value));
-				message.put("responseCode", EnumUtil.ResponseCode.删除通知失败.value);
-			}
+		result = notificationMapper.deleteById(NotificationBean.class, nid) > 0;
+		if(result){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除通知成功.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 		}else{
-			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除的通知不存在.value));
-			message.put("responseCode", EnumUtil.ResponseCode.删除的通知不存在.value);
-			return message;
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除通知失败.value));
+			message.put("responseCode", EnumUtil.ResponseCode.删除通知失败.value);
 		}
 		
 		//保存操作日志

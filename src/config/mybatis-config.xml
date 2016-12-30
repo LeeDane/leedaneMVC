@@ -4,7 +4,9 @@
 <configuration>
 	<settings> 
 		<!-- 开启驼峰命名规范 -->
-         <setting name="mapUnderscoreToCamelCase" value="true" />  
+         <setting name="mapUnderscoreToCamelCase" value="true" /> 
+         <!-- 开启值为空的字段也要映射，默认是不开启的 -->
+         <setting name="callSettersOnNulls" value="true"/>
      </settings> 
 	<!-- 实体类,简称 -设置别名 -->
 	<typeAliases>

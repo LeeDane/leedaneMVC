@@ -9,13 +9,15 @@
 	UserBean userBean = null;
 	String account = "";
 	boolean isLogin = obj != null;
+	String bp = request.getScheme()+"://"+request.getServerName()
+			+":"+request.getServerPort()+request.getContextPath()+"/";
+	
+	String loginLink = "";
 	if(isLogin){
 		userBean = (UserBean)obj;
 		account = userBean.getAccount();
 	}else{
-		String bp = request.getScheme()+"://"+request.getServerName()
-				+":"+request.getServerPort()+request.getContextPath()+"/";
-		response.sendRedirect(bp +"page/login.jsp?ref="+ CommonUtil.getFullPath(request) +"&t="+UUID.randomUUID().toString());
+		loginLink = bp +"page/login.jsp?ref="+ CommonUtil.getFullPath(request) +"&t="+UUID.randomUUID().toString();
 	}
 	
 	String bid = request.getParameter("bid");
@@ -24,6 +26,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>文章详情</title>
 	<link rel="stylesheet" href="other/layui/css/layui.css">
 	<script src="js/base.js"></script>
@@ -46,6 +49,52 @@
 			font-family: "华文宋体";
 			font-size: 14px;
 		}
+		.original{
+			border-color: #51BAE3;
+  			color: #51BAE3;
+  			box-sizing: inherit;
+  			-webkit-tap-highlight-color: transparent;
+  			border: 2px solid;
+		    border-radius: 50%;
+		    width: 25px;
+		    height: 25px;
+		    vertical-align: text-bottom;
+		    text-align: center;
+		    font-size: 16px;
+		    line-height: 26px;
+		    float: left;
+		}
+		.inline{
+			display: inline-block !important;
+		}
+		.marginRight{
+			margin-right: 12px;
+		}
+		.comment-list{
+			border:1px solid #f5f5f5;
+			box-shadow: 1px 0px 5px #888888;
+			margin-bottom: 10px;
+		}
+		.comment-list-padding{
+			padding: 5px;
+			border-radius: 3px; 
+		}
+		.comment-list-item{
+			background-color: #fff !important;
+			border-color: #f5f5f5 !important;
+		}
+		.publish-time{
+			color: #999;
+		}
+		.text-align-right{
+			text-align: right;
+		}
+		.comment-list:hover {
+			border: 1px dashed #999;
+		}
+		.tag{
+			margin-right: 5px;
+		}
 	</style>
 </head>
 <body>
@@ -55,82 +104,111 @@
 <script src="<%=basePath %>page/js/detail.js"></script>
 
 </body>
-
-<div class="container">
+	<input type="hidden" name="blogId" value="<%=bid %>">
+	<div class="container">
 		<div class="row">
 			<div class="col-lg-12">
-				<div class="btn-group">
-				    <button type="button" class="btn btn-default">按钮 1</button>
-				    <button type="button" class="btn btn-default">按钮 2</button>
-				    <button type="button" class="btn btn-default">按钮 3</button>
+				<div class="inline" style="margin-bottom: -3px;">
+					<span class="original">原</span>
 				</div>
+				<div class="inline" style="margin-bottom: -3px;">
+					<span class="original">荐</span>
+				</div>
+				<div class="h3 inline" id="b-title"></div>
 			</div>
+			<div class="col-lg-12">
+				<a href="JavaScript:void(0);" target="_blank" class="marginRight" id="b-account"></a>
+				<span class="marginRight" id="b-create-time"></span>
+				<span class="marginRight" id="b-read-time"></span>
+				<a href="#comment" class="marginRight" id="b-comment-number"></a>
+				<span class="marginRight" id="b-transmit-number"></span>
+				<span class="marginRight" id="b-zan-number"></span>
+				<span class="marginRight" id="b-share-number"></span>
+			</div>
+			<div class="col-lg-12" id="tags"></div>
 		</div>
-	   <div class="row row-content">
-	      <div class="col-lg-4" id="column-01">
-	      	<img alt="" src="http://d.hiphotos.baidu.com/exp/w=500/sign=bbcb94714b086e066aa83f4b32097b5a/f31fbe096b63f624683231438044ebf81a4ca306.jpg?t=2003">
-	      </div>
-	      <div class="col-lg-4" id="column-02">
-	      
-	      </div>     
-	      <div class="col-lg-4" id="column-03">
-	      
-	      </div>
-	   </div> 
+	   <div class="row">
+	   		<div class="col-lg-12 row-content">
+	   		
+	   		</div>
 	   </div>
+	   <div class="row">
+	   		<div class="col-lg-12">
+	   			<ul class="pager">
+				    <li><a href="#">Previous</a></li>
+				    <li><a href="#">Next</a></li>
+				</ul>
+	   		</div>
+	   </div>
+	    
+	   <div class="row">
+	   		<div class="col-lg-12" id="keywords">
+	   			<span class="marginRight">关键字：</span>
+				<a href="#" target="_blank" class="marginRight">leedane</a>
+				<a href="#" target="_blank" class="marginRight">leedane</a>
+				<a href="#" target="_blank" class="marginRight">leedane</a>
+				<a href="#" target="_blank" class="marginRight">leedane</a>
+				<a href="#" target="_blank" class="marginRight">leedane</a>
+			</div>
+	   </div>
+	   <div class="row" id="comment">
+	   		<% if(!isLogin){ %>
+	   		<div class="col-lg-12" style="text-align: center;">
+			        您还未登录，无法参与评论 <a type="button" class="btn btn-info" href="<%=loginLink %>">登录</a>
+			</div>
+			<%}else{ %>
+			<div class="col-lg-6" style="text-align: center;">
+			     <form class="form-signin" role="form">
+				     <fieldset>
+					     <textarea class="form-control" name="add-comment" style="min-height: 125px;" autofocus></textarea>
+					     <button class="btn btn-lg btn-primary btn-block" type="button" style="margin-top: 10px;" onclick="addComment(this);">发表评论</button>
+				     </fieldset>
+				 </form>
+			</div>
+			<%} %>
+	   </div>
+	   <!-- <div class="row comment-list comment-list-padding">
+	   		<div class="col-lg-1">
+	   			<img src="http://7xnv8i.com1.z0.glb.clouddn.com/1_1_20160727183009_1469401739017.jpg" width="100%" height="70px" class="img-rounded">
+	   		</div>
+	   		<div class="col-lg-11">
+			       <div class="list-group">
+			       		<div class="list-group-item comment-list-item active">
+			       			<a href="#" target="_blank">leedane</a>
+			       			<span class="marginRight publish-time">发表于:2016-10-10 10:10</span>
+			       			<span class="marginRight publish-time">来自:小米手机</span>
+			       		</div>
+			       		<div class="list-group-item comment-list-item">
+			       			<div class="row">
+			       				<div class="col-lg-12">nginx 已经做tcp负载，cool</div>
+			       			</div>
+			       			<div class="row">
+			       				<div class="col-lg-offset-11 col-lg-1 text-align-right">
+			       					 <button class="btn btn-sm btn-primary btn-block" style="width: 60px;" type="button">回复TA</button>
+			       				</div>
+			       				
+		       					<div class="col-lg-12 reply-container">
+		       						<div class="row">
+			       						<div class="col-lg-12">
+			       							<form class="form-signin" role="form">
+											     <fieldset>
+												     <textarea class="form-control" placeholder="@leedane" autofocus> </textarea>
+											     </fieldset>
+											 </form>
+			       						</div>
+			       						<div class="col-lg-offset-11 col-lg-1 text-align-right" style="margin-top: 10px;">
+			       							<button class="btn btn-sm btn-primary btn-block" style="width: 60px;" type="button">评论</button>
+			       						</div>
+		       						</div>
+		       					</div>
+			       			</div>
+			       		</div>
+			       </div>
+			</div>
+	   </div> -->
+	</div>
 
 	<script type="text/javascript">
-		var winW = $(window).width(); 
-		$(function(){
-			var bid = '<%=bid %>';
-			if(isEmpty(bid)){
-				layer.msg("文章不存在");
-				return;
-			}
-			getInfo(bid);
-			getContent(bid);
-		});
-		
-		//获取博客的基本信息(没有内容)
-		function getInfo(bid){
-			$.ajax({
-				type : "post",
-				data : {blog_id: bid, t: Math.random()},
-				url : getBasePath() +"leedane/blog/getInfo.action",
-				dataType: 'json',
-				beforeSend:function(){
-				},
-				success : function(data) {
-					if(data.isSuccess){
-						document.title = data.message.title;
-					}else{
-						layer.msg(data.message);
-					}
-				},
-				error : function() {
-					layer.msg("网络请求失败");
-				}
-			});
-		}
-		
-		//获取博客的详细内容
-		function getContent(bid){
-			var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
-			$.ajax({
-				type : "post",
-				data : {blog_id: bid, t: Math.random()},
-				url : getBasePath() +"leedane/blog/getContent.action",
-				beforeSend:function(){
-				},
-				success : function(data) {
-					layer.close(loadi);
-					$(".row-content").html(data);
-				},
-				error : function() {
-					layer.close(loadi);
-					layer.msg("网络请求失败");
-				}
-			});
-		}
+		var isLogin = <%=isLogin %>;
 	</script>
 </html>

@@ -1,3 +1,5 @@
+<%@page import="com.cn.leedane.utils.CommonUtil"%>
+<%@page import="com.cn.leedane.utils.StringUtil"%>
 <%@page import="com.cn.leedane.model.UserBean"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
@@ -13,8 +15,15 @@
 	}
 	String basePath = request.getScheme()+"://"+request.getServerName()
 			+":"+request.getServerPort()+request.getContextPath()+"/"; 
+
+	String url = CommonUtil.getFullPath(request);
 	
-	String url = request.getRequestURL().toString();
+	//是否隐藏头部
+	String noHeaderStr = request.getParameter("noHeader");
+	boolean noHeader = false;
+	if(StringUtil.isNotNull(noHeaderStr)){
+		noHeader = StringUtil.changeObjectToBoolean(noHeaderStr);
+	}
 %>
 <!DOCTYPE html>
 <html>
@@ -90,6 +99,7 @@
 	</style>
 </head>
 <input type="hidden" value="<%=basePath%>" id="basePath"/>
+<% if(!noHeader){ %>
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class=" ">
     <div class="navbar-header">
@@ -117,7 +127,7 @@
                 	<li><a href="<%=basePath %>page/publish-blog.jsp">记一博</a></li>
                	<%} %>
                     <li><a href="#">关于我</a></li>
-                    <li><a href="http://7xnv8i.com1.z0.glb.clouddn.com/1_leedaneba1cc32e-da82-4aa4-b4f0-d1aebe868994_20160608140830_app-release.apk">app下载</a></li>
+                    <li><a href="<%=basePath %>page/download.jsp">app下载</a></li>
                	<% if(loginUser != null && loginUser.isAdmin()){ %>
                		<li><a href="<%=basePath %>page/admin/index.jsp">系统后台</a></li>
                	<%} %>
@@ -132,6 +142,7 @@
     </div>
     </div>
 </nav>
+<%} %>
 <%-- <div class="left-sider-bg" onclick="sideClick()"></div>
 <div class="left-sider">
 	 <iframe width="100%" height="100%" src="<%=basePath %>page/jsp/index-sider.jsp"></iframe> 

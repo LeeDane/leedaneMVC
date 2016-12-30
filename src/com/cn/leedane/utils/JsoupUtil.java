@@ -1,5 +1,9 @@
 package com.cn.leedane.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,32 +35,18 @@ public class JsoupUtil {
 		}
 		return mJsoupUtil;
 	}
-	
-	
+
 	/**
-	 * 从内容中提取摘要信息
-	 * @param content  字符串内容
-	 * @param start 截取字符串开始标记
-	 * @param end 截取字符串结束标记
+	 * 解析获取没有标签的内容
+	 * @param content
 	 * @return
 	 */
-	public String getDigest(String content, int start, int end){
+	public String getContentNoTag(String content){
 		Document h = Jsoup.parse(content);
 		if(content == null){ 
 			throw new NullPointerException("文档解析错误");	
 		}
-		return getDigest(h, start, end);
-	}
-	
-	/**
-	 * 从内容中提取摘要信息(重载)
-	 * @param content 文档对象
-	 * @param start 截取字符串开始标记
-	 * @param end 截取字符串结束标记
-	 * @return
-	 */
-	public String getDigest(Document content, int start, int end){		
-		Elements e = content.getAllElements();
+		Elements e = h.getAllElements();
 		
 		if(e.isEmpty()) return "";
 		
@@ -71,7 +61,18 @@ public class JsoupUtil {
 				}
 			}
 		}	
-		String text = content.text().trim();
+		return h.text().trim();
+	}
+	
+	/**
+	 * 从内容中提取摘要信息(重载)
+	 * @param content 文档对象
+	 * @param start 截取字符串开始标记
+	 * @param end 截取字符串结束标记
+	 * @return
+	 */
+	public String getDigest(String content, int start, int end){		
+		String text = getContentNoTag(content);
 		//去掉所有的空格
 		text = text.replaceAll(" ", "");
 		text = text.substring(text.length() > start ? start : 0, text.length() > end ? end : text.length());
@@ -159,6 +160,47 @@ public class JsoupUtil {
 		}
 		return result;
 	}
+	
+	/**
+	 * 将html标签的style属性转化成map
+	 * @param style
+	 * @return
+	 */
+	public static Map<String, String> styleToMap(String style){
+		Map<String, String> styles = new HashMap<String, String>();
+		if(StringUtil.isNull(style))
+			return styles;
+		
+		String[] csses = style.split(";");
+		for(String css: csses){
+			String[] attrs = css.split(":");
+			if(attrs.length == 2){
+				styles.put(attrs[0], attrs[1]);
+			}
+		}
+		return styles;
+	}
+	
+	/**
+	 * 将map转化成html标签的style属性
+	 * @param style
+	 * @return
+	 */
+	public static String mapToStyle(Map<String, String> mapStyles){
+		StringBuffer style = new StringBuffer();
+		if(mapStyles != null && mapStyles.isEmpty())
+			return style.toString();
+		
+		
+		for(Entry<String, String> mapEntry: mapStyles.entrySet()){
+			style.append(mapEntry.getKey());
+			style.append(": ");
+			style.append(mapEntry.getValue());
+			style.append(";");
+		}
+		return style.toString();
+	}
+	
 	public static void main(String[] args) {
 		//String html = "<input type='text' value='aaa'/><label>上百倍</label>wo<b>是的</b><br/><!-- 什么意思 -->";
 		//String html = "<div class=\"page\"><div class=\"pagenum\"><span>第1页</span><a href=\"/html/693/2012/0419/090657_1.html\">第2页</a><a href=\"/html/693/2012/0419/090657_2.html\">第3页</a> </div></div><span>ss</span>";

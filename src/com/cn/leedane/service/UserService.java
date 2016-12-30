@@ -350,6 +350,25 @@ public interface UserService<T extends IDBean>{
 	public Map<String, Object> search(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	/**
+	 * web端搜索用户(跟app搜索区别，所以另外写一个)
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> webSearch(JSONObject jo, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 摇一摇搜索用户
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> shakeSearch(JSONObject jo, UserBean user, HttpServletRequest request);
+
+	
+	/**
 	 * 更新用户的基本信息
 	 * @param jo
 	 * @param user
@@ -357,6 +376,15 @@ public interface UserService<T extends IDBean>{
 	 * @return
 	 */
 	public Map<String, Object> updateUserBase(JSONObject jo, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 管理员更新用户的基本信息
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> adminUpdateUserBase(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	/**
 	 * 更新登录密码
@@ -366,6 +394,15 @@ public interface UserService<T extends IDBean>{
 	 * @return
 	 */
 	public Map<String, Object> updatePassword(JSONObject jo, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 管理员重置用户登录密码
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> adminResetPassword(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	/**
 	 * 通过微信用户名找到leedane系统绑定的用户对象
@@ -407,4 +444,41 @@ public interface UserService<T extends IDBean>{
 	 * @return
 	 */
 	public Map<String, Object> cancelScanLogin(JSONObject json, UserBean user, HttpServletRequest request);
+
+	/**
+	 * 删除（注销）用户
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> deleteUser(JSONObject json, UserBean user, HttpServletRequest request);
+
+	/**
+	 * 发送信息//type: 1为通知，2为邮件，3为私信，4为短信
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> sendMessage(JSONObject json, UserBean user, HttpServletRequest request);
+
+	/**
+	 * 添加用户(只能是管理员操作)
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> addUser(JSONObject json, UserBean user, HttpServletRequest request);
+
+	/**
+	 * 上传用户头像链接
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> uploadUserHeadImageLink(JSONObject json, UserBean user, HttpServletRequest request);
+
 }

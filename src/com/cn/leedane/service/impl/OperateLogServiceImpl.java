@@ -47,7 +47,8 @@ public class OperateLogServiceImpl implements OperateLogService<OperateLogBean>{
 	@Override
 	public boolean saveOperateLog(final UserBean user, final HttpServletRequest request,
 			final Date createTime, final String subject, final String method, final int status, final int operateType){
-		
+		if(user == null)
+			return false;
 		new Thread(new Runnable() {
 			
 			@Override

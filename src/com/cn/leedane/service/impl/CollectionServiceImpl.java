@@ -27,6 +27,7 @@ import com.cn.leedane.mapper.CollectionMapper;
 import com.cn.leedane.model.CollectionBean;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.UserBean;
+import com.cn.leedane.service.AdminRoleCheckService;
 import com.cn.leedane.service.CollectionService;
 import com.cn.leedane.service.OperateLogService;
 /**
@@ -36,7 +37,7 @@ import com.cn.leedane.service.OperateLogService;
  * Version 1.0
  */
 @Service("collectionService")
-public class CollectionServiceImpl implements CollectionService<CollectionBean>{
+public class CollectionServiceImpl extends AdminRoleCheckService implements CollectionService<CollectionBean>{
 	Logger logger = Logger.getLogger(getClass());
 	
 	@Autowired
@@ -105,7 +106,7 @@ public class CollectionServiceImpl implements CollectionService<CollectionBean>{
 		
 		CollectionBean collectionBean = collectionMapper.findById(CollectionBean.class, cid);
 		//非登录用户不能删除操作
-		if(!user.isAdmin() && (collectionBean == null || collectionBean.getCreateUserId() != user.getId())){
+		if(!checkAdmin(user, collectionBean.getCreateUserId())){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;

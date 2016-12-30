@@ -1,8 +1,14 @@
 package com.cn.leedane.utils;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
@@ -438,4 +444,29 @@ public class LuceneUtil {
 	public IKAnalyzer getAnalyzer() {
 		return analyzer;
 	}
+	
+	/** 
+	 * 传入String类型的数据源，智能提取单词放入Set中 
+	 * @param source
+	 * @param keyLength 关键字的长度大于等于(默认是2)
+	 * @param keyNumber 关键字的数量(默认是5)
+	 * @return
+	 * @throws IOException
+	 */
+	public List<String> extract(String source) throws IOException {
+		List<String> list =new ArrayList<String>(); //定义一个Set来接收将要截取出来单词 
+		if(StringUtil.isNull(source))
+			return list;
+		
+		analyzer = new IKAnalyzer(); //初始化IKAnalyzer 
+		analyzer.setUseSmart(true); //将IKAnalyzer设置成智能截取 
+		TokenStream tokenStream= analyzer.tokenStream("", new StringReader(source)); //调用tokenStream方法(读取数据源的字符流)
+		tokenStream.reset();
+		while (tokenStream.incrementToken()) { //循环获得截取出来的单词 
+			CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class); //转换为char类型 
+			String keWord = charTermAttribute.toString(); //转换为String类型 
+			list.add(keWord); //将最终获得的单词放入list集合中 
+		} 
+		return list; 
+	 }  
 }

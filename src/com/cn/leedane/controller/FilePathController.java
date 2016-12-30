@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cn.leedane.handler.UserHandler;
 import com.cn.leedane.model.FilePathBean;
+import com.cn.leedane.model.MoodBean;
+import com.cn.leedane.model.TimeLineBean;
 import com.cn.leedane.model.UploadBean;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.FilePathService;
@@ -27,7 +31,9 @@ import com.cn.leedane.service.UploadService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EnumUtil;
+import com.cn.leedane.utils.FilterUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
+import com.cn.leedane.utils.EnumUtil.NotificationType;
 import com.cn.leedane.utils.EnumUtil.ResponseCode;
 import com.cn.leedane.utils.FileUtil;
 import com.cn.leedane.utils.JsonUtil;
@@ -248,4 +254,30 @@ public class FilePathController extends BaseController{
 		printWriter(message, response);
 		return null;
     }
+	
+	/**
+	 * 上传用户头像链接
+	 * @return
+	 */
+	@RequestMapping("/uploadUserHeadImageLink")
+	public String uploadUserHeadImageLink(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(userService.uploadUserHeadImageLink(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+
+	
 }

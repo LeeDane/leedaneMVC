@@ -1,3 +1,4 @@
+<%@page import="com.cn.leedane.utils.EnumUtil"%>
 <%@page import="java.util.UUID"%>
 <%@page import="com.cn.leedane.utils.CommonUtil"%>
 <%@page import="com.cn.leedane.model.UserBean"%>
@@ -13,7 +14,7 @@
 	String basePath = request.getScheme()+"://"+request.getServerName()
 			+":"+request.getServerPort()+request.getContextPath()+"/";
 	if(obj != null){
-		System.out.print("obj不为空");
+		System.out.println("obj不为空");
 		isLogin = !isLogin;
 		userBean = (UserBean)obj;
 		//后台只有管理员权限才能操作
@@ -21,10 +22,12 @@
 			isLogin = !isLogin;
 			account = userBean.getAccount();
 		}else{
-			response.sendRedirect(basePath +"page/login.jsp?ref="+CommonUtil.getFullPath(request)+"&t="+UUID.randomUUID().toString());
+			session.removeAttribute(UserController.USER_INFO_KEY);
+			request.setAttribute("errorMessage", "非管理员用户，不能使用后台管理系统。");
+			response.sendRedirect(basePath +"page/login.jsp?errorcode="+ EnumUtil.ResponseCode.没有操作权限.value+"&t="+UUID.randomUUID().toString() +"&ref="+CommonUtil.getFullPath(request));
 		}
 	}else{
-		System.out.print("obj为空");
+		System.out.println("obj为空");
 		response.sendRedirect(basePath +"page/login.jsp?ref="+CommonUtil.getFullPath(request)+"&t="+UUID.randomUUID().toString());
 	}
 	
@@ -41,6 +44,7 @@
    <link rel="stylesheet" href="<%=basePath %>page/other/layui/css/layui.css">
    <script type="text/javascript" src="<%=basePath %>page/other/layui/layui.js"></script>
    <script type="text/javascript" src="<%=basePath %>page/other/layui/lay/dest/layui.all.js"></script>
+   <script type="text/javascript" src="<%=basePath %>page/js/base.js"></script>
  </head>
  <body>
 
@@ -53,6 +57,7 @@
       </div>
 
     <div class="dl-log">欢迎您，<span class="dl-log-user"><%=account %></span><a href="javascript:void(0);" title="退出系统" class="dl-log-quit" onclick="logout()">[退出]</a>
+    	<a href="<%=basePath %>page/index.jsp" title="首页" class="dl-log-quit">[前台首页]</a>
     </div>
   </div>
    <div class="content">
@@ -100,7 +105,7 @@
 	}
 	
     BUI.use('common/main',function(){
-      var config = [{
+    var config = [{
           id:'welcome', 
           homePage : 'welcome',
           menu:[{
@@ -142,8 +147,9 @@
               menu:[{
                   text:'博客管理',
                   items:[
-                    {id:'publish',text:'写一博',href:'blog/publish.jsp',closeable : false},
-                    {id:'search',text:'查询博客',href:'blog/search.jsp'},
+                    {id:'publish',text:'写一博',href:'<%=basePath %>page/publish-blog.jsp?noHeader=true',closeable : false},
+                    {id:'search',text:'查询博客',href: 'blog/search.jsp'},
+                    {id:'manager',text:'管理博客',href: '<%=basePath %>page/index.jsp?noHeader=true'},
                     {id:'draft',text:'博客草稿',href:'blog/draft.jsp'}
                   ]
                 },{
@@ -232,6 +238,88 @@
         modulesConfig : config
       });
     });
+    
+    /**
+     * 打开当前模块的菜单配置页面
+     *
+     */
+     function openPreModuleTab(id, searchParams){ 
+    	 openTab(null, id, searchParams);
+    }
+    
+    /**
+    * 打开菜单配置页面
+    *
+    */
+    function openTab(moduleId, id, searchParams){ 
+    	if(isEmpty(id)){
+    		layer.msg("菜单配置页面ID为空");
+			return;
+    	}
+    	var topManager = top.topManager;    	
+    	if(topManager){
+    		var index = topManager.__attrVals.currentModelIndex;
+    		var config = topManager.__attrVals.modulesConfig;
+    		var hasId = false;
+    		var menus = config[index].menu;
+    		var preModuleId = config[index].id;
+    		
+    		
+    		if(isNotEmpty(moduleId) && preModuleId != moduleId){
+    			//不同模块的切换，当前的模块将清空
+    			layer.confirm('检测到您将切换到其他模块，当前的模块将临时被替换，是否继续操作？', {
+    				  btn: ['确定','点错了'] //按钮
+    			}, function(){
+    				layer.closeAll('dialog');
+    				//获取新的菜单列表
+    				for(var i = 0; i < config.length; i++){
+    					if(config[i].id == moduleId){
+    						menus = config[i].menu;
+    						break;
+    					}
+    				}
+    				openOneTab(moduleId, id, searchParams, menus, hasId);
+    			}, function(){
+    				
+    			});
+    		}else{
+    			openOneTab(moduleId, id, searchParams, menus, hasId);
+    		}
+    	}
+    }
+    
+    /**
+    *	执行打开页面
+    */
+    function openOneTab(moduleId, id, searchParams, menus, hasId){
+    	if(typeof(menus) != 'undefined' && menus.length > 0){
+			var menu;
+			for(var i = 0; i < menus.length; i++){
+				menu = menus[i];
+				for(var j = 0; j < menu.items.length; j++){
+					if(menu.items[j].id == id){
+        				hasId = true;
+        				break;
+        			}
+				}
+    		}
+    		if(!hasId){
+    			layer.msg("当前的Tab在配置中找不到，请核实！");
+    			return;
+    		}
+    		
+    		//打开左侧菜单中配置过的页面
+   		  	top.topManager.openPage({
+   		  		moduleId: moduleId,
+   		    	id : id,
+   		    	//search : 'a=123&b=456'
+   		    	search : searchParams
+   		  	});
+		}else{
+			layer.msg("菜单配置有错误，请认真核查！");
+			return;
+		}
+    }
   </script>
  </body>
 </html>

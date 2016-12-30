@@ -47,7 +47,7 @@ public class EmailRecieve implements IRecieve{
 		
 		for(UserBean userBean: emailBean.getReplyTo()){
 			//保存操作日志
-			operateLogService.saveOperateLog(emailBean.getFrom(), null, null, StringUtil.getStringBufferStr(emailBean.getFrom().getAccount(),"给用户", userBean.getAccount(), "发送邮件,内容是：", emailBean.getSubject(), StringUtil.getSuccessOrNoStr(success)).toString(), "SendEmailRecieve excute()", ConstantsUtil.STATUS_NORMAL, 0);
+			operateLogService.saveOperateLog(emailBean.getFrom(), null, null, StringUtil.getStringBufferStr(emailBean.getFrom().getAccount(),"给用户", userBean.getAccount(), "发送邮件,内容是：", emailBean.getSubject(), "，结果：",StringUtil.getSuccessOrNoStr(success)).toString(), "SendEmailRecieve excute()", ConstantsUtil.STATUS_NORMAL, 0);
 		}
 		return success;
 	}

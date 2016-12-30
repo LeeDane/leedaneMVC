@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -28,6 +29,7 @@ import com.cn.leedane.exception.ErrorException;
 import com.cn.leedane.handler.CommentHandler;
 import com.cn.leedane.handler.FanHandler;
 import com.cn.leedane.handler.FriendHandler;
+import com.cn.leedane.handler.NotificationHandler;
 import com.cn.leedane.handler.SignInHandler;
 import com.cn.leedane.handler.TransmitHandler;
 import com.cn.leedane.handler.UserHandler;
@@ -36,23 +38,31 @@ import com.cn.leedane.mapper.UserMapper;
 import com.cn.leedane.message.ISendNotification;
 import com.cn.leedane.message.SendNotificationImpl;
 import com.cn.leedane.message.notification.Notification;
+import com.cn.leedane.model.EmailBean;
 import com.cn.leedane.model.FilePathBean;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.ScoreBean;
 import com.cn.leedane.model.UserBean;
+import com.cn.leedane.rabbitmq.SendMessage;
+import com.cn.leedane.rabbitmq.send.EmailSend;
+import com.cn.leedane.rabbitmq.send.ISend;
 import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.service.FilePathService;
 import com.cn.leedane.service.OperateLogService;
 import com.cn.leedane.service.ScoreService;
 import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.Base64ImageUtil;
+import com.cn.leedane.utils.CollectionUtil;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EmailUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
+import com.cn.leedane.utils.EnumUtil.EmailType;
+import com.cn.leedane.utils.FileUtil;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.MD5Util;
+import com.cn.leedane.utils.SessionManagerUtil;
 import com.cn.leedane.utils.StringUtil;
 
 /**
@@ -103,6 +113,9 @@ public class UserServiceImpl implements UserService<UserBean> {
 	
 	@Autowired
 	private SystemCache systemCache;
+	
+	@Autowired
+	private NotificationHandler notificationHandler;
 
 	
 	@Override
@@ -375,6 +388,8 @@ public class UserServiceImpl implements UserService<UserBean> {
 		result = userMapper.executeSQL("select id from "+DataTableType.用户.value+" where account = ?", account).size() >0;
 		if(result){
 			message.put("isSuccess", result);
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作成功.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 			message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
@@ -468,6 +483,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 		}
 		if(result){
 			message.put("isSuccess", result);
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 			message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
@@ -532,6 +548,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 		}
 		if(result){
 			message.put("isSuccess", result);
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 			message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
@@ -682,6 +699,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取自己的基本数据").toString(), "getUserInfoData()", ConstantsUtil.STATUS_NORMAL, 0);
 		message.put("isSuccess", true);
 		message.put("message", rs);
+		message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 		return message;
 	}
 
@@ -756,6 +774,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 			saveRegisterScore(user);
 			message.put("isSuccess", result);
 			message.put("message", "恭喜您注册成功,请登录");
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库保存失败.value));
 			message.put("responseCode", EnumUtil.ResponseCode.数据库保存失败.value);
@@ -797,8 +816,117 @@ public class UserServiceImpl implements UserService<UserBean> {
 		}
 		message.put("isSuccess", true);
 		message.put("message", rs);
+		message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 		return message;
 	}
+	
+	@Override
+	public Map<String, Object> webSearch(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("UserServiceImpl-->webSearch():jo="+jo.toString());
+		String searchKey = JsonUtil.getStringValue(jo, "search_key");
+		int pageSize = JsonUtil.getIntValue(jo, "pageSize", 25); //默认获取25条最符合条件的记录
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
+		if(!user.isAdmin()){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请用管理员账号登录.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请用管理员账号登录.value);
+			return message;
+		}
+		
+		
+		String registerStartTime = JsonUtil.getStringValue(jo, "register_time_start");
+		String registerEndTime = JsonUtil.getStringValue(jo, "register_time_end");
+		String birthStartTime = JsonUtil.getStringValue(jo, "birth_time_start");
+		String birthEndTime = JsonUtil.getStringValue(jo, "birth_time_end");
+		
+		StringBuffer sql = new StringBuffer();
+		sql.append("select id, status, china_name, real_name, account, personal_introduction introduction, date_format(birth_day,'%Y-%m-%d') birth_day ");
+		sql.append(", native_place, education_background, nation, mobile_phone phone, sex, email, qq, date_format(register_time,'%Y-%m-%d %H:%i:%s') register_time");
+		sql.append("");
+		sql.append(" from " + DataTableType.用户.value);
+		sql.append(" where 0 = 0 " );
+		
+		if(StringUtil.isNotNull(registerEndTime)){
+			sql.append(" and register_time <= str_to_date('");
+			sql.append(registerEndTime);
+			sql.append("','%Y-%m-%d')");
+		}
+		
+		if(StringUtil.isNotNull(registerStartTime)){
+			sql.append(" and register_time >= str_to_date('");
+			sql.append(registerStartTime);
+			sql.append("','%Y-%m-%d')");
+		}
+
+		if(StringUtil.isNotNull(birthStartTime)){
+			sql.append(" and birth_day >= str_to_date('");
+			sql.append(birthStartTime);
+			sql.append("','%Y-%m-%d')");
+		}
+		
+		if(StringUtil.isNotNull(birthEndTime)){
+			sql.append(" and birth_day <= str_to_date('");
+			sql.append(birthEndTime);
+			sql.append("','%Y-%m-%d')");
+		}
+		
+		if(StringUtil.isNotNull(searchKey)){
+			sql.append(" and (account like '%");
+			sql.append(searchKey);
+			sql.append("%' or china_name like '%");
+			sql.append(searchKey);
+			sql.append("%' or real_name like '%");
+			sql.append(searchKey);
+			sql.append("%')");
+		}
+		
+		sql.append(" order by register_time desc limit ?");
+		List<Map<String, Object>> rs = userMapper.executeSQL(sql.toString(), pageSize);
+		
+		if(CollectionUtil.isNotEmpty(rs)){
+			for(Map<String, Object> map: rs){
+				//获取用户头像图片
+				map.put("user_pic_path", userHandler.getUserPicPath(StringUtil.changeObjectToInt(map.get("id")), "30x30"));
+			}
+		}
+		
+		message.put("isSuccess", true);
+		message.put("message", rs);
+		message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr("账号为", user.getAccount() , "搜索用户列表。搜索json语句是"+ jo.toString()).toString(), "webSearch()", ConstantsUtil.STATUS_NORMAL, 0);	
+				
+		return message;
+	}
+	
+	@Override
+	public Map<String, Object> shakeSearch(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("UserServiceImpl-->shakeSearch():jo="+jo.toString());
+		int userId = 0; //获取到的用户的ID
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
+		UserBean userBean = userMapper.shakeSearch(user.getId(), ConstantsUtil.STATUS_NORMAL);
+		if(userBean != null ){
+			message.put("isSuccess", true);
+			userId = userBean.getId();
+			message.put("message", userHandler.getUserInfo(userBean, false));
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+	
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有更多数据.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有更多数据.value);
+		}
+			
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr("账号为", user.getAccount() , "摇一摇搜索，得到用户Id为"+ userId, StringUtil.getSuccessOrNoStr(userId > 0)).toString(), "shakeSearch()", StringUtil.changeBooleanToInt(userId > 0), 0);	
+		
+		return message;
+	}
+
 
 	@Override
 	public Map<String, Object> updateUserBase(JSONObject jo, UserBean user,
@@ -828,7 +956,8 @@ public class UserServiceImpl implements UserService<UserBean> {
 		boolean result = userMapper.update(user) > 0;
 		if(result){
 			message.put("isSuccess", result);
-			
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作成功.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 			//把Redis缓存的信息删除掉
 			userHandler.deleteUserDetail(user.getId());
 			message.put("userinfo", userHandler.getUserInfo(user, true));
@@ -838,8 +967,70 @@ public class UserServiceImpl implements UserService<UserBean> {
 		}
 			
 		//保存操作日志
-		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr("账号为", user.getAccount() , "用户更新基本信息", StringUtil.getSuccessOrNoStr(result)).toString(), "updateUserBase()", ConstantsUtil.STATUS_NORMAL, 0);	
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr("账号为", user.getAccount() , "用户更新基本信息", StringUtil.getSuccessOrNoStr(result)).toString(), "updateUserBase()", StringUtil.changeBooleanToInt(result), 0);	
 		
+		return message;
+	}
+	
+	@Override
+	public Map<String, Object> adminUpdateUserBase(JSONObject jo, final UserBean user,
+			HttpServletRequest request) {
+		logger.info("UserServiceImpl-->adminUpdateUserBase():jo="+jo.toString());
+
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		if(!user.isAdmin()){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请用管理员账号登录.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请用管理员账号登录.value);
+			return message;
+		}
+		
+		final int toUserId = JsonUtil.getIntValue(jo, "to_user_id");
+		String account = JsonUtil.getStringValue(jo, "account");
+		int status = JsonUtil.getIntValue(jo, "status", ConstantsUtil.STATUS_NORMAL);
+		if(toUserId < 1 || StringUtil.isNull(account)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户不存在或请求参数不对.value));
+			message.put("responseCode", EnumUtil.ResponseCode.用户不存在或请求参数不对.value);
+			return message;
+		}
+
+		UserBean updateUserBean = userMapper.findById(UserBean.class, toUserId);
+		if(updateUserBean == null){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户不存在.value));
+			message.put("responseCode", EnumUtil.ResponseCode.用户不存在.value);
+			return message;
+		}
+
+		updateUserBean.setAccount(account);
+		updateUserBean.setPersonalIntroduction(JsonUtil.getStringValue(jo, "personal_introduction"));
+		updateUserBean.setStatus(status);
+		boolean result = userMapper.update(updateUserBean) > 0;
+		if(result){
+			message.put("isSuccess", result);
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作成功.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+			//把Redis缓存的信息删除掉
+			userHandler.deleteUserDetail(updateUserBean.getId());
+			
+			if(status != ConstantsUtil.STATUS_NORMAL){
+				SessionManagerUtil.getInstance().removeSession(updateUserBean.getId());
+			}
+			//通知相关用户
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					String content = "您的基本息已经被管理信员更新！";
+					notificationHandler.sendNotificationById(false, user, toUserId, content, com.cn.leedane.utils.EnumUtil.NotificationType.通知, EnumUtil.DataTableType.用户.value, toUserId, null);
+				}
+			}).start();
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库修改失败.value));
+			message.put("responseCode", EnumUtil.ResponseCode.数据库修改失败.value);
+		}
+			
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr("管理员账号为", user.getAccount() , "更新用户ID为", toUserId, "基本信息", StringUtil.getSuccessOrNoStr(result)).toString(), "adminUpdateUserBase()", StringUtil.changeBooleanToInt(result), 0);	
 		return message;
 	}
 
@@ -885,7 +1076,58 @@ public class UserServiceImpl implements UserService<UserBean> {
 		}
 			
 		//保存操作日志
-		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr("账号为", user.getAccount() , "用户更改登录密码", StringUtil.getSuccessOrNoStr(result)).toString(), "updatePassword()", ConstantsUtil.STATUS_NORMAL, 0);	
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr("账号为", user.getAccount() , "用户更改登录密码", StringUtil.getSuccessOrNoStr(result)).toString(), "updatePassword()", StringUtil.changeBooleanToInt(result), 0);	
+		
+		return message;
+	}
+	
+	@Override
+	public Map<String, Object> adminResetPassword(JSONObject jo, final UserBean user,
+			HttpServletRequest request) {
+		logger.info("UserServiceImpl-->adminResetPassword():jo="+jo.toString());
+
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		if(!user.isAdmin()){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请用管理员账号登录.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请用管理员账号登录.value);
+			return message;
+		}
+		
+		//都是经过第一次MD5加密后的字符串
+		final int toUserId = JsonUtil.getIntValue(jo, "to_user_id"); //重置密码的用户
+		UserBean updateUserBean = userMapper.findById(UserBean.class, toUserId);
+		if(updateUserBean == null){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户不存在.value));
+			message.put("responseCode", EnumUtil.ResponseCode.用户不存在.value);
+			return message;
+		}
+		
+		//两次MD5加密
+		updateUserBean.setPassword(MD5Util.compute(MD5Util.compute(ConstantsUtil.DEFALULT_LOGIN_PASSWORD_STRING)));
+		
+		boolean result = userMapper.update(updateUserBean) > 0;
+		if(result){
+			message.put("isSuccess", result);
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.密码重置成功.value));
+			message.put("responseCode", EnumUtil.ResponseCode.密码重置成功.value);
+			//通知相关用户
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					String content = "您的登录密码已经被管理员重置为"+ ConstantsUtil.DEFALULT_LOGIN_PASSWORD_STRING +",请尽快重新登录修改！";
+					notificationHandler.sendNotificationById(false, user, toUserId, content, com.cn.leedane.utils.EnumUtil.NotificationType.通知, EnumUtil.DataTableType.用户.value, toUserId, null);
+				}
+			}).start();
+			
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库修改失败.value));
+			message.put("responseCode", EnumUtil.ResponseCode.数据库修改失败.value);
+		}
+			
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr("管理员账号为", user.getAccount() , "更改用户账号为", updateUserBean.getAccount(),"登录密码", StringUtil.getSuccessOrNoStr(result)).toString(), "adminResetPassword()", StringUtil.changeBooleanToInt(result), 0);	
 		
 		return message;
 	}
@@ -1092,5 +1334,294 @@ public class UserServiceImpl implements UserService<UserBean> {
 		userHandler.removeLoginErrorNumber(user.getAccount());
 		return message;
 	}
+
+	@Override
+	public Map<String, Object> deleteUser(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("UserServiceImpl-->deleteUser():jo=" +jo.toString());
+		int toUserId = JsonUtil.getIntValue(jo, "to_user_id", user.getId());// 0表示ID，1表示名称
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		
+		if(!user.isAdmin() && (user.getId() != toUserId)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+			return message;
+		}
+		
+		UserBean updateUserBean = userMapper.findById(UserBean.class, toUserId);
+		
+		if(updateUserBean == null){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已经注销.value));
+			message.put("responseCode", EnumUtil.ResponseCode.用户已经注销.value);
+			return message;
+		}
+		
+		boolean result = userMapper.update(updateUserBean) > 0 ;
+
+		if (result) {
+			userHandler.deleteUserDetail(toUserId);
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户注销成功.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+			message.put("isSuccess", true);
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除失败.value));
+			message.put("responseCode", EnumUtil.ResponseCode.删除失败.value);
+		}
+		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, user.getAccount()+"执行删除用户Id为"+toUserId +"的用户", "deleteUser()", StringUtil.changeBooleanToInt(result), 0);
+		return message;
+	}
+
+	@Override
+	public Map<String, Object> sendMessage(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("UserServiceImpl-->sendMessage():jo=" +jo.toString());
+		//type: 1为通知，2为邮件，3为私信，4为短信
+		int toUserId = JsonUtil.getIntValue(jo, "to_user_id");
+		
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		if(toUserId < 1){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.某些参数为空.value));
+			message.put("responseCode", EnumUtil.ResponseCode.某些参数为空.value);
+			return message;
+		}
+		
+		
+		if(toUserId == user.getId()){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.不能给自己发信息.value));
+			message.put("responseCode", EnumUtil.ResponseCode.不能给自己发信息.value);
+			return message;
+		}
+		
+		UserBean toUser = userMapper.findById(UserBean.class, toUserId);
+		if(toUser == null){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.该用户不存在.value));
+			message.put("responseCode", EnumUtil.ResponseCode.该用户不存在.value);
+			return message;
+		}
+		int type = JsonUtil.getIntValue(jo, "type");
+		String content = JsonUtil.getStringValue(jo, "content");
+		switch (type) {
+			case 1:  //1为通知
+				notificationHandler.sendNotificationById(false, user, toUserId, content, EnumUtil.NotificationType.通知, null, 0, null);
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.通知已经发送.value));
+				message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+				break;
+			case 2:  //2为邮件
+				
+				if(StringUtil.isNull(toUser.getEmail())){
+					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.对方还没有绑定电子邮箱.value));
+					message.put("responseCode", EnumUtil.ResponseCode.对方还没有绑定电子邮箱.value);
+					break;
+				}
+				
+				//String content = "用户："+user.getAccount() +"已经添加您为好友，请您尽快处理，谢谢！";
+				//String object = "LeeDane好友添加请求确认";
+				Set<UserBean> set = new HashSet<UserBean>();		
+				set.add(toUser);
+				EmailBean emailBean = new EmailBean();
+				emailBean.setContent(content);
+				emailBean.setCreateTime(new Date());
+				emailBean.setFrom(user);
+				emailBean.setSubject(user.getAccount() + "给您发送一封电子邮件");
+				emailBean.setReplyTo(set);
+				emailBean.setType(EmailType.新邮件.value); //新邮件
+
+				try {
+					ISend send = new EmailSend(emailBean);
+					SendMessage sendMessage = new SendMessage(send);
+					sendMessage.sendMsg();//发送消息队列到消息队列
+					message.put("isSuccess", true);
+					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件已经发送.value));
+					message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+				} catch (Exception e) {
+					e.printStackTrace();
+					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件发送失败.value)+",失败原因是："+e.toString());
+					message.put("responseCode", EnumUtil.ResponseCode.邮件发送失败.value);
+				}		
+				break;
+			case 3:  //3为私信
+				notificationHandler.sendNotificationById(false, user, toUserId, content, EnumUtil.NotificationType.私信, null, 0, null);
+				message.put("isSuccess", true);
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.私信已经发送.value));
+				message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+				break;
+			case 4:  //4为短信
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.暂时不支持发送短信.value));
+				message.put("responseCode", EnumUtil.ResponseCode.暂时不支持发送短信.value);
+				break;
+			default:
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.未知的发送消息类型.value));
+				message.put("responseCode", EnumUtil.ResponseCode.未知的发送消息类型.value);
+				break;
+		}
+		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, user.getAccount()+"给用户Id为"+toUserId +"的用户发送信息，信息类型为："+type, "sendMessage()", ConstantsUtil.STATUS_NORMAL, 0);
+		return message;
+	}
+
+	@Override
+	public Map<String, Object> addUser(JSONObject jo, UserBean user,
+			HttpServletRequest request) {
+		logger.info("UserServiceImpl-->addUser():jo="+jo.toString());
+
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);
+		if(!user.isAdmin()){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请用管理员账号登录.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请用管理员账号登录.value);
+			return message;
+		}
+		
+		String account = JsonUtil.getStringValue(jo, "account");
+		String password = JsonUtil.getStringValue(jo, "password");
+		if(StringUtil.isNull(account) || StringUtil.isNull(password)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.某些参数为空.value));
+			message.put("responseCode", EnumUtil.ResponseCode.某些参数为空.value);
+			return message;
+		}
+
+		UserBean addUserBean = new UserBean();
+		
+		addUserBean.setAccount(account);
+		addUserBean.setPassword(MD5Util.compute(MD5Util.compute(password)));
+		addUserBean.setAddress(JsonUtil.getStringValue(jo, "address"));
+		if(StringUtil.isNotNull(JsonUtil.getStringValue(jo, "birth_day"))){
+			addUserBean.setBirthDay(DateUtil.stringToDate(JsonUtil.getStringValue(jo, "birth_day"), "yyyy-MM-dd"));
+		}
+		addUserBean.setChinaName(JsonUtil.getStringValue(jo, "china_name"));
+		addUserBean.setEducationBackground(JsonUtil.getStringValue(jo, "education_background"));
+		addUserBean.setEmail(JsonUtil.getStringValue(jo, "email"));	
+		addUserBean.setMobilePhone(JsonUtil.getStringValue(jo, "mobile_phone"));
+		addUserBean.setNation(JsonUtil.getStringValue(jo, "nation"));
+		addUserBean.setNativePlace(JsonUtil.getStringValue(jo, "native_place"));
+		addUserBean.setPersonalIntroduction(JsonUtil.getStringValue(jo, "personal_introduction"));
+		addUserBean.setQq(JsonUtil.getStringValue(jo, "qq"));
+		addUserBean.setRealName(JsonUtil.getStringValue(jo, "real_name"));
+		
+		String registerTime = JsonUtil.getStringValue(jo, "register_time", DateUtil.DateToString(new Date()));
+		if(registerTime.contains("T")){
+			registerTime = registerTime.replace("T", " ") + ":00";
+			
+		}
+		addUserBean.setRegisterTime(DateUtil.stringToDate(registerTime));
+		
+		addUserBean.setSex(JsonUtil.getStringValue(jo, "sex"));
+		
+		addUserBean.setStatus(ConstantsUtil.STATUS_NORMAL);
+		boolean result = userMapper.insert(addUserBean) > 0;
+		if(result){
+			message.put("isSuccess", result);
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加成功.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+		}else{
+			message.put("message", "添加失败，请核实账号是否被占用！");
+			message.put("responseCode", EnumUtil.ResponseCode.数据库保存失败.value);
+		}
+		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr("管理员账号为", user.getAccount() , "添加新用户，用户账号是：", account, StringUtil.getSuccessOrNoStr(result)).toString(), "addUser()", StringUtil.changeBooleanToInt(result), 0);	
+		
+		return message;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public Map<String, Object> uploadUserHeadImageLink(JSONObject jo,
+			UserBean user, HttpServletRequest request) {
+		logger.info("UserServiceImpl-->uploadUserHeadImageLink():jo=" +jo.toString());
+		String link = JsonUtil.getStringValue(jo, "link"); //必须
+		int toUserId = JsonUtil.getIntValue(jo, "to_user_id"); //必须
+				
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", false);	
+		
+		//没有图片链接报错返回
+		if(StringUtil.isNull(link) || toUserId < 1){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.某些参数为空.value));
+			message.put("responseCode", EnumUtil.ResponseCode.某些参数为空.value);
+			return message;
+		}
+		
+		if(!StringUtil.isLink(link)){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.非合法的链接.value));
+			message.put("responseCode", EnumUtil.ResponseCode.非合法的链接.value);
+			return message;
+		}
+		
+		if(!user.isAdmin() && toUserId != user.getId()){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
+			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
+			return message;
+		}
+		
+		//获取操作用户对象
+		if(toUserId != user.getId())
+			user = findById(toUserId);
+		
+		boolean result = false;
+		//生成统一的uuid
+		String uuid =  user.getAccount() + "user_head_link" + UUID.randomUUID().toString();
+
+		FilePathBean filePathBean = null;
+		long[] widthAndHeight;
+		int width = 0, height = 0;
+		long length = 0;
+		//获取网络图片
+		widthAndHeight = FileUtil.getNetWorkImgAttr(link);
+		if(widthAndHeight.length == 3){
+			width = (int) widthAndHeight[0];
+			height = (int) widthAndHeight[1];
+			length = widthAndHeight[2];
+		}
+		
+		if(length < 1){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.链接操作失败.value));
+			message.put("responseCode", EnumUtil.ResponseCode.链接操作失败.value);
+			return message;
+		}
+		
+		if(length > 1024* 1024* 500){
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.上传的文件过大.value));
+			message.put("responseCode", EnumUtil.ResponseCode.上传的文件过大.value);
+			return message;
+		}
+		
+		filePathBean = new FilePathBean();
+		filePathBean.setCreateTime(new Date());
+		filePathBean.setCreateUserId(user.getId());
+		filePathBean.setPicOrder(0);
+		filePathBean.setPath(StringUtil.getFileName(link));
+		filePathBean.setQiniuPath(link);
+		filePathBean.setUploadQiniu(ConstantsUtil.STATUS_NORMAL);
+		filePathBean.setPicSize(ConstantsUtil.DEFAULT_PIC_SIZE); //source
+		filePathBean.setWidth(width);
+		filePathBean.setHeight(height);
+		filePathBean.setLenght(length);
+		filePathBean.setStatus(ConstantsUtil.STATUS_NORMAL);
+		filePathBean.setTableName(DataTableType.用户.value);
+		filePathBean.setTableUuid(String.valueOf(toUserId));
+		result = filePathMapper.save(filePathBean) > 0;
+		
+		if(result){
+			userHandler.deleteUserDetail(toUserId);
+			message.put("isSuccess", result);
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.头像上传成功.value));
+			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.心情图片链接处理失败.value));
+			message.put("responseCode", EnumUtil.ResponseCode.心情图片链接处理失败.value);
+		}
+		
+		String subject = user.getAccount() + "上传了头像" + StringUtil.getSuccessOrNoStr(result);
+		this.operateLogService.saveOperateLog(user, request, new Date(), subject, "uploadUserHeadImageLink", StringUtil.changeBooleanToInt(result), 0);	
+		return message;
+	}
+
+	
 
 }

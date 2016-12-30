@@ -128,7 +128,9 @@ public class UserHandler {
 		JSONObject userInfo = null;
 		if(redisUtil.hasKey(userInfoKey)){
 			userInfo = JSONObject.fromObject(redisUtil.getString(userInfoKey));
-		}else{
+		}
+		
+		if(userInfo == null){
 			//查找数据库，找到用户的头像
 			List<Map<String, Object>> list = userService.executeSQL("select id, account, email, age, mobile_phone, qq, sex, is_admin, no_login_code, personal_introduction from "+DataTableType.用户.value+" u where status=? and id=? limit 1", ConstantsUtil.STATUS_NORMAL, userId);
 			if(list != null && list.size()>0){
@@ -155,7 +157,7 @@ public class UserHandler {
 	 */
 	public String getUserName(int userId){
 		JSONObject userInfo = getUserDetail(userId);
-		return JsonUtil.getStringValue(userInfo, "account");
+		return userInfo != null ? JsonUtil.getStringValue(userInfo, "account") : null;
 	}
 	
 	/**
@@ -332,6 +334,40 @@ public class UserHandler {
 	}
 	
 	/**
+	 * 添加session到redis中
+	 * @param user
+	 * @param sessionId
+	 * @return
+	 */
+	public boolean addSession(UserBean user, String sessionId){
+		String key = getRedisSessionKey(user.getId());
+		redisUtil.addString(key, sessionId);
+		return true;
+	}
+	
+	/**
+	 * 从redis中获取session
+	 * @param user
+	 * @param sessionId
+	 * @return
+	 */
+	public String getSession(UserBean user){
+		String key = getRedisSessionKey(user.getId());
+		return redisUtil.getString(key);
+	}
+	
+	/**
+	 * 从redis中清除session
+	 * @param user
+	 * @param sessionId
+	 * @return
+	 */
+	public boolean deleteSession(UserBean user){
+		String key = getRedisSessionKey(user.getId());
+		return redisUtil.delete(key);
+	}
+	
+	/**
 	 * 添加免登录码
 	 * @param account
 	 * @return
@@ -420,6 +456,14 @@ public class UserHandler {
 		return "no_login_"+noLoginCode;
 	}
 	
+	/**
+	 * 缓存免登录码信息
+	 * @param username
+	 * @return
+	 */
+	public static String getRedisSessionKey(int userid){
+		return "session_mapper_"+userid;
+	}
 	/*private String getRedisUserAccountKey(int userId){
 		return "t_user_account_"+userId;
 	}*/

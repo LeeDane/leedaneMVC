@@ -158,4 +158,10 @@ public interface UserMapper  extends BaseMapper<UserBean>{
 	 * @return
 	 */
 	public UserBean loginByWeChat(@Param("fromUserName")String FromUserName, @Param("status")int status);
+	
+	/**
+	 * 摇一摇随机获取用户
+	 * @return
+	 */
+	public UserBean shakeSearch(@Param("createUserId")int createUserId, @Param("status")int status);
 }

@@ -63,10 +63,7 @@ public class CommentController extends BaseController{
 		long start = System.currentTimeMillis();
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
-			if(!checkParams(message, request)){
-				printWriter(message, response);
-				return null;
-			}
+			checkParams(message, request);
 			message.put("message", commentService.getCommentsByLimit(getJsonFromMessage(message), getUserFromMessage(message), request));
 			message.put("isSuccess", true);
 			long end = System.currentTimeMillis();

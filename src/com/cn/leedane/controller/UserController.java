@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -31,6 +33,7 @@ import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.MD5Util;
+import com.cn.leedane.utils.SessionManagerUtil;
 import com.cn.leedane.utils.SpringUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.wechat.bean.WeixinCacheBean;
@@ -112,6 +115,9 @@ public class UserController extends BaseController{
 						
 						if(user != null){
 							if(user.getStatus() == 4 ){
+								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已被禁言.value));
+								message.put("responseCode", EnumUtil.ResponseCode.用户已被禁言.value);
+							}else if(user.getStatus() == 5){
 								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已经注销.value));
 								message.put("responseCode", EnumUtil.ResponseCode.用户已经注销.value);
 							}else if(user.getStatus() == 0){
@@ -147,6 +153,7 @@ public class UserController extends BaseController{
 								message.put("responseCode", EnumUtil.ResponseCode.恭喜您登录成功.value);
 								isSuccess = true;
 								message.put("isSuccess", isSuccess);
+								SessionManagerUtil.getInstance().addSession(session, user.getId());
 								/*printWriter(message, response);
 								return null;*/
 							}
@@ -431,6 +438,7 @@ public class UserController extends BaseController{
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.注销成功.value));
 				message.put("responseCode", EnumUtil.ResponseCode.注销成功.value);
 				message.put("isSuccess", true);
+				SessionManagerUtil.getInstance().removeSession(user.getId());
 				printWriter(message, response);
 				return null;
 			} catch (Exception e) {
@@ -447,6 +455,39 @@ public class UserController extends BaseController{
 		return null;
 	}
 	
+	/**
+	 * 将别人踢出系统
+	 * @return
+	 */
+	/*@RequestMapping("/logoutOther")
+	public String logoutOther(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		HttpSession session = request.getSession();
+		//判断是否有在线的用户，那就先取消该用户的session
+		if(session.getAttribute(USER_INFO_KEY) != null) {
+			UserBean user = (UserBean) session.getAttribute(USER_INFO_KEY);
+			try {
+				session.removeAttribute(USER_INFO_KEY);
+				this.operateLogService.saveOperateLog(user, request, null, user.getAccount()+"退出系统", "logout", 1, 0);
+				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.注销成功.value));
+				message.put("responseCode", EnumUtil.ResponseCode.注销成功.value);
+				message.put("isSuccess", true);
+				printWriter(message, response);
+				return null;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}else{
+			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.注销成功.value));
+			message.put("responseCode", EnumUtil.ResponseCode.注销成功.value);
+			message.put("isSuccess", true);
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	*/
 	/**
 	 * 根据用户的id获取用户的base64位图像信息
 	 * {"uid":2, "size":"30x30"} "order":0默认是0, tablename:"t_user"
@@ -847,17 +888,22 @@ public class UserController extends BaseController{
 				message.put("responseCode", EnumUtil.ResponseCode.用户不存在或请求参数不对.value);
 			}else{
 				if(user.getStatus() == 4 ){
+					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已被禁言.value));
+					message.put("responseCode", EnumUtil.ResponseCode.用户已被禁言.value);
+				}else if(user.getStatus() == 5){
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已经注销.value));
 					message.put("responseCode", EnumUtil.ResponseCode.用户已经注销.value);
 				}else if(user.getStatus() == 0){
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先验证邮箱.value));
 					message.put("responseCode", EnumUtil.ResponseCode.请先验证邮箱.value);
-				}else{
+				}else if(user.getStatus() == ConstantsUtil.STATUS_NORMAL){
 					message.put("userinfo", userHandler.getUserInfo(user, true));
 					message.put("isSuccess", true);
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.恭喜您登录成功.value));
 					message.put("responseCode", EnumUtil.ResponseCode.恭喜您登录成功.value);
-					
+				}else{
+					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.非正常状态.value));
+					message.put("responseCode", EnumUtil.ResponseCode.非正常状态.value);
 				}
 			}
 			printWriter(message, response);
@@ -1070,6 +1116,125 @@ public class UserController extends BaseController{
 		return null;
 	}
 	
+	/**
+	 * web端用户搜索
+	 * @return
+	 */
+	@RequestMapping("/websearch")
+	public String websearch(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(userService.webSearch(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
+	 * 管理员更新用户的基本信息
+	 * @return
+	 */
+	@RequestMapping("/admin/updateUser")
+	public String adminUpdateUserBase(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(userService.adminUpdateUserBase(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
+	 * 管理员重置用户登录密码
+	 * @return
+	 */
+	@RequestMapping("/admin/resetPassword")
+	public String adminResetPassword(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(userService.adminResetPassword(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
+	 * 删除用户
+	 * @return
+	 */
+	@RequestMapping("/deleteUser")
+	public String deleteUser(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(userService.deleteUser(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
+	 * 添加用户
+	 * @return
+	 */
+	@RequestMapping("/addUser")
+	public String addUser(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(userService.addUser(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
 	/*@RequestMapping("/aaa")
 	public String getAllUser(HttpServletRequest request, HttpServletResponse response){
 		try {
@@ -1108,4 +1273,5 @@ public class UserController extends BaseController{
 	private boolean checkRole(UserBean user) {
 		return true;
 	}
+
 }

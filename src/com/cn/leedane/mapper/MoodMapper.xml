@@ -21,4 +21,7 @@
 		</if>
 	</select>
 	
+	<select id="shakeSearch" resultType="Integer">
+		select id from t_mood where status = #{status} and create_user_id != #{createUserId} order by rand() limit 1
+	</select>
 </mapper>

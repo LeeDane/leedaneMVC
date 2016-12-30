@@ -29,6 +29,7 @@ public class SendMessage {
 			 */
 			channel.queueDeclare(send.getQueueName(), durable, false,
 					false, null);
+			System.out.println(getClass().getName() +channel.queueDeclare().getMessageCount());
 			// 发送的消息
 			//String message = object.getFromUserID() + "@@"+ object.getToUserID() + "@@" +object.getMsg()+"@@"+DateUtil.DateToString(object.getCreateTime());
 			// 往队列中发出一条消息(MessageProperties.PERSISTENT_TEXT_PLAIN指定消息的持久化)

@@ -205,7 +205,7 @@ function buildHasImgRow(index, blog){
 												'<ul class="dropdown-menu" role="menu">'+
 													'<li><a class="attention" href="javascript:void(0);" onclick="attention('+ blog.id+','+ index+ ');">关注</a></li>'+
 													'<li><a class="collection" href="javascript:void(0);" onclick="collect('+ blog.id+','+ index+ ');">收藏</a></li>';
-										if(loginUserId == blog.create_user_id){
+										if(isAdmin || loginUserId == blog.create_user_id){
 											html += '<li><a class="delete-blog" href="javascript:void(0);" onclick="updateBlog('+ blog.id+','+ index+ ');">编辑</a></li>'+
 													'<li class="divider"></li>'+
 													'<li><a href="javascript:void(0);" onclick="deleteBlog('+ blog.id+','+ index+ ');">删除</a></li>';
@@ -274,7 +274,7 @@ function buildNotHasImgRow(index, blog){
 											'<ul class="dropdown-menu" role="menu">'+
 												'<li><a class="attention" href="javascript:void(0);" onclick="attention('+ blog.id+','+ index+ ');">关注</a></li>'+
 												'<li><a class="collection" href="javascript:void(0);" onclick="collection('+ blog.id+','+ index+ ');">收藏</a></li>';
-									if(loginUserId == blog.create_user_id){
+									if(isAdmin || loginUserId == blog.create_user_id){
 										html += '<li><a class="delete-blog" href="javascript:void(0);" onclick="updateBlog('+ blog.id+','+ index+ ');">编辑</a></li>'+
 												'<li class="divider"></li>'+
 												'<li><a href="javascript:void(0);" onclick="deleteBlog('+ blog.id+','+ index+ ');">删除</a></li>';

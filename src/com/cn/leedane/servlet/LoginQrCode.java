@@ -65,7 +65,11 @@ public class LoginQrCode extends HttpServlet{
 			return;
 		}
 		try {
-			message.put("message", ZXingCodeHandler.createQRCode("scan_login:" +cid, 200));
+			String bp = request.getScheme()+"://"+request.getServerName() +
+					(request.getServerName().endsWith("com")? "" : ":"+request.getServerPort())
+					+request.getContextPath()+"/";
+			String bpath = bp + "page/download.jsp?scan_login=" + cid;
+			message.put("message", ZXingCodeHandler.createQRCode(bpath, 200));
 			message.put("isSuccess", true);
 		} catch (WriterException e) {
 			message.put("message", e.toString());

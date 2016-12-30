@@ -13,7 +13,7 @@ public class BlogBean extends RecordTimeBean{
 	
 	private static final long serialVersionUID = 1L;
 
-	//博客的状态,-1：草稿，1：正常，0:禁用，2、删除
+	//博客的状态,-1：草稿，1：正常，0:禁用，2、删除, 3:待审核
 	
 	
 	/**
@@ -121,6 +121,11 @@ public class BlogBean extends RecordTimeBean{
 	 * 是否立即发布
 	 */
 	private boolean isPublishNow;
+	
+	/**
+	 * 是否推荐
+	 */
+	private boolean isRecommend;
 	
 	/**
 	 * 分类
@@ -323,6 +328,11 @@ public class BlogBean extends RecordTimeBean{
 	public void setCategory(String category) {
 		this.category = category;
 	}
-	
+	public boolean isRecommend() {
+		return isRecommend;
+	}
+	public void setRecommend(boolean isRecommend) {
+		this.isRecommend = isRecommend;
+	}
 	
 }

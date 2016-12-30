@@ -101,7 +101,7 @@ public class NotificationHandler {
 	/**
 	 * 发送通知
 	 * @param notifyMySelf  是否需要通知自己
-	 * @param user
+	 * @param user 当前登录用户
 	 * @param id  单个用户
 	 * @param content
 	 * @param notificationType
@@ -118,7 +118,7 @@ public class NotificationHandler {
 	/**
 	 * 发送通知
 	 * @param notifyMySelf 是否需要通知自己
-	 * @param user
+	 * @param user 当前登录用户
 	 * @param ids
 	 * @param content
 	 * @param notificationType

@@ -1,5 +1,6 @@
 package com.cn.leedane.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.cn.leedane.model.MoodBean;
@@ -29,5 +30,12 @@ public interface MoodMapper extends BaseMapper<MoodBean>{
 	 * @return
 	 */
 	//public int getTotal(String tableName, String where);
+	
+	/**
+	 * 摇一摇搜索心情
+	 * @param statusNormal
+	 * @return
+	 */
+	public int shakeSearch(@Param("createUserId")int createUserId, @Param("status")int status);
 
 }

@@ -125,6 +125,7 @@ CREATE TABLE `t_blog` (
   `modify_user_id` int(11) DEFAULT NULL,
   `can_comment` bit(1) DEFAULT b'1',
   `can_transmit` bit(1) DEFAULT b'1',
+  `is_recommend` bit(1) DEFAULT b'0' COMMENT '是否推荐，默认是false',
   `category` varchar(10) DEFAULT NULL COMMENT '分类',
   PRIMARY KEY (`id`),
   KEY `FK_82ogubia30gvvfbwa76x41ogj` (`create_user_id`),

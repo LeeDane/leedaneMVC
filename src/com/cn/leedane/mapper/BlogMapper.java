@@ -19,13 +19,13 @@ public interface BlogMapper extends BaseMapper<BlogBean>{
 	 * @param conditions 条件的字符串
 	 * @return
 	 */
-	public List<Map<String, Object>> searchBlog(String conditions);
+	public List<Map<String, Object>> searchBlog(@Param("status") int status, @Param("conditions") String conditions);
 	
 	/**
 	 * 查找一条博客信息(跟findById的区别是字段可以自定义显示，去掉冗余字段)
 	 * @param id
 	 */
-	public List<Map<String,Object>> getOneBlog(int id);
+	public List<Map<String, Object>> getOneBlog(@Param("status") int status,@Param("id") int id);
 	
 	public List<BlogBean> getMoreBlog(int start,int end,String showType);
 	public List<BlogBean> managerAllBlog();
@@ -41,7 +41,7 @@ public interface BlogMapper extends BaseMapper<BlogBean>{
 	public int getCommentNum(int Bid);//获得评论的总数
 	
 	public int getSearchBlogTotalNum(String conditions,String conditionsType);  //按照条件和条件的类型搜索符合条件的博客的数量
-	public List<BlogBean> SearchBlog(int start,int end ,String conditions,String conditionsType); //按照条件和条件的类型分页搜索符合条件的博客
+	//public List<BlogBean> SearchBlog(int start,int end ,String conditions,String conditionsType); //按照条件和条件的类型分页搜索符合条件的博客
 	
 	
 	public void addReadNum(BlogBean blog);//此处不必有返回值
@@ -84,6 +84,13 @@ public interface BlogMapper extends BaseMapper<BlogBean>{
 	 * @return
 	 */
 	public List<Map<String, Object>> getRecommendBlogs(int size);
+
+	/**
+	 * 摇一摇获取文章
+	 * @param statusNormal
+	 * @return
+	 */
+	public int shakeSearch(@Param("createUserId")int createUserId, @Param("status")int status);
 	
 	/**
 	 * 更新阅读的数量

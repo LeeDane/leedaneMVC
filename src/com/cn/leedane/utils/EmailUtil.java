@@ -115,7 +115,7 @@ public class EmailUtil {
 		if(userTos.size() != contents.length){
 			throw new Error("userTos的size()和content的length值不相等");
 		}
-		this.userFrom = userFrom;
+		//this.userFrom = userFrom;
 		this.userTos = userTos;
 		this.contents = contents;
 		this.subject= subject;
@@ -130,7 +130,7 @@ public class EmailUtil {
 	 * @param subject  邮件的标题
 	 */
 	private EmailUtil(UserBean userFrom, Set<UserBean> userTos, String content, String subject) {
-		this.userFrom = userFrom;
+		//this.userFrom = userFrom;
 		this.userTos = userTos;
 		this.content = content;
 		this.subject = subject;

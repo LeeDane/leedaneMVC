@@ -1,3 +1,4 @@
+<%@page import="com.cn.leedane.utils.EnumUtil"%>
 <%@page import="com.cn.leedane.utils.StringUtil"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
@@ -12,19 +13,27 @@
 	String ref = request.getParameter("ref");
 	String basePath = request.getScheme()+"://"+request.getServerName()
 			+":"+request.getServerPort()+request.getContextPath()+"/"; 
+	
 	if(isLogin){
 		userBean = (UserBean)obj;
 		account = userBean.getAccount();
 		//已经登录，直接跳转
 		if(StringUtil.isNull(ref)){
-			basePath = request.getScheme()+"://"+request.getServerName()
-					+":"+request.getServerPort()+request.getContextPath()+"/";
 			//跳转回到首页
 			ref = basePath +"page/index.jsp?&t="+UUID.randomUUID().toString();
 		}
 		response.sendRedirect(ref);
 	}
+	String errorcode = request.getParameter("errorcode");
+	String errorMessage = "";
+	if(StringUtil.isNotNull(errorcode) && StringUtil.changeObjectToInt(errorcode) > 0){
+		errorMessage = EnumUtil.getResponseValue(StringUtil.changeObjectToInt(errorcode));
+	}
 	
+	if(StringUtil.isNull(ref)){
+		//跳转回到首页
+		ref = basePath +"page/index.jsp?&t="+UUID.randomUUID().toString();
+	}
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -110,6 +119,14 @@
     <div class="container">
 	      <form class="form-signin" role="form">
 	        <h2 class="form-signin-heading">登录</h2>
+	        <div id="errorMessage">
+		    <% if(StringUtil.isNotNull(errorMessage)){ %>
+		        <div class="alert alert-warning alert-dismissible" role="alert">
+				  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				  <strong>警告!</strong> <%=errorMessage %>
+				</div>
+			<%} %>
+			</div>
 	        <input type="text" id="account" class="form-control" placeholder="Email address" autofocus>
 	        <input type="password" id="password" class="form-control" style="margin-top: 10px;" placeholder="Password" data-placement="bottom">
 	        <div class="checkbox">
@@ -192,9 +209,16 @@
 			},
 			success : function(data) {
 				layer.close(loadi);
-				layer.msg(data.message);
-				if(data.isSuccess)
+				if(data.isSuccess){
+					layer.msg(data.message);
 					window.location.href="<%= ref%>";
+				}else{
+					var errorHtml ='<div class="alert alert-warning alert-dismissible" role="alert">'+
+									  '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>'+
+									  '<strong>警告!</strong>'+ data.message +
+									'</div>';
+					$("#errorMessage").html(errorHtml);
+				}
 			},
 			error : function() {
 				layer.close(loadi);

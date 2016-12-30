@@ -33,6 +33,13 @@
 	String bidStr = request.getParameter("bid");
 	if(StringUtil.isNotNull(bidStr))
 		blogId = StringUtil.changeObjectToInt(bidStr);
+	
+	//是否隐藏头部
+	String noHeaderStr1 = request.getParameter("noHeader");
+	boolean noHeader1 = false;
+	if(StringUtil.isNotNull(noHeaderStr1)){
+		noHeader1 = StringUtil.changeObjectToBoolean(noHeaderStr1);
+	}
 %>
 <!DOCTYPE html>
 <html>
@@ -47,9 +54,11 @@
 		.clearFloat{
 			clear: both;
 		}
+		<% if(!noHeader1){ %>
 		.container{
 			margin-top: 50px;
 		}
+		<% } %>
 		.blog-info{
 			margin-top: 15px;
 		}
@@ -81,6 +90,16 @@
 <script src="<%=basePath %>page/js/publish-blog.js"></script>
 <div class="main clearFloat">	
 	<div class="container">
+		<% if(userBean != null && !userBean.isAdmin()){ %>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="alert alert-warning alert-dismissible" role="alert">
+				  <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				  <strong>警告!您是非管理员账号，发布的文章需要等待管理员审核!</strong>
+				</div>
+			</div>
+		</div>
+		<%} %>
 		<div class="row blog-info">
 	   		<div class="col-lg-9">
 	   			<div class="form-group">
@@ -185,6 +204,10 @@
 					</label>
 				</div>
 	   		</div>
+	   </div>
+	   
+	   <div class="row" style="display: none;">
+	   		<input type="hidden" name="create_user_id">
 	   </div>
 	   <div class="row" style="margin-bottom: 20px;">
 	   		<div class="col-lg-12" style="text-align: center;">

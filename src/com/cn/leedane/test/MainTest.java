@@ -4,11 +4,13 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import com.cn.leedane.handler.UserHandler;
 import com.cn.leedane.handler.ZXingCodeHandler;
 import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.utils.DateUtil;
+import com.cn.leedane.utils.LuceneUtil;
 import com.cn.leedane.utils.MD5Util;
 import com.cn.leedane.utils.StringUtil;
 import com.google.zxing.WriterException;
@@ -26,6 +28,7 @@ public class MainTest {
 		System.out.println(DateUtil.DateToString(new Date(), "yyyy年MM月"));
 		System.out.println(DateUtil.DateToString(new Date(), "MM月dd日"));
 		System.out.println(DateUtil.DateToString(new Date(), "dd日HH时"));
+	
 	}
 	
 	private static void testImages() {

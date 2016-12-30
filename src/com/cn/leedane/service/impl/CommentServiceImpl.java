@@ -23,6 +23,7 @@ import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.EnumUtil.NotificationType;
 import com.cn.leedane.utils.FilterUtil;
 import com.cn.leedane.utils.JsonUtil;
+import com.cn.leedane.utils.OptionUtil;
 import com.cn.leedane.utils.SqlUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.handler.CommentHandler;
@@ -36,6 +37,7 @@ import com.cn.leedane.model.FriendBean;
 import com.cn.leedane.model.NotificationBean;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.UserBean;
+import com.cn.leedane.service.AdminRoleCheckService;
 import com.cn.leedane.service.CommentService;
 import com.cn.leedane.service.FriendService;
 import com.cn.leedane.service.NotificationService;
@@ -47,7 +49,7 @@ import com.cn.leedane.service.OperateLogService;
  * Version 1.0
  */
 @Service("commentService")
-public class CommentServiceImpl implements CommentService<CommentBean>{
+public class CommentServiceImpl extends AdminRoleCheckService implements CommentService<CommentBean>{
 	Logger logger = Logger.getLogger(getClass());
 	@Autowired
 	private CommentMapper commentMapper;
@@ -196,7 +198,10 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 	@Override
 	public List<Map<String, Object>> getCommentsByLimit(JSONObject jo,
 			UserBean user, HttpServletRequest request) throws Exception {
-		logger.info("CommentServiceImpl-->getCommentByLimit():jsonObject=" +jo.toString() +", user=" +user.getAccount());
+		logger.info("CommentServiceImpl-->getCommentByLimit():jsonObject=" +jo.toString());
+		
+		if(user == null)
+			user = OptionUtil.adminUser;
 		 //{\"uid\":2,\"table_name\":\"t_mood\", \"table_id\":123,\"pageSize\":5
 		//, \"first_id\": 2, \"last_id\":2, \"method\":\"firstloading\"}
 		String tableName = JsonUtil.getStringValue(jo, "table_name"); //操作表名
@@ -495,7 +500,8 @@ public class CommentServiceImpl implements CommentService<CommentBean>{
 		message.put("isSuccess", false);
 		
 		int createUserId = SqlUtil.getCreateUserIdByList(commentMapper.getObjectCreateUserId(tableName, tableId));
-		if(!user.isAdmin() && (user.getId() != createUserId)){
+		
+		if(!checkAdmin(user, createUserId)){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;

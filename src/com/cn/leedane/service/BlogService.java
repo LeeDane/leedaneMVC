@@ -43,11 +43,6 @@ public interface BlogService <T extends IDBean>{
 	 */
 	public List<Map<String, Object>> searchBlog(String conditions);
 	
-	/**
-	 * 查找一条博客信息(跟findById的区别是字段可以自定义显示，去掉冗余字段)
-	 * @param id
-	 */
-	public List<Map<String,Object>> getOneBlog(int id);
 	public Map<String,Object> getIndexBlog(int start,int end,String showType);
 	public List<BlogBean> managerAllBlog();	
 	/**
@@ -61,7 +56,7 @@ public interface BlogService <T extends IDBean>{
 	public int getCommentNum(int Bid);//获得评论的总数
 	
 	public int getSearchBlogTotalNum(String conditions,String conditionsType);  //按照条件和条件的类型搜索符合条件的博客的数量
-	public List<BlogBean> SearchBlog(int start,int end ,String conditions,String conditionsType); //按照条件和条件的类型分页搜索符合条件的博客
+	//public List<BlogBean> SearchBlog(int start,int end ,String conditions,String conditionsType); //按照条件和条件的类型分页搜索符合条件的博客
 	
 	
 	public void addReadNum(BlogBean blog);//此处不必有返回值
@@ -131,6 +126,14 @@ public interface BlogService <T extends IDBean>{
 	public Map<String, Object> search(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	/**
+	 * 摇一摇搜索文章
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> shakeSearch(JSONObject jo, UserBean user, HttpServletRequest request);
+	/**
 	 * 添加标签
 	 * @param jo
 	 * @param user
@@ -173,4 +176,32 @@ public interface BlogService <T extends IDBean>{
 	 * @return
 	 */
 	public Map<String, Object> edit(JSONObject json, UserBean user, HttpServletRequest request);
+
+	/**
+	 * 未审核文章列表
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> noCheckPaging(JSONObject json, UserBean user,HttpServletRequest request);
+
+	/**
+	 * 审核文章(管理员操作)
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> check(JSONObject json, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 查找一条博客信息(跟findById的区别是字段可以自定义显示，去掉冗余字段)
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> getOneBlog(JSONObject jo, UserBean user, HttpServletRequest request);
+
 }

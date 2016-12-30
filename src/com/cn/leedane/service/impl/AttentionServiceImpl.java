@@ -21,6 +21,7 @@ import com.cn.leedane.mapper.AttentionMapper;
 import com.cn.leedane.model.AttentionBean;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.UserBean;
+import com.cn.leedane.service.AdminRoleCheckService;
 import com.cn.leedane.service.AttentionService;
 import com.cn.leedane.service.OperateLogService;
 import com.cn.leedane.utils.ConstantsUtil;
@@ -36,7 +37,7 @@ import com.cn.leedane.utils.StringUtil;
  * Version 1.0
  */
 @Service("attentionService")
-public class AttentionServiceImpl implements AttentionService<AttentionBean>{
+public class AttentionServiceImpl extends AdminRoleCheckService implements AttentionService<AttentionBean>{
 	Logger logger = Logger.getLogger(getClass());
 	
 	@Autowired
@@ -117,7 +118,7 @@ public class AttentionServiceImpl implements AttentionService<AttentionBean>{
 		AttentionBean attentionBean = attentionMapper.findById(AttentionBean.class, aid);
 		
 		//非登录用户不能删除操作
-		if(!user.isAdmin() && (attentionBean == null || attentionBean.getCreateUserId() != user.getId())){
+		if(!checkAdmin(user, attentionBean.getCreateUserId())){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有操作权限.value));
 			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;

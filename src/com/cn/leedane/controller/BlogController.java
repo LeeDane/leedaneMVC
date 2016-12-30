@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,11 +29,13 @@ import com.cn.leedane.rabbitmq.SendMessage;
 import com.cn.leedane.rabbitmq.send.AddReadSend;
 import com.cn.leedane.rabbitmq.send.ISend;
 import com.cn.leedane.service.BlogService;
+import com.cn.leedane.utils.CollectionUtil;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.JsoupUtil;
+import com.cn.leedane.utils.LuceneUtil;
 import com.cn.leedane.utils.OptionUtil;
 import com.cn.leedane.utils.StringUtil;
 
@@ -90,7 +93,13 @@ public class BlogController extends BaseController{
 			blog.setContent(content);
 			blog.setTag(JsonUtil.getStringValue(json, "tag"));
 			blog.setFroms(JsonUtil.getStringValue(json, "froms"));
-			blog.setStatus(JsonUtil.getIntValue(json, "status"));
+			
+			//非管理员发布的文章需要审核
+			int status = JsonUtil.getIntValue(json, "status");
+			if(!user.isAdmin() && status == ConstantsUtil.STATUS_NORMAL){
+				status = ConstantsUtil.STATUS_AUDIT;
+			}
+			blog.setStatus(status);
 			
 			blog.setCanComment(JsonUtil.getBooleanValue(json, "can_comment"));
 			blog.setCanTransmit(JsonUtil.getBooleanValue(json, "can_transmit"));
@@ -134,7 +143,7 @@ public class BlogController extends BaseController{
 				
 			}
 			
-			blog.setCreateUserId(user.getId());
+			blog.setCreateUserId(JsonUtil.getIntValue(json, "create_user_id", user.getId()));
 			blog.setCreateTime(new Date());
 			
 			if(hasDigest){
@@ -309,27 +318,67 @@ public class BlogController extends BaseController{
 								element.attr("onclick", "clickImg(this, "+i+");");
 								if(StringUtil.isNotNull(device_width)){
 									String style = element.attr("style");
-									int width = Integer.parseInt(device_width);
-									if(StringUtil.isNotNull(style) && !style.contains("width") && !style.contains("height")){
+									int deviceWidth = Integer.parseInt(device_width);
+									if(StringUtil.isNotNull(style)){
+										Map<String, String> mapStyles = JsoupUtil.styleToMap(style);
+										int oldHeight = 0, oldWidth = 0;
+										if(mapStyles.containsKey("height")){
+											oldHeight = StringUtil.changeObjectToInt(mapStyles.get("height").replaceAll("px", ""));
+										}
+										
+										if(mapStyles.containsKey("width")){
+											oldWidth = StringUtil.changeObjectToInt(mapStyles.get("width").replaceAll("px", ""));
+										}
+										
+										if(oldWidth < 1){
+											oldWidth = deviceWidth;
+										}
+										
+										if(oldHeight > 0 && oldHeight < oldWidth){
+											oldHeight = oldWidth / oldHeight * deviceWidth;
+										}
+										
+										if(oldHeight < 1){
+											oldHeight = deviceWidth;
+										}
 										
 										//style样式存在，但是同时也没有宽高，系统给它一个适配屏幕的宽高
-										if(style.trim().endsWith(";")){
-											style += "width: "+width+"px;";
-										}else{
-											style += "; width: "+width+"px;";
-										}
-										element.attr("style", style);
+										mapStyles.put("width", "100%");
+										mapStyles.put("height", oldHeight +"px");
+										element.attr("style", JsoupUtil.mapToStyle(mapStyles));
 									}else if(StringUtil.isNull(style)){
+										int height = 0;
+										String heightString = element.attr("height");
 										String widthString = element.attr("width");
+										int oldWidth = 0;
 										if(StringUtil.isNotNull(widthString)){
-											if(widthString.endsWith("px"))
-												widthString = widthString.substring(0, widthString.length() - 2);
-											
-											if(Float.parseFloat(widthString) < width)
-												width = (int) Float.parseFloat(widthString);
+											widthString = widthString.replaceAll("px", "");
+											oldWidth = StringUtil.changeObjectToInt(widthString);
+											if(oldWidth < 1){
+												oldWidth = deviceWidth;
+											}
+										}else{
+											oldWidth = deviceWidth;
+										}
+										
+										int oldHeight = 0;
+										if(StringUtil.isNotNull(heightString)){
+											heightString = heightString.replaceAll("px", "");
+											oldHeight = StringUtil.changeObjectToInt(heightString);
+										}else{
+											oldHeight = deviceWidth;
+										}
+										
+										
+										if(oldWidth > 0 && oldHeight >= oldWidth)
+											height = oldHeight / oldWidth * deviceWidth;
+										else {
+											height = oldHeight;
 										}
 										//图片没有限制宽高，系统给它一个适配屏幕的宽高
-										element.attr("style", "width: "+width+"px;");
+										element.removeAttr("width");
+										element.removeAttr("height");
+										element.attr("style", "width: 100%;height:"+height+"px");
 									}
 								}
 								i++;
@@ -343,8 +392,9 @@ public class BlogController extends BaseController{
 					}else{
 						request.setAttribute("imgs", imgs.toString());
 					}
-					
+					request.setAttribute("device_width", device_width);
 					request.setAttribute("content", content);
+					blogService.updateReadNum(blogId, bean.getReadNumber());
 					return "content-page";
 				}
 			}
@@ -389,31 +439,8 @@ public class BlogController extends BaseController{
 	public String getOneBlog(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
 		try{
-			if(!checkParams(message, request)){
-				printWriter(message, response);
-				return null;
-			}
-			JSONObject json = getJsonFromMessage(message);
-			String id = JsonUtil.getStringValue(json, "blog_id");
-			if(StringUtil.isNull(id)){
-				message.put("message", "博客ID不能为空");
-			}else{
-				List<Map<String,Object>> ls = blogService.getOneBlog(Integer.parseInt(id));
-				if(ls.size() == 0){
-					message.put("message", "该博客不存在");
-				}else if(ls.size() == 1){				
-					int readNum = StringUtil.changeObjectToInt(ls.get(0).get("read_number"));
-					int b_id = StringUtil.changeObjectToInt(ls.get(0).get("id"));
-					int i = blogService.updateReadNum(b_id, readNum + 1);
-					
-					message.put("message", ls);
-					message.put("isSuccess", true);
-					printWriter(message, response);
-					return null;
-				}else{
-					message.put("message", "数据库数据有误");
-				}
-			}
+			checkParams(message, request);			
+			message.putAll(blogService.getOneBlog(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response);
 			return null;
 		}catch(Exception e){
@@ -608,6 +635,54 @@ public class BlogController extends BaseController{
 				return null;
 			}
 			message.putAll(blogService.edit(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
+	 * 未审核文章列表
+	 * @return
+	 */
+	@RequestMapping("/noCheckPaging")
+	public String noCheckPaging(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(blogService.noCheckPaging(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
+	
+	/**
+	 * 审核文章（管理员）
+	 * @return
+	 */
+	@RequestMapping("/check")
+	public String check(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(blogService.check(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response);
 			return null;
 		} catch (Exception e) {

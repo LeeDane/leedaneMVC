@@ -188,6 +188,7 @@ function getMoods(){
 		error : function() {
 			layer.close(loadi);
 			layer.msg("网络请求失败");
+			isLoad = false;
 		}
 	});
 }
@@ -447,18 +448,6 @@ function showImg(index, imgIndex){
 	    photos: json
 	    ,shift: 1 //0-6的选择，指定弹出图片动画类型，默认随机
 	  });
-}
-
-/**
- * 跳转到我的个人中心
- * @param id
- */
-function linkToMy(id){
-	if(isEmpty(id)){
-		layer.msg("该用户不存在，请联系管理员核实");
-		return;
-	}
-	window.open(getBasePath() +"page/my.jsp?uid="+id, "_self");
 }
 
 /**

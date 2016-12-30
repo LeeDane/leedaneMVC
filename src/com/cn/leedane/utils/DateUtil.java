@@ -300,13 +300,13 @@ public class DateUtil {
 	 * @return
 	 */
 	public static Date getThisWeekStart(){
-        int sundayPlus = getSundayPlus();  
-        GregorianCalendar currentDate = new GregorianCalendar();  
-        currentDate.add(GregorianCalendar.DATE, sundayPlus);  
-        currentDate.set(Calendar.HOUR_OF_DAY, 0); //小时
-        currentDate.set(Calendar.MINUTE, 0); //分钟
-        currentDate.set(Calendar.SECOND, 0); //秒钟
-        return currentDate.getTime();  
+		Calendar currentDate = Calendar.getInstance();
+		currentDate.setFirstDayOfWeek(Calendar.MONDAY);
+		currentDate.set(Calendar.HOUR_OF_DAY, 0); //小时
+		currentDate.set(Calendar.MINUTE, 0); //分钟
+		currentDate.set(Calendar.SECOND, 0); //秒钟
+		currentDate.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		return currentDate.getTime();
 	}
 	
 	/**
@@ -584,6 +584,7 @@ public class DateUtil {
 		Timestamp timestamp = new Timestamp(date.getTime());
 		return timestamp;
 	}
+	
 	public static void main(String[] args) {
 		try {
 			int i = leftMinutes(stringToDate("2016-11-03 18:59:00"), new Date());

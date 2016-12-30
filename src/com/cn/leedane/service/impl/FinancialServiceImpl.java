@@ -24,6 +24,7 @@ import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.FinancialService;
 import com.cn.leedane.service.OperateLogService;
 import com.cn.leedane.utils.ConstantsUtil;
+import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.FinancialWebImeiUtil;
 import com.cn.leedane.utils.JsonUtil;
@@ -476,7 +477,10 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 		List<Map<String, Object>> rs = new ArrayList<Map<String,Object>>();
 		int pageSize = JsonUtil.getIntValue(jo, "pageSize", ConstantsUtil.DEFAULT_PAGE_SIZE); //每页的大小
 		int lastId = JsonUtil.getIntValue(jo, "last_id"); //开始的页数
-		int firstId = JsonUtil.getIntValue(jo, "first_id"); //结束的页数
+		String lastAdditionTime = JsonUtil.getStringValue(jo, "last_addition_time"); //开始的时间
+		if(StringUtil.isNull(lastAdditionTime)){
+			lastAdditionTime = DateUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm") + ":00";
+		}
 		String method = JsonUtil.getStringValue(jo, "method", "firstloading"); //操作方式
 				
 		StringBuffer sql = new StringBuffer();
@@ -488,24 +492,43 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 			sql.append("	, location, longitude, latitude, financial_desc, create_user_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(addition_time,'%Y-%m-%d %H:%i:%s') addition_time");
 			sql.append(" from t_financial ");
 			sql.append(" where create_user_id = ?");
-			sql.append(" order by addition_time desc limit 0,?");
+			sql.append(" order by addition_time desc, id desc limit 0,?");
 			rs = financialMapper.executeSQL(sql.toString(), user.getId(), pageSize);
 		//下刷新
 		}else if("lowloading".equalsIgnoreCase(method)){
+			
+			//这个方法的缺欠之处在于多请求了一次。
 			sql.append("select local_id, id, status, model, money, one_level, two_level, has_img, path");
 			sql.append("	, location, longitude, latitude, financial_desc, create_user_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(addition_time,'%Y-%m-%d %H:%i:%s') addition_time");
 			sql.append(" from t_financial ");
 			sql.append(" where create_user_id = ?");
-			sql.append(" and id < ? order by addition_time desc limit 0,? ");
-			rs = financialMapper.executeSQL(sql.toString(), user.getId(), lastId, pageSize);
-		//上刷新
-		}else if("uploading".equalsIgnoreCase(method)){
-			sql.append("select local_id, id, status, model, money, one_level, two_level, has_img, path");
+			sql.append(" and id < ? and addition_time = str_to_date(?,'%Y-%m-%d %H:%i:%s') order by id desc");
+			rs = financialMapper.executeSQL(sql.toString(), user.getId(), lastId,  lastAdditionTime);
+			
+			if(rs.size() < pageSize){
+				sql = new StringBuffer();
+				sql.append("select local_id, id, status, model, money, one_level, two_level, has_img, path");
+				sql.append("	, location, longitude, latitude, financial_desc, create_user_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(addition_time,'%Y-%m-%d %H:%i:%s') addition_time");
+				sql.append(" from t_financial ");
+				sql.append(" where create_user_id = ?");
+				sql.append(" and addition_time < str_to_date(?,'%Y-%m-%d %H:%i:%s')  order by addition_time desc, id desc limit 0,? ");
+				rs.addAll(financialMapper.executeSQL(sql.toString(), user.getId(), lastAdditionTime, pageSize));
+			}
+			
+			
+			//下面方法的缺陷就是获取的记录的条数比请求的页数大
+			/*sql.append("(select local_id, id, status, model, money, one_level, two_level, has_img, path");
 			sql.append("	, location, longitude, latitude, financial_desc, create_user_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(addition_time,'%Y-%m-%d %H:%i:%s') addition_time");
 			sql.append(" from t_financial ");
 			sql.append(" where create_user_id = ?");
-			sql.append(" and id > ? limit 0,? ");
-			rs = financialMapper.executeSQL(sql.toString(), user.getId(), firstId, pageSize);
+			sql.append(" and id < ? and addition_time = str_to_date(?,'%Y-%m-%d %H:%i:%s'))");
+			sql.append(" union all ");
+			sql.append("(select local_id, id, status, model, money, one_level, two_level, has_img, path");
+			sql.append("	, location, longitude, latitude, financial_desc, create_user_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time, date_format(addition_time,'%Y-%m-%d %H:%i:%s') addition_time");
+			sql.append(" from t_financial ");
+			sql.append(" where create_user_id = ?");
+			sql.append(" and addition_time < str_to_date(?,'%Y-%m-%d %H:%i:%s')  order by addition_time desc, id desc limit 0,?) ");
+			rs = financialMapper.executeSQL(sql.toString(), user.getId(), lastId,  lastAdditionTime, user.getId(), lastAdditionTime, pageSize);*/
 		}
 
 		//保存操作日志

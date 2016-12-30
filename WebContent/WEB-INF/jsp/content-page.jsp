@@ -8,28 +8,33 @@
 				+":"+request.getServerPort()+request.getContextPath()+"/"; 
 	String content = String.valueOf(request.getAttribute("content"));
 	String imgs = String.valueOf(request.getAttribute("imgs"));
+	String deviceWidth = String.valueOf(request.getAttribute("device_width"));
 %>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
 <title>全文阅读</title>
 
 <!-- 百度JQUERYCDN -->
 <script type="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <style type="text/css">
 	*{
 		padding: 0;
 		margin: 0;
 	}
-	#content{
-		margin-top: 1px;
-		margin-left: 0px !important;
-		margin-right: 0px !important;
-	}
+	
 </style>
 </head>
-<body style="overflow-x:hidden;overflow-y:scroll">
-	<div id="content" style="width:100%;"><%=content %></div>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12 col-sm-12" id="content" style="width: 100%;overflow: hidden;">
+				<%=content %>
+			</div>
+		</div>
+	</div>
 </body>
 
 <script type="text/javascript">
