@@ -62,4 +62,13 @@ public interface ChatService <T extends IDBean>{
 	 * @return
 	 */
 	public Map<String, Object> deleteChat(JSONObject jo, UserBean user, HttpServletRequest request);
+
+	/**
+	 * 获取登录用户的全部与其有过聊天记录的用户的最新一条聊天信息
+	 * @param json
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> getOneChatByAllUser(JSONObject json, UserBean user, HttpServletRequest request);
 }

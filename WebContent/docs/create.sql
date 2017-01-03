@@ -183,3 +183,27 @@ CREATE TABLE `t_financial_two_category` (
   CONSTRAINT `FK_financial_two_category_modify_user` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`),
   CONSTRAINT `FK_financial_two_category_create_user` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6526 DEFAULT CHARSET=utf8;
+
+
+-- ----------------------------
+-- Table structure for t_chat
+-- ----------------------------
+DROP TABLE IF EXISTS `t_chat`;
+CREATE TABLE `t_chat` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` int(11) NOT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `modify_time` datetime DEFAULT NULL,
+  `content` varchar(255) DEFAULT NULL,
+  `to_user_id` int(11) DEFAULT NULL,
+  `create_user_id` int(11) DEFAULT NULL,
+  `create_user_name` varchar(255) DEFAULT NULL COMMENT '创建人的名称',
+  `modify_user_id` int(11) DEFAULT NULL,
+  `type` int(11) NOT NULL,
+  `is_read` bit(1) DEFAULT b'0',
+  PRIMARY KEY (`id`),
+  KEY `FK_4l4d6iq0ei1lu3omi8ftc63vf` (`create_user_id`),
+  KEY `FK_3x07xyf2j7g1eq8d7u1gm5w4b` (`modify_user_id`),
+  CONSTRAINT `FK_3x07xyf2j7g1eq8d7u1gm5w4b` FOREIGN KEY (`modify_user_id`) REFERENCES `t_user` (`id`),
+  CONSTRAINT `FK_4l4d6iq0ei1lu3omi8ftc63vf` FOREIGN KEY (`create_user_id`) REFERENCES `t_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8;

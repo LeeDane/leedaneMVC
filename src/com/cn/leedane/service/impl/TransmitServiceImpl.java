@@ -22,6 +22,7 @@ import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.EnumUtil.NotificationType;
 import com.cn.leedane.utils.FilterUtil;
 import com.cn.leedane.utils.JsonUtil;
+import com.cn.leedane.utils.OptionUtil;
 import com.cn.leedane.utils.SqlUtil;
 import com.cn.leedane.utils.StringUtil;
 import com.cn.leedane.handler.CommonHandler;
@@ -226,6 +227,8 @@ public class TransmitServiceImpl implements TransmitService<TransmitBean>{
 	@Override
 	public List<Map<String, Object>> getLimit(JSONObject jo, UserBean user,
 			HttpServletRequest request) {
+		if(user == null)
+			user = OptionUtil.adminUser;
 		logger.info("TransmitServiceImpl-->getLimit():jsonObject=" +jo.toString() +", user=" +user.getAccount());
 		int toUserId = JsonUtil.getIntValue(jo, "toUserId"); //操作的对象用户的id，如获取指定心情的转发数，这个为0
 		String tableName = JsonUtil.getStringValue(jo, "table_name");

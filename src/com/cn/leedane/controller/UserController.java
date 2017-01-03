@@ -114,17 +114,25 @@ public class UserController extends BaseController{
 						//登录成功后加载权限和角色信息缓存中
 						
 						if(user != null){
-							if(user.getStatus() == 4 ){
+							if(user.getStatus() == ConstantsUtil.STATUS_NO_TALK){
 								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已被禁言.value));
 								message.put("responseCode", EnumUtil.ResponseCode.用户已被禁言.value);
-							}else if(user.getStatus() == 5){
+							}else if(user.getStatus() == ConstantsUtil.STATUS_DELETE){
 								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已经注销.value));
 								message.put("responseCode", EnumUtil.ResponseCode.用户已经注销.value);
-							}else if(user.getStatus() == 0){
+							}else if(user.getStatus() == ConstantsUtil.STATUS_DISABLE){
+								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已被禁止使用.value));
+								message.put("responseCode", EnumUtil.ResponseCode.用户已被禁止使用.value);
+							}else if(user.getStatus() == ConstantsUtil.STATUS_NO_VALIDATION_EMAIL){
 								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先验证邮箱.value));
 								message.put("responseCode", EnumUtil.ResponseCode.请先验证邮箱.value);
-							}
-							else {
+							}else if(user.getStatus() == ConstantsUtil.STATUS_NO_ACTIVATION){
+								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.注册未激活账户.value));
+								message.put("responseCode", EnumUtil.ResponseCode.注册未激活账户.value);
+							}else if(user.getStatus() == ConstantsUtil.STATUS_INFORMATION){
+								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.未完善信息.value));
+								message.put("responseCode", EnumUtil.ResponseCode.未完善信息.value);
+							}else if(user.getStatus() == ConstantsUtil.STATUS_NORMAL){
 								//判断是android平台的登录
 								if(json.has("login_mothod") && LoginType.LOGIN_TYPE_ANDROID.getValue().equals(json.get("login_mothod"))){
 									
@@ -156,6 +164,9 @@ public class UserController extends BaseController{
 								SessionManagerUtil.getInstance().addSession(session, user.getId());
 								/*printWriter(message, response);
 								return null;*/
+							}else{
+								message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.非正常登录状态.value));
+								message.put("responseCode", EnumUtil.ResponseCode.非正常登录状态.value);
 							}
 						}
 					}else{	
@@ -887,23 +898,32 @@ public class UserController extends BaseController{
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户不存在或请求参数不对.value));
 				message.put("responseCode", EnumUtil.ResponseCode.用户不存在或请求参数不对.value);
 			}else{
-				if(user.getStatus() == 4 ){
+				if(user.getStatus() == ConstantsUtil.STATUS_NO_TALK){
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已被禁言.value));
 					message.put("responseCode", EnumUtil.ResponseCode.用户已被禁言.value);
-				}else if(user.getStatus() == 5){
+				}else if(user.getStatus() == ConstantsUtil.STATUS_DELETE){
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已经注销.value));
 					message.put("responseCode", EnumUtil.ResponseCode.用户已经注销.value);
-				}else if(user.getStatus() == 0){
+				}else if(user.getStatus() == ConstantsUtil.STATUS_DISABLE){
+					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户已被禁止使用.value));
+					message.put("responseCode", EnumUtil.ResponseCode.用户已被禁止使用.value);
+				}else if(user.getStatus() == ConstantsUtil.STATUS_NO_VALIDATION_EMAIL){
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先验证邮箱.value));
 					message.put("responseCode", EnumUtil.ResponseCode.请先验证邮箱.value);
+				}else if(user.getStatus() == ConstantsUtil.STATUS_NO_ACTIVATION){
+					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.注册未激活账户.value));
+					message.put("responseCode", EnumUtil.ResponseCode.注册未激活账户.value);
+				}else if(user.getStatus() == ConstantsUtil.STATUS_INFORMATION){
+					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.未完善信息.value));
+					message.put("responseCode", EnumUtil.ResponseCode.未完善信息.value);
 				}else if(user.getStatus() == ConstantsUtil.STATUS_NORMAL){
 					message.put("userinfo", userHandler.getUserInfo(user, true));
 					message.put("isSuccess", true);
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.恭喜您登录成功.value));
 					message.put("responseCode", EnumUtil.ResponseCode.恭喜您登录成功.value);
 				}else{
-					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.非正常状态.value));
-					message.put("responseCode", EnumUtil.ResponseCode.非正常状态.value);
+					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.非正常登录状态.value));
+					message.put("responseCode", EnumUtil.ResponseCode.非正常登录状态.value);
 				}
 			}
 			printWriter(message, response);

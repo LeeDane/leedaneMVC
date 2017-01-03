@@ -89,9 +89,11 @@ public class JPushTest extends BaseTest{
 		chatBean.setToUserId(1);
 		chatBean.setType(1);
 		
-		Map<String, Object> chatMap = ChatServiceImpl.chatBeanToMap(chatBean);
+		Map<String, Object> chatMap = null;
 		JpushCustomMessage message= new JpushCustomMessage();
 		System.out.println(message.sendToAlias("leedane_user_1", JSONObject.fromObject(chatMap).toString(), "toUserId", "1"));
+		
+		
 	}
 	
 }

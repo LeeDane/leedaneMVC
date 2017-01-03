@@ -1,8 +1,12 @@
 package com.cn.leedane.utils;
 import java.security.Key;
 import java.security.Security;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.crypto.Cipher;
+
+import net.sf.json.JSONObject;
 
 /**
  * DES加密和解密工具,可以对字符串进行加密和解密操作
@@ -177,6 +181,13 @@ public class DesUtils {
 	      System.out.println("解密后的字符：" + des1.decrypt(test));
 	      
 	      //System.out.println("解密后的字符：" + des.decrypt("202cb962ac59075b964b07152d234b70"));
+	      Map<String, Object> infoMap = new HashMap<>();
+          infoMap.put("account", 26);
+          infoMap.put("id", "dane");
+          String newString = des.encrypt(JSONObject.fromObject(infoMap).toString());
+          String string = newString+ "http://7xnv8i.com1.z0.glb.clouddn.com/10_10_20160430172759_489c15f4d74a11151fa92c53f63acdd8.jpg";
+          System.out.println(des.encrypt(JSONObject.fromObject(infoMap).toString()));
+          System.out.println(string.length());
 	    }
 	    catch (Exception e) {
 	      e.printStackTrace();

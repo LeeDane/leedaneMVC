@@ -179,7 +179,7 @@
 									<input type="radio" name="options" id="no-agree" type-value="4"> 禁言
 								</label>
 								<label class="btn btn-primary status-btn">
-									<input type="radio" name="options" id="no-agree" type-value="5"> 注销
+									<input type="radio" name="options" id="no-agree" type-value="2"> 注销
 								</label>
 							</div>
 						</div>

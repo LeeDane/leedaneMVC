@@ -12,7 +12,7 @@ import com.cn.leedane.mybatis.table.annotation.Column;
 public class UserBean extends StatusBean{
 	
 	private static final long serialVersionUID = 1L;
-	//用户状态    0:被禁止 1：正常，2、注册未激活,3：未完善信息 ， 4：被禁言 ，5:注销
+	//用户状态    0:被禁止使用 1：正常，8、注册未激活,6：未完善信息 ， 4：被禁言 ，2:注销
 	
 	/**
 	 * 非必须，uuid,唯一(如在图像的时候关联filepath表)

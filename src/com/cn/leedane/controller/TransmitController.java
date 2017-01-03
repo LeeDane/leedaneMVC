@@ -85,10 +85,8 @@ public class TransmitController extends BaseController{
 	public String paging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
-			if(!checkParams(message, request)){
-				printWriter(message, response);
-				return null;
-			}
+			checkParams(message, request);
+			
 			List<Map<String, Object>> result= transmitService.getLimit(getJsonFromMessage(message), getUserFromMessage(message), request);
 			System.out.println("获得转发的数量：" +result.size());
 			message.put("isSuccess", true);

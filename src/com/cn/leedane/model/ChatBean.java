@@ -14,6 +14,8 @@ public class ChatBean extends RecordTimeBean{
 	
 	private int toUserId; //接收好友的用户ID
 	
+	private String createUserName; //创建用户名称
+	
 	private String content ;  //发送消息的内容
 	
 	private int type; //发送消息的类型，0：文本,1:语音, 3:图片
@@ -47,5 +49,12 @@ public class ChatBean extends RecordTimeBean{
 	public void setRead(boolean isRead) {
 		this.isRead = isRead;
 	}
+	public String getCreateUserName() {
+		return createUserName;
+	}
+	public void setCreateUserName(String createUserName) {
+		this.createUserName = createUserName;
+	}
+	
 	
 }

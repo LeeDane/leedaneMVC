@@ -157,19 +157,19 @@ public class BaseController {
 					case ConstantsUtil.STATUS_NORMAL:
 						canDo = true;
 						break;
-					case 2:
+					case ConstantsUtil.STATUS_NO_ACTIVATION:
 						returnErrorMeg = "请先激活账号"+ user.getAccount();
 						returnErrorCode = EnumUtil.ResponseCode.账号未被激活.value;
 						break;
-					case 3:
+					case ConstantsUtil.STATUS_INFORMATION:
 						returnErrorMeg = "请先完善账号"+ user.getAccount() +"的信息";
 						returnErrorCode = EnumUtil.ResponseCode.请先完善账号信息.value;
 						break;
-					case 4:
+					case ConstantsUtil.STATUS_NO_TALK:
 						returnErrorMeg = "账号"+ user.getAccount()+"已经被禁言，有问题请联系管理员";
 						returnErrorCode = EnumUtil.ResponseCode.账号已被禁言.value;
 						break;
-					case 5:
+					case ConstantsUtil.STATUS_DELETE:
 						returnErrorMeg = "账号"+ user.getAccount()+"已经被注销，有问题请联系管理员";
 						returnErrorCode = EnumUtil.ResponseCode.账号已被注销.value;
 						break;

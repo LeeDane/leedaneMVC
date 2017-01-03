@@ -144,4 +144,30 @@ public class ChatController extends BaseController{
 		printWriter(message, response);
 		return null;
 	}
+	
+	/**
+	 * 获取登录用户的全部与其有过聊天记录的用户的最新一条聊天信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/getOneChatByAllUser")
+	public String getOneChatByAllUser(HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> message = new HashMap<String, Object>();
+		try {
+			if(!checkParams(message, request)){
+				printWriter(message, response);
+				return null;
+			}
+			message.putAll(chatService.getOneChatByAllUser(getJsonFromMessage(message), getUserFromMessage(message), request));
+			printWriter(message, response);
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}     
+        message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
+		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
+		printWriter(message, response);
+		return null;
+	}
 }

@@ -77,18 +77,18 @@ public class ChatServiceImpl implements ChatService<ChatBean> {
 		}
 	
 		if("firstloading".equalsIgnoreCase(method)){
-			sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id, date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
+			sql.append("select c.id, c.is_read, c.create_user_id, c.create_user_name, c.to_user_id, date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
 			sql.append(" from "+DataTableType.聊天.value+" c where ((c.create_user_id = ? and c.to_user_id =?) or (c.to_user_id =? and c.create_user_id = ?))");
 			sql.append(" order by c.id desc limit 0,?");
 			rs = chatMapper.executeSQL(sql.toString(), user.getId(), toUserId,  user.getId(), toUserId,pageSize);
 		//上刷新
 		}else if("uploading".equalsIgnoreCase(method)){
-			sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id , date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
+			sql.append("select c.id, c.is_read, c.create_user_id, c.create_user_name, c.to_user_id , date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
 			sql.append(" from "+DataTableType.聊天.value+" c where ((c.create_user_id = ? and c.to_user_id =?) or (c.to_user_id =? and c.create_user_id = ?))");
 			sql.append(" and c.id < ? order by c.id desc limit 0,? ");
 			rs = chatMapper.executeSQL(sql.toString(), user.getId(), toUserId, user.getId(), toUserId, firstId, pageSize);
 		}else if("lowloading".equalsIgnoreCase(method)){
-			sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id , date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
+			sql.append("select c.id, c.is_read, c.create_user_id, c.create_user_name, c.to_user_id , date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
 			sql.append(" from "+DataTableType.聊天.value+" c where ((c.create_user_id = ? and c.to_user_id =?) or (c.to_user_id =? and c.create_user_id = ?))");
 			sql.append(" and c.id > ? order by c.id desc limit 0,? ");
 			rs = chatMapper.executeSQL(sql.toString(), user.getId(), toUserId, user.getId(), toUserId, lastId, pageSize);
@@ -132,6 +132,7 @@ public class ChatServiceImpl implements ChatService<ChatBean> {
 		chatBean.setCreateUserId(user.getId());
 		chatBean.setStatus(ConstantsUtil.STATUS_NORMAL);
 		chatBean.setToUserId(toUserId);
+		chatBean.setCreateUserName(user.getAccount());
 		chatBean.setType(type);
 		if(toUserId == user.getId()){//对于自己发的，标记为已读
 			chatBean.setRead(true);
@@ -160,11 +161,12 @@ public class ChatServiceImpl implements ChatService<ChatBean> {
 	 * @param chatBean
 	 * @return
 	 */
-	public static Map<String, Object> chatBeanToMap(ChatBean chatBean){
+	public Map<String, Object> chatBeanToMap(ChatBean chatBean){
 		Map<String, Object> chat = new HashMap<String, Object>();
 		chat.put("id", chatBean.getId());
 		chat.put("create_user_id", chatBean.getCreateUserId());
 		chat.put("to_user_id", chatBean.getToUserId());
+		chat.put("create_user_name", chatBean.getCreateUserName());
 		chat.put("create_time", DateUtil.DateToString(chatBean.getCreateTime()));
 		chat.put("type", chatBean.getType());
 		chat.put("content", chatBean.getContent());
@@ -217,7 +219,7 @@ public class ChatServiceImpl implements ChatService<ChatBean> {
 		
 		List<Map<String, Object>> rs = new ArrayList<>();
 		StringBuffer sql = new StringBuffer();
-		sql.append("select c.id, c.is_read, c.create_user_id, c.to_user_id , date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
+		sql.append("select c.id, c.is_read, c.create_user_id, c.create_user_name, c.to_user_id , date_format(c.create_time,'%Y-%m-%d %H:%i:%s') create_time, c.type, c.content");
 		sql.append(" from "+DataTableType.聊天.value+" c where c.to_user_id =? and c.is_read = ? and c.status=?");
 		rs = chatMapper.executeSQL(sql.toString(), user.getId(), false, ConstantsUtil.STATUS_NORMAL);
 		
@@ -260,6 +262,25 @@ public class ChatServiceImpl implements ChatService<ChatBean> {
 		//保存操作日志
 		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"刪除聊天记录Id为：", cid , ",内容为：", content, StringUtil.getSuccessOrNoStr(result)).toString(), "deleteChat()", ConstantsUtil.STATUS_NORMAL, 0);
 		message.put("isSuccess", result);
+		return message;
+	}
+
+	@Override
+	public Map<String, Object> getOneChatByAllUser(JSONObject jo,
+			UserBean user, HttpServletRequest request) {
+		logger.info("ChatServiceImpl-->getOneChatByAllUser():jsonObject=" +jo.toString() +", user=" +user.getAccount());
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("isSuccess", true);
+		List<ChatBean> rs = chatMapper.getOneChatByAllUser(user.getId(), ConstantsUtil.STATUS_NORMAL);
+		List<Map<String, Object>> resList = new ArrayList<Map<String,Object>>();
+		for(ChatBean chatBean: rs){
+			resList.add(chatBeanToMap(chatBean));
+		}
+		message.put("message", resList);
+		message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
+		
+		//保存操作日志
+		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取全部与其有过聊天记录的用户的最新一条聊天信息").toString(), "getOneChatByAllUser()", ConstantsUtil.STATUS_NORMAL, 0);
 		return message;
 	}
 }
