@@ -501,7 +501,7 @@ function addZan(id){
 	var loadi = layer.load('努力加载中…');
 	$.ajax({
 		type : "post",
-		data: {table_name: 't_mood', content: '', forms: '网页端', table_id: id},
+		data: {table_name: 't_mood', content: '', froms: '网页端', table_id: id},
 		url : getBasePath() +"leedane/zan/add.action",
 		dataType: 'json', 
 		beforeSend:function(){
