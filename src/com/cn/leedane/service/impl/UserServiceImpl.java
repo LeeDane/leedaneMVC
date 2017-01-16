@@ -1247,7 +1247,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 			return message;
 		}
 		
-		if(AppStore.getInstance().get(cid) == null){
+		if(AppStore.getInstance().getScanLogin(cid) == null){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.登录页面已经过期.value));
 			message.put("responseCode", EnumUtil.ResponseCode.登录页面已经过期.value);
 			return message;
@@ -1278,7 +1278,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 		if(user != null){
 			message.put("isSuccess", true);
 			//扫码校验成功，将信息推送给客户端
-			HttpSession session = (HttpSession) AppStore.getInstance().get(cid);
+			HttpSession session = (HttpSession) AppStore.getInstance().getScanLogin(cid);
 			boolean result = false;
 			if(session != null){
 				CometEngine engine = CometContext.getInstance().getEngine();
@@ -1315,7 +1315,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 			return message;
 		}
 		
-		if(AppStore.getInstance().get(cid) == null){
+		if(AppStore.getInstance().getScanLogin(cid) == null){
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.登录页面已经过期.value));
 			message.put("responseCode", EnumUtil.ResponseCode.登录页面已经过期.value);
 			return message;
@@ -1326,7 +1326,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("isSuccess", true);
 		map.put("message", "cancel");
-		HttpSession session = (HttpSession) AppStore.getInstance().get(cid);
+		HttpSession session = (HttpSession) AppStore.getInstance().getScanLogin(cid);
 		if(session != null){
 			session.removeAttribute(UserController.USER_INFO_KEY);
 		}

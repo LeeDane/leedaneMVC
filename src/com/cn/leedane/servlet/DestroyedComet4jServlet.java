@@ -40,8 +40,8 @@ public class DestroyedComet4jServlet extends HttpServlet{
 		String channel = request.getParameter("channel");
 		
 		if(StringUtil.isNotNull(channel) && Comet4jServer.SCAN_LOGIN.equals(channel)){
-			AppStore.getInstance().removeKey(key);
-			System.out.println("cid为"+key+"已经销毁，还剩余链接数："+AppStore.getInstance().getMap().size());
+			AppStore.getInstance().removeScanLoginKey(key);
+			System.out.println("cid为"+key+"已经销毁，还剩余链接数："+AppStore.getInstance().getScanLogin().size());
 		}
 	}
 	

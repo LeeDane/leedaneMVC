@@ -156,8 +156,6 @@
 </head>
 <body data-spy="scroll" data-target="#myScrollspy" data-offset="90">
 <%@ include file="/page/common.jsp" %>
-<script type="text/javascript" src="other/layui/layui.js"></script>
-<script type="text/javascript" src="other/layui/lay/dest/layui.all.js"></script>
 <script src="<%=basePath %>page/js/my.js"></script>
 <div class="container mainContainer clearFloat">
 	   <div class="row">

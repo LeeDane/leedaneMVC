@@ -1,7 +1,9 @@
 package com.cn.leedane.comet4j;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 应用全局存储
@@ -11,41 +13,61 @@ import java.util.Map;
  */
 public class AppStore {
 
-	private static Map<String, Object> map;
+	private static Map<String, Object> mapScanLogin;
+	private static Set<String> mapChatRoom;
 	
 	private static AppStore instance;
 
-	public static AppStore getInstance() {
-
-		if (instance == null) {
-			instance = new AppStore();
-			map = new HashMap<String, Object>();
+	private AppStore(){
+		mapScanLogin = new HashMap<String, Object>();
+		mapChatRoom = new HashSet<String>();
+	}
+	public synchronized static AppStore getInstance() {
+		if(instance == null){
+			synchronized (AppStore.class) {
+				if(instance == null){
+					instance = new AppStore();
+				}
+			}
 		}
 		return instance;
 	}
 
-	public void put(String key, Object value) {
-		map.put(key, value);
+	public void putScanLogin(String key, Object value) {
+		mapScanLogin.put(key, value);
 	}
 	
-	public Object get(String key) {
-		return map.get(key);
+	public Object getScanLogin(String key) {
+		return mapScanLogin.get(key);
 	}
 	
-	public Map<String, Object> getMap() {
-		return map;
+	public Map<String, Object> getScanLogin() {
+		return mapScanLogin;
 	} 
 	
 	
-	public void removeKey(String key){
+	public void removeScanLoginKey(String key){
 		try {
-			map.remove(key);
+			mapScanLogin.remove(key);
 		} catch (Exception e) {
 		}
 	}
 
-	public void destroy() {
-		map.clear();
-		map = null;
+	public void destroyScanLogin() {
+		mapScanLogin.clear();
+		mapScanLogin = null;
+	}
+	
+	public void addChat(String key){
+		mapChatRoom.add(key);
+	}
+	
+	public void removeChat(String key){
+		mapChatRoom.remove(key);
+	}
+	
+	public void destroyAllChat(){
+		mapChatRoom.clear();
+		mapChatRoom = null;
 	}
 }

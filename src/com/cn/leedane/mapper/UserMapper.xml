@@ -44,6 +44,6 @@
 	</select>
 	
 	<select id="shakeSearch" resultType="UserBean">
-		select * from t_user where status = #{status} and create_user_id != #{createUserId} order by rand() limit 1
+		select * from t_user where status = #{status} and id != #{createUserId} order by rand() limit 1
 	</select>
 </mapper>

@@ -56,12 +56,21 @@
 		#add-grallery{
 			padding-top:200px;
 		}
+		img{
+			transition: .1s transform;
+  			transform: translateZ(0);
+  			z-index: 0;
+		}
+		img:hover{
+			transform: scale(1.1, 1.1);
+  			transition: .3s transform;
+  			z-index: 999;
+		}
+		
 	</style>
 </head>
 <body>
 <%@ include file="/page/common.jsp" %>
-<script type="text/javascript" src="other/layui/layui.js"></script>
-<script type="text/javascript" src="other/layui/lay/dest/layui.all.js"></script>
 <script src="<%=basePath %>page/js/photo.js"></script>
 
 <div class="container">

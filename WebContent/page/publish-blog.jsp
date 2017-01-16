@@ -79,8 +79,6 @@
 </head>
 <body>
 <%@ include file="common.jsp" %>
-<script type="text/javascript" src="<%=basePath %>page/other/layui/layui.js"></script>
-<script type="text/javascript" src="<%=basePath %>page/other/layui/lay/dest/layui.all.js"></script>
 <script type="text/javascript" src="<%=basePath %>page/other/jquery.md5.js"></script>
 <script type="text/javascript" charset="utf-8" src="<%=basePath %>page/other/ueditor1_4_3_3-utf8-jsp/ueditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="<%=basePath %>page/other/ueditor1_4_3_3-utf8-jsp/ueditor.all.min.js"> </script>

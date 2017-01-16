@@ -101,9 +101,6 @@
 </head>
 <body>
 <%@ include file="common.jsp" %>
-
-<script type="text/javascript" src="<%=basePath %>page/other/layui/layui.js"></script>
-<script type="text/javascript" src="<%=basePath %>page/other/layui/lay/dest/layui.all.js"></script>
 <script src="<%=basePath %>page/js/index.js"></script>
 <script type="text/javascript" src="<%=basePath %>page/other/jquery.md5.js"></script>
 <div class="main clearFloat">

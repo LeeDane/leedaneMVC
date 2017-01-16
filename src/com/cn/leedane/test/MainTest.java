@@ -24,10 +24,12 @@ import com.google.zxing.WriterException;
 public class MainTest {
 
 	public static void main(String[] args) throws IOException {
-		System.out.println(DateUtil.DateToString(new Date(), "yyyyMM"));
+		int distance = 112456399 + 11;
+		System.out.println(((distance/1000) > 0 ? ((distance/1000000) > 0 ? (distance/1000000)+ "千公里": (distance/1000) + "公里"): "") +  ((distance%1000) > 0 ? (distance%1000) +"米": ""));
+		/*System.out.println(DateUtil.DateToString(new Date(), "yyyyMM"));
 		System.out.println(DateUtil.DateToString(new Date(), "yyyy年MM月"));
 		System.out.println(DateUtil.DateToString(new Date(), "MM月dd日"));
-		System.out.println(DateUtil.DateToString(new Date(), "dd日HH时"));
+		System.out.println(DateUtil.DateToString(new Date(), "dd日HH时"));*/
 	
 	}
 	

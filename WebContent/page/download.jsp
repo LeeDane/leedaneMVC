@@ -25,8 +25,6 @@
 
   <body onload="init();">
 	<%@ include file="/page/common.jsp" %>
-	<script type="text/javascript" src="other/layui/layui.js"></script>
-	<script type="text/javascript" src="other/layui/lay/dest/layui.all.js"></script>
     <div class="container">
 	      欢迎您的使用，请下载最新版的app后使用扫一扫功能。下载地址<span class="download-link"></span>：
     </div> <!-- /container -->
@@ -38,6 +36,10 @@
 	 * @param uid
 	 */
 	function init(){
+		$(".navbar-nav .nav-main-li").each(function(){
+			$(this).removeClass("active");
+		});
+		
 		var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
 		$.ajax({
 			type : "post",

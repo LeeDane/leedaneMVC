@@ -58,7 +58,7 @@ public class LoginQrCode extends HttpServlet{
 			return;
 		}
 		
-		if(AppStore.getInstance().get(cid) == null){
+		if(AppStore.getInstance().getScanLogin(cid) == null){
 			message.put("message", "连接对象不存在，请重新刷新当前页");
 			message.put("responseCode", EnumUtil.ResponseCode.参数不存在或为空.value);
 			printWriter(message, response);
