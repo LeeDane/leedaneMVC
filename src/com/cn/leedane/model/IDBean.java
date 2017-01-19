@@ -2,6 +2,8 @@ package com.cn.leedane.model;
 
 import java.io.Serializable;
 
+import org.apache.solr.client.solrj.beans.Field;
+
 
 /**
  * 自增长的 ID类的基类
@@ -20,6 +22,7 @@ public class IDBean implements Serializable{
 	/**
 	 * 基本的ID列
 	 */
+	@Field
 	protected int id;
 	
 	//@Id

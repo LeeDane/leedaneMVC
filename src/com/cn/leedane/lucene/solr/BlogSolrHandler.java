@@ -1,5 +1,8 @@
 package com.cn.leedane.lucene.solr;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
@@ -7,33 +10,45 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
+import com.cn.leedane.model.BlogBean;
+
+
 /**
  * solr处理类
  * @author LeeDane
  * 2016年7月12日 下午3:36:22
  * Version 1.0
  */
-public class SolrHandler {
-	private static final String SOLR_URL = "http://localhost:8983/solr";
+public class BlogSolrHandler extends BaseSolrHandler<BlogBean> {
+public static BlogSolrHandler handler;
+	
 	public static HttpSolrServer server;
-	public static SolrHandler handler;
 	
-	private SolrHandler(){}
+	private BlogSolrHandler() {
+		buildSolrServerInstance();
+	}
 	
-	public synchronized static SolrHandler getInstance(){
+	@Override
+	protected String corename() {
+		return "blog";
+	}
+	
+	public synchronized static BlogSolrHandler getInstance(){
 		if(handler == null){
-			synchronized(SolrHandler.class){
-				handler = new SolrHandler();
+			synchronized(BlogSolrHandler.class){
+				handler = new BlogSolrHandler();
 			}
 		}
 		return handler;
 	}
 	
-	
-	public synchronized static HttpSolrServer getSolrInstance(){
+	/**
+	 * 构建HttpSolrServer实例
+	 */
+	public synchronized void buildSolrServerInstance(){
 		if(server == null){
-			synchronized(SolrHandler.class){
-				server = new HttpSolrServer(SOLR_URL);
+			synchronized(BaseSolrHandler.class){
+				server = new HttpSolrServer(BaseSolrHandler.BASE_SOLR_URL +this.corename());
 			    server.setMaxRetries(5); // defaults to 0. > 1 not recommended.
 			    server.setConnectionTimeout(30000); // 5 seconds to establish TCP
 			    //正常情况下，以下参数无须设置
@@ -68,7 +83,35 @@ public class SolrHandler {
 			    server.setRequestWriter(new BinaryRequestWriter());
 			}
 		}
-		return server;
+	}
+	
+	@Override
+	public boolean addBean(BlogBean bean){
+		try {
+			server.addBean(bean);
+			 //对索引进行优化
+            server.optimize();
+            
+			server.commit();
+			return true;
+		} catch (IOException | SolrServerException e) {
+			e.printStackTrace();
+		}  
+		return false;
+	}
+	
+	@Override
+	public boolean addBeans(List<BlogBean> beans){
+		try {
+			server.addBeans(beans);
+			//对索引进行优化
+            server.optimize();
+			server.commit();
+			return true;
+		} catch (SolrServerException | IOException e) {
+			e.printStackTrace();
+		}  
+		return false;
 	}
 	
 	/**
@@ -77,8 +120,36 @@ public class SolrHandler {
 	 * @return
 	 * @throws SolrServerException
 	 */
+	@Override
 	public QueryResponse query(SolrQuery query) throws SolrServerException{
-		return getSolrInstance().query(query);
+		return server.query(query);
 	}
 	
+	@Override
+	protected boolean deleteBean(String id){
+		try {
+			server.deleteById(id);
+			//对索引进行优化
+            server.optimize();
+			server.commit();
+			return true;
+		} catch (SolrServerException | IOException e) {
+			e.printStackTrace();
+		}  
+		return false;
+	}
+
+	@Override
+	protected boolean deleteBeans(List<String> ids){
+		try {
+			server.deleteById(ids);
+			//对索引进行优化
+            server.optimize();
+			server.commit();
+			return true;
+		} catch (SolrServerException | IOException e) {
+			e.printStackTrace();
+		}  
+		return false;
+	}
 }

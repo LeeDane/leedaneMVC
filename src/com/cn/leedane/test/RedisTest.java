@@ -21,6 +21,7 @@ public class RedisTest extends BaseTest {
 		RedisUtil redisUtil = new RedisUtil();
 		System.out.println(redisUtil.addString("mood_1", "hello mood 1"));
 		System.out.println(redisUtil.getString("mood_1"));
+		redisUtil.clearAll();
 	}
 	
 	@Test

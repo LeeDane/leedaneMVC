@@ -135,7 +135,11 @@ public class BlogServiceImpl extends AdminRoleCheckService implements BlogServic
 		blogId = blogMapper.shakeSearch(user.getId(), ConstantsUtil.STATUS_NORMAL);
 		if(blogId > 0 ){
 			message.put("isSuccess", true);
-			message.put("message", blogHandler.getBlogDetail(blogId, user));
+			List<Map<String, Object>> rs = blogHandler.getBlogDetail(blogId, user);
+			Map<String, Object> resultMap = new HashMap<String, Object>();
+			if(CollectionUtil.isNotEmpty(rs))
+				resultMap = rs.get(0);
+			message.put("message", resultMap);
 			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.没有更多数据.value));

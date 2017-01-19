@@ -404,7 +404,7 @@
 						 			'</div>'+
 						 			'<div class="row">'+
 						 				'<div class="col-lg-9">'+
-							 				'<div class="form-group">个人简介：'+ changeNotNullString(user.introduction) +'</div>'+
+							 				'<div class="form-group">个人简介：'+ changeNotNullString(user.personal_introduction) +'</div>'+
 										'</div>'+
 										'<div class="col-lg-3 padding-five">'+ 
 							 				'<div class="row" style="text-align: right;"><button type="button" class="btn btn-primary btn-sm" onclick="showUploadHeadLink(this, '+ index +');">上传头像</button></div>'+
@@ -454,7 +454,7 @@
 			 			'</div>'+
 			 			'<div class="row">'+
 			 				'<div class="col-lg-9">'+
-				 				'<div class="form-group">个人简介：'+ changeNotNullString(user.introduction) +'</div>'+
+				 				'<div class="form-group">个人简介：'+ changeNotNullString(user.personal_introduction) +'</div>'+
 							'</div>'+
 							'<div class="col-lg-3 padding-five">'+ 
 				 				'<div class="row" style="text-align: right;"><button type="button" class="btn btn-primary btn-sm" onclick="showUploadHeadLink(this, '+ index +');">上传头像</button></div>'+
@@ -477,7 +477,7 @@
 		var user = users[index];
 		$("#edit-user-info").attr("data-id", user.id);
 		$("#edit-user-info").find('[name="account"]').val(changeNotNullString(user.account));
-		$("#edit-user-info").find('[name="personal_introduction"]').val(changeNotNullString(user.introduction));
+		$("#edit-user-info").find('[name="personal_introduction"]').val(changeNotNullString(user.personal_introduction));
 		var status = user.status;
 		var labels = $(".status-btn");
 		for(var i = 0 ; i < labels.length; i++){

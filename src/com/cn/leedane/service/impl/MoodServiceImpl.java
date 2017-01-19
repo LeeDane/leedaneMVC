@@ -21,6 +21,7 @@ import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.EnumUtil.NotificationType;
+import com.cn.leedane.utils.CollectionUtil;
 import com.cn.leedane.utils.FileUtil;
 import com.cn.leedane.utils.FilterUtil;
 import com.cn.leedane.utils.JsonUtil;
@@ -36,6 +37,7 @@ import com.cn.leedane.handler.UserHandler;
 import com.cn.leedane.handler.ZanHandler;
 import com.cn.leedane.mapper.FilePathMapper;
 import com.cn.leedane.mapper.MoodMapper;
+import com.cn.leedane.model.BlogBean;
 import com.cn.leedane.model.FilePathBean;
 import com.cn.leedane.model.FriendBean;
 import com.cn.leedane.model.MoodBean;
@@ -758,7 +760,17 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		moodId = moodMapper.shakeSearch(user.getId(), ConstantsUtil.STATUS_NORMAL);
 		if(moodId > 0 ){
 			message.put("isSuccess", true);
-			message.put("message", moodHandler.getMoodDetail(moodId, user));
+			List<Map<String, Object>> rs = moodHandler.getMoodDetail(moodId, user);
+			Map<String, Object> resultMap = new HashMap<String, Object>();
+			if(CollectionUtil.isNotEmpty(rs)){
+				Map<String, Object> m = rs.get(0);
+				String uuid = StringUtil.changeNotNull(m.get("uuid"));
+				if(StringUtil.changeObjectToBoolean(m.get("has_img")) && !StringUtil.isNull(uuid)){
+					m.put("imgs", moodHandler.getMoodImg(DataTableType.心情.value, uuid, ConstantsUtil.DEFAULT_PIC_SIZE));
+				}
+				resultMap.putAll(m);
+			}
+			message.put("message", resultMap);
 			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 	
 		}else{
@@ -866,6 +878,9 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		return message;
 	}
 
-	
+	@Override
+	public List<MoodBean> getMoodBeans(String sql, Object... params) {
+		return  moodMapper.getBeans(sql, params);
+	}
 
 }

@@ -1,6 +1,8 @@
 package com.cn.leedane.model;
 import java.util.Date;
 
+import org.apache.solr.client.solrj.beans.Field;
+
 import com.cn.leedane.mybatis.table.annotation.Column;
 
 /**
@@ -27,12 +29,14 @@ public class UserBean extends StatusBean{
 	/**
 	 * 帐号,默认登录的标准以及显示的用户名称(不能为空)
 	 */
+	@Field
 	private String account; 
 	
 	/**
 	 * 中文名
 	 */
 	@Column("china_name")
+	@Field
 	private String chinaName;
 	
 	/**
@@ -44,21 +48,25 @@ public class UserBean extends StatusBean{
 	 * 真实姓名
 	 */
 	@Column("real_name")
+	@Field
 	private String realName; 
 	
 	/**
 	 * 性别
 	 */
+	@Field
 	private String sex;
 	
 	/**
 	 * 年龄
 	 */
+	@Field
 	private int age;
 	
 	/**
 	 * 民族
 	 */
+	@Field
 	private String nation;
 	
 	/**
@@ -70,39 +78,46 @@ public class UserBean extends StatusBean{
 	 * 籍贯
 	 */
 	@Column("native_place")
+	@Field
 	private String nativePlace;
 	
 	/**
 	 * 最高学历
 	 */
 	@Column("education_background")
+	@Field
 	private String educationBackground; 
 	
 	/**
 	 * 毕业学校
 	 */
+	@Field
 	private String school; 
 	
 	/**
 	 * 公司
 	 */
+	@Field
 	private String company;
 	
 	/**
 	 * 公司地址
 	 */
 	@Column("company_address")
+	@Field
 	private String companyAddress;  
 	
 	/**
 	 * 联系地址(默认地址)
 	 */
+	@Field
 	private String address;   
 	
 	/**
 	 * 手机号码，格式：137XXXXXXXXXXX
 	 */
 	@Column("mobile_phone")
+	@Field
 	private String mobilePhone;  
 	
 	/**
@@ -127,6 +142,7 @@ public class UserBean extends StatusBean{
 	 * 保存照片的相对路径(开发时选择绝对路径)
 	 */
 	@Column("pic_path")
+	@Field
 	private String picPath;
 	
 	/**
@@ -138,11 +154,13 @@ public class UserBean extends StatusBean{
 	/**
 	 * 邮箱，附加登录的条件，找回密码，验证等凭证
 	 */
+	@Field
 	private String email;
 	
 	/**
 	 * QQ号码
 	 */
+	@Field
 	private String qq;
 	
 	/**
@@ -155,6 +173,7 @@ public class UserBean extends StatusBean{
 	 * 个人介绍
 	 */
 	@Column("personal_introduction")
+	@Field
 	private String personalIntroduction; 
 	
 	/**
@@ -172,6 +191,7 @@ public class UserBean extends StatusBean{
 	 * 注册时间，格式2014-06-25 10:00:00
 	 */
 	@Column("register_time")
+	@Field
 	private Date registerTime;
 	
 	/**

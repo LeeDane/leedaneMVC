@@ -6,7 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import com.cn.leedane.model.BlogBean;
 import com.cn.leedane.model.IDBean;
+import com.cn.leedane.model.MoodBean;
 import com.cn.leedane.model.UserBean;
 
 /**
@@ -165,5 +167,11 @@ public interface MoodService <T extends IDBean>{
 	 */
 	public Map<String, Object> getTopicByLimit(JSONObject jo, UserBean user,HttpServletRequest request);
 
-	
+	/**
+	 * 获取博客对象列表
+	 * @param sql
+	 * @param params
+	 * @return
+	 */
+	public List<MoodBean> getMoodBeans(String sql, Object ...params);
 }

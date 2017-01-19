@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cn.leedane.lucene.solr.SolrHandler;
+import com.cn.leedane.lucene.solr.UserSolrHandler;
 import com.cn.leedane.model.BlogBean;
 import com.cn.leedane.model.MoodBean;
 import com.cn.leedane.service.BlogService;
@@ -184,7 +184,7 @@ public class ShakeController extends BaseController{
 		    //query.setSort("price", ORDER.asc);
 		    query.setStart(start);
 		    query.setRows(getSearchRows(tempId));
-			return SolrHandler.getInstance().query(query);
+			return UserSolrHandler.getInstance().query(query);
 		}
 	}
 }

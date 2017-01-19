@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import com.cn.leedane.exception.ErrorException;
 /**
@@ -583,6 +584,25 @@ public class DateUtil {
 	public static Timestamp getTimestamp(Date date){
 		Timestamp timestamp = new Timestamp(date.getTime());
 		return timestamp;
+	}
+	
+	/**
+	 * 对字符串进行格式化，格式如Thu Sep 03 23:51:25 CST 2015
+	 * @param str
+	 * @param format
+	 * @return 转化不了返回""
+	 */
+	public static String formatLocaleTime(String str, String format){
+		try{
+			SimpleDateFormat sdf1 = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
+	   	   	Date date = sdf1.parse(str);
+	   	   	SimpleDateFormat sdf = new SimpleDateFormat(format);
+	   	   	return sdf.format(date);
+		}
+		catch (ParseException e){
+			e.printStackTrace();
+		}
+		return "";
 	}
 	
 	public static void main(String[] args) {

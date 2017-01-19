@@ -13,23 +13,21 @@ import java.util.concurrent.Future;
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Component;
 
-import com.cn.leedane.utils.ConstantsUtil;
-import com.cn.leedane.utils.DateUtil;
-import com.cn.leedane.utils.EnumUtil.DataTableType;
-import com.cn.leedane.utils.StringUtil;
-import com.cn.leedane.lucene.solr.SolrHandler;
+import com.cn.leedane.lucene.solr.BlogSolrHandler;
+import com.cn.leedane.lucene.solr.MoodSolrHandler;
+import com.cn.leedane.lucene.solr.UserSolrHandler;
 import com.cn.leedane.mapper.BlogMapper;
 import com.cn.leedane.mapper.MoodMapper;
 import com.cn.leedane.model.BlogBean;
 import com.cn.leedane.model.MoodBean;
 import com.cn.leedane.model.UserBean;
-import com.cn.leedane.service.BlogService;
-import com.cn.leedane.service.MoodService;
 import com.cn.leedane.service.UserService;
+import com.cn.leedane.utils.ConstantsUtil;
+import com.cn.leedane.utils.DateUtil;
+import com.cn.leedane.utils.EnumUtil.DataTableType;
+import com.cn.leedane.utils.StringUtil;
 
 /**
  * 定时加入solr索引
@@ -177,51 +175,55 @@ public class SolrIndex extends BaseScheduling{
 	class SingleIndexTask implements Callable<Boolean>{
 		private Object obj;
 		private int tempId;
-		private HttpSolrServer server = SolrHandler.getSolrInstance();
-		private SolrInputDocument document = new SolrInputDocument();
+		private String corename;
 		public SingleIndexTask(int tempId, Object obj) {
 			this.obj = obj;
 			this.tempId = tempId;
+			switch (tempId) {
+				case 1:
+					corename = "blog";
+					break;
+				case 2:
+					corename = "mood";
+					break;
+				case 3:
+					corename = "user";
+					break;
+			default:
+				break;
+			}
+			
 		}
 
 		@Override
 		public Boolean call() throws Exception {
+			boolean result = false;
 			if(tempId == 1){
 				BlogBean blog = (BlogBean) obj;
-				document.addField("id", "b"+blog.getId());
-				document.addField("bcontent", blog.getContent());
-				document.addField("btitle", blog.getTitle());
-				document.addField("bdigest", blog.getDigest());
-				server.add(document);
-				server.commit();
 				BlogBean updateBlog = blogMapper.findById(BlogBean.class, blog.getId());
-				updateBlog.setSolrIndex(true);
-				blogMapper.update(updateBlog);
+				result = BlogSolrHandler.getInstance().addBean(updateBlog);
+				if(result){
+					updateBlog.setSolrIndex(true);
+					blogMapper.update(updateBlog);
+				}
 			}else if(tempId ==2){
 				MoodBean mood = (MoodBean) obj;
-				document.addField("id", "m"+mood.getId());
-				document.addField("mcontent", mood.getContent());
-				server.add(document);
-				server.commit();
 				MoodBean updateMood = moodMapper.findById(MoodBean.class, mood.getId());
-				updateMood.setSolrIndex(true);
-				moodMapper.update(updateMood);
+				result = MoodSolrHandler.getInstance().addBean(updateMood);
+				if(result){
+					updateMood.setSolrIndex(true);
+					moodMapper.update(updateMood);
+				}
 			}else if(tempId ==3){
 				UserBean user = (UserBean) obj;
-				document.addField("id", "u"+user.getId());
-				document.addField("uchina_name", user.getChinaName());
-				document.addField("uaccount", user.getAccount());
-				document.addField("ureal_name", user.getRealName());
-				document.addField("umobile_phone", user.getMobilePhone());
-				document.addField("uid_card", user.getIdCard());
-				document.addField("uemail", user.getEmail());
-				server.add(document);
-				server.commit();
 				UserBean updateUser = userService.findById(user.getId());
-				updateUser.setSolrIndex(true);
-				userService.update(updateUser);
+				result = UserSolrHandler.getInstance().addBean(updateUser);
+				if(result){
+					updateUser.setSolrIndex(true);
+					userService.update(updateUser);
+				}
 			}
-			return true;
+			return result;
 		}
 	}
 }

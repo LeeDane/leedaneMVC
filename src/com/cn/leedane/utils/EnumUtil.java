@@ -474,4 +474,5 @@ public class EnumUtil {
         }
         public final String value;
     }
+  
 }

@@ -1,5 +1,7 @@
 package com.cn.leedane.model;
 
+import org.apache.solr.client.solrj.beans.Field;
+
 
 /**
  * Blog实体类
@@ -24,26 +26,31 @@ public class BlogBean extends RecordTimeBean{
 	/**
 	 * 博客的标题
 	 */
+	@Field
 	private String title; 
 	
 	/**
 	 * 博客内容
 	 */
+	@Field
 	private String content;
 	
 	/**
 	 * 博客摘要(建议一般不要超过50个字)
 	 */
+	@Field
 	private String digest;
 	
 	/**
 	 * 标签(多个用逗号隔开)
 	 */
+	@Field
 	private String tag;   
 	
 	/**
 	 * 来自(指的是来自发表的方式，如：Android客户端，iPhone客户端等)
 	 */
+	@Field
 	private String froms;
 	
 	/**
@@ -54,26 +61,31 @@ public class BlogBean extends RecordTimeBean{
 	/**
 	 * 图片的地址
 	 */
+	@Field
 	private String imgUrl;
 	
 	/**
 	 * 原文的链接
 	 */
+	@Field
 	private String originLink;
 	
 	/**
 	 * 来源（指的是文章的来源，其他网站的话写的是其他网站的信息，原创的话直接写原创）
 	 */
+	@Field
 	private String source; 
 	
 	 /**
      * 是否可以评论(默认可以评论)
      */
+	@Field
     private boolean canComment;
     
     /**
      * 是否可以转发(默认可以转发)
      */
+	@Field
     private boolean canTransmit;
 	
 	/**
@@ -90,31 +102,37 @@ public class BlogBean extends RecordTimeBean{
 	/**
 	 * 是否被阅读
 	 */
+	
 	private boolean isRead; 
 	
 	/**
 	 * 阅读次数
 	 */
+	@Field
 	private int readNumber; 
 	
 	/**
 	 * 统计赞的数量
 	 */
+	@Field
 	private int zanNumber;   
 	
 	/**
 	 * 统计评论的数量
 	 */
+	@Field
 	private int commentNumber; 
 	
 	/**
 	 * 统计转发的数量
 	 */
+	@Field
 	private int transmitNumber ;
 	
 	/**
 	 * 统计分享的数量
 	 */
+	@Field
 	private int shareNumber;
 	
 	/**
@@ -125,11 +143,13 @@ public class BlogBean extends RecordTimeBean{
 	/**
 	 * 是否推荐
 	 */
+	@Field
 	private boolean isRecommend;
 	
 	/**
 	 * 分类
 	 */
+	@Field
 	private String category;
 	
 	/**

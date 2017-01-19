@@ -16,7 +16,6 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.junit.Test;
 
-import com.cn.leedane.lucene.solr.SolrHandler;
 import com.cn.leedane.mapper.BlogMapper;
 import com.cn.leedane.model.BlogBean;
 
@@ -39,8 +38,7 @@ public class SolrTest extends BaseTest{
 	
 	@Test
 	public void index() {
-		try {
-			 HttpSolrServer server = SolrHandler.getSolrInstance();
+		/*try {
 			 List<BlogBean> list = new ArrayList<BlogBean>();
 			 
 			 list.add(blogMapper.findById(BlogBean.class, 1510));
@@ -63,13 +61,12 @@ public class SolrTest extends BaseTest{
 				 document.addField("mymanu", list.get(i).getTitle());
 				 documents.add(document);
 			 }
-			 server.add(documents);
-			 server.commit();
+			 //SolrHandler.getInstance().getSolrInstance("blog").addField(bean);
 			} catch (SolrServerException e) {
 			    e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			}*/
 
 	}
 	

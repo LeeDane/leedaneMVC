@@ -1,5 +1,7 @@
 package com.cn.leedane.model;
 
+import org.apache.solr.client.solrj.beans.Field;
+
 
 /**
  * 心情实体类
@@ -22,71 +24,85 @@ public class MoodBean extends RecordTimeBean{
 	/**
 	 * 心情内容
 	 */
+	@Field
 	private String content;
 	
 	/**
 	 * 标签(多个用逗号隔开)
 	 */
+	@Field
 	private String tag;   
 	
 	/**
 	 * 来自(指的是来自发表的方式，如：Android客户端，iPhone客户端等)
 	 */
+	@Field
 	private String froms;
 	
 	/**
 	 * 是否有图片
 	 */
+	@Field
 	private boolean hasImg;
 	
 	/**
 	 * 位置的展示信息
 	 */
+	@Field
 	private String location;
 	
 	/**
 	 * 经度
 	 */
+	@Field
     private double longitude;
     
     /**
      * 纬度
      */
+	@Field
     private double latitude;
     
     /**
      * 是否可以评论(默认可以评论)
      */
+	@Field
     private boolean canComment;
     
     /**
      * 是否可以转发(默认可以转发)
      */
+	@Field
     private boolean canTransmit;
 	
 	/**
 	 * 阅读次数
 	 */
+	@Field
 	private int readNumber; 
 	
 	/**
 	 * 统计赞的数量
 	 */
+	@Field
 	private int zanNumber;   
 	
 	/**
 	 * 统计评论的数量
 	 */
+	@Field
 	private int commentNumber; 
 	
 	/**
 	 * 统计转发的数量
 	 */
+	@Field
 	private int transmitNumber ;
 	
 	/**
 	 * 统计分享的数量
 	 */
+	@Field
 	private int shareNumber;
 	
 	/**
