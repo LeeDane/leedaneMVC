@@ -53,7 +53,7 @@ public class AppFileUploadController extends BaseController{
             if(user == null){
             	message.put("message", EnumUtil.getResponseValue(ResponseCode.请先登录.value));
             	message.put("responseCode", ResponseCode.请先登录.value);
-            	printWriter(message, response);
+            	printWriter(message, response, startTime);
 				return null;
         	}
             
@@ -130,7 +130,7 @@ public class AppFileUploadController extends BaseController{
             
            if(serialNumber == 0 ){ 	   
         	   message.put("isSuccess", filePathService.saveSourceAndEachFile(fileFullPath.toString(), user, tableUuid, tableName, order, null, null));
-        	   printWriter(message, response);
+        	   printWriter(message, response, startTime);
         	   return null;
            }else{
         	   UploadBean upload = new UploadBean();
@@ -148,7 +148,7 @@ public class AppFileUploadController extends BaseController{
         		   	message.put("message", EnumUtil.getResponseValue(ResponseCode.文件上传失败.value));
                		message.put("responseCode", ResponseCode.文件上传失败.value);
         	   }
-        	   printWriter(message, response);
+        	   printWriter(message, response, startTime);
         	   return null;
            }
         } catch (Exception e) {
@@ -159,7 +159,7 @@ public class AppFileUploadController extends BaseController{
         message.put("message", EnumUtil.getResponseValue(ResponseCode.服务器处理异常.value));
    		message.put("responseCode", ResponseCode.服务器处理异常.value);
         System.out.println("上传总计耗时："+ (endTime - startTime) +"毫秒");
-        printWriter(message, response);
+        printWriter(message, response, startTime);
 		return null;
     }
 }

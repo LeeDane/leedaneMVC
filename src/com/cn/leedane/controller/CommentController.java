@@ -36,13 +36,13 @@ public class CommentController extends BaseController{
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(commentService.add(getJsonFromMessage(message), getUserFromMessage(message), request));
 			long end = System.currentTimeMillis();
 			System.out.println("发表评论总计耗时：" +(end - start) +"毫秒");
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -50,7 +50,7 @@ public class CommentController extends BaseController{
 		message.put("isSuccess", false);
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 
@@ -68,7 +68,7 @@ public class CommentController extends BaseController{
 			message.put("isSuccess", true);
 			long end = System.currentTimeMillis();
 			System.out.println("获取评论列表总计耗时：" +(end - start) +"毫秒");
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -76,7 +76,7 @@ public class CommentController extends BaseController{
 		message.put("isSuccess", false);
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -91,14 +91,14 @@ public class CommentController extends BaseController{
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.put("message", commentService.getOneCommentItemsByLimit(getJsonFromMessage(message), getUserFromMessage(message), request));
 			message.put("isSuccess", true);
 			long end = System.currentTimeMillis();
 			System.out.println("获取每条评论的子评论列表总计耗时：" +(end - start) +"毫秒");
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -106,7 +106,7 @@ public class CommentController extends BaseController{
 		message.put("isSuccess", false);
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -120,14 +120,14 @@ public class CommentController extends BaseController{
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.put("message", commentService.getCountByObject(getJsonFromMessage(message), getUserFromMessage(message), request));
 			message.put("isSuccess", true);
 			long end = System.currentTimeMillis();
 			System.out.println("获取表的行记录评论数量总计耗时：" +(end - start) +"毫秒");
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -135,7 +135,7 @@ public class CommentController extends BaseController{
 		message.put("isSuccess", false);
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -149,14 +149,14 @@ public class CommentController extends BaseController{
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.put("message", commentService.getCountByUser(getJsonFromMessage(message), getUserFromMessage(message), request));
 			message.put("isSuccess", true);
 			long end = System.currentTimeMillis();
 			System.out.println("获取用户所有的评论数量总计耗时：" +(end - start) +"毫秒");
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -164,7 +164,7 @@ public class CommentController extends BaseController{
 		message.put("isSuccess", false);
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -175,21 +175,22 @@ public class CommentController extends BaseController{
 	@RequestMapping("/delete")
 	public String delete(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"cid":1, "create_user_id":1}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(commentService.deleteComment(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -201,20 +202,21 @@ public class CommentController extends BaseController{
 	@RequestMapping("/updateCommentStatus")
 	public String updateCommentStatus(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(commentService.updateCommentStatus(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 }

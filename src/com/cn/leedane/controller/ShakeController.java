@@ -50,20 +50,21 @@ public class ShakeController extends BaseController{
 	@RequestMapping("/user")
 	public String user(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.shakeSearch(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -74,20 +75,21 @@ public class ShakeController extends BaseController{
 	@RequestMapping("/mood")
 	public String mood(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(moodService.shakeSearch(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -98,20 +100,21 @@ public class ShakeController extends BaseController{
 	@RequestMapping("/blog")
 	public String blog(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(blogService.shakeSearch(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	

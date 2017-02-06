@@ -37,11 +37,11 @@ public class FinancialController extends BaseController{
     	Map<String, Object> message = new HashMap<String, Object>();
     	try{
     		if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, startTime);
 				return null;
 			}
 			message.putAll(financialService.save(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, startTime);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -50,7 +50,7 @@ public class FinancialController extends BaseController{
         System.out.println("记账数据保存总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, startTime);
 		return null;
     }
 	
@@ -64,11 +64,11 @@ public class FinancialController extends BaseController{
     	Map<String, Object> message = new HashMap<String, Object>();
     	try{
     		if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, startTime);
 				return null;
 			}
 			message.putAll(financialService.update(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, startTime);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -77,7 +77,7 @@ public class FinancialController extends BaseController{
         System.out.println("记账数据更新总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, startTime);
 		return null;
     }
 	
@@ -91,11 +91,11 @@ public class FinancialController extends BaseController{
     	Map<String, Object> message = new HashMap<String, Object>();
     	try{
     		if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, startTime);
 				return null;
 			}
 			message.putAll(financialService.delete(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, startTime);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -104,7 +104,7 @@ public class FinancialController extends BaseController{
         System.out.println("记账数据删除总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, startTime);
 		return null;
     }
 	
@@ -118,11 +118,11 @@ public class FinancialController extends BaseController{
     	Map<String, Object> message = new HashMap<String, Object>();
     	try{
     		if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, startTime);
 				return null;
 			}
 			message.putAll(financialService.synchronous(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, startTime);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -131,7 +131,7 @@ public class FinancialController extends BaseController{
         System.out.println("记账数据同步总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, startTime);
 		return null;
     }
     
@@ -151,11 +151,11 @@ public class FinancialController extends BaseController{
     	Map<String, Object> message = new HashMap<String, Object>();
     	try{
     		if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, startTime);
 				return null;
 			}
 			message.putAll(financialService.force(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, startTime);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -164,7 +164,7 @@ public class FinancialController extends BaseController{
         System.out.println("强制更新记账数据总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, startTime);
 		return null;
     }
 	
@@ -178,11 +178,11 @@ public class FinancialController extends BaseController{
     	Map<String, Object> message = new HashMap<String, Object>();
     	try{
     		if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, startTime);
 				return null;
 			}
 			message.putAll(financialService.getByYear(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, startTime);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -191,7 +191,7 @@ public class FinancialController extends BaseController{
         System.out.println("获取一年的总记账数据总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, startTime);
 		return null;
     }
 	
@@ -205,11 +205,11 @@ public class FinancialController extends BaseController{
     	Map<String, Object> message = new HashMap<String, Object>();
     	try{
     		if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, startTime);
 				return null;
 			}
 			message.putAll(financialService.getAll(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, startTime);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -218,7 +218,7 @@ public class FinancialController extends BaseController{
         System.out.println("获取全部总记账数据总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, startTime);
 		return null;
     }
 	
@@ -232,11 +232,11 @@ public class FinancialController extends BaseController{
     	Map<String, Object> message = new HashMap<String, Object>();
     	try{
     		if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, startTime);
 				return null;
 			}
 			message.putAll(financialService.query(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, startTime);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -245,7 +245,7 @@ public class FinancialController extends BaseController{
         System.out.println("获取全部总记账数据总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, startTime);
 		return null;
     }
 	
@@ -259,11 +259,11 @@ public class FinancialController extends BaseController{
     	Map<String, Object> message = new HashMap<String, Object>();
     	try{
     		if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, startTime);
 				return null;
 			}
 			message.putAll(financialService.paging(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, startTime);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -272,7 +272,7 @@ public class FinancialController extends BaseController{
         System.out.println("获取全部总记账数据总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, startTime);
 		return null;
     }
 }

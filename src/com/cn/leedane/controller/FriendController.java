@@ -43,20 +43,21 @@ public class FriendController extends BaseController{
 	@RequestMapping("/delete")
 	public String delete(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(friendService.deleteFriends(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	/**
@@ -66,14 +67,15 @@ public class FriendController extends BaseController{
 	@RequestMapping("/add")
 	public String add(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2, "add_introduce":"你好,我是XX"}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(friendService.addFriend(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			//resmessage = "抱歉，添加好友执行出现异常！请核实提交的信息后重试或者联系管理员";
@@ -81,7 +83,7 @@ public class FriendController extends BaseController{
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -92,21 +94,22 @@ public class FriendController extends BaseController{
 	@RequestMapping("/agreeFriend")
 	public String agreeFriend(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"relation_id":100}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(friendService.addAgree(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);      
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -117,10 +120,11 @@ public class FriendController extends BaseController{
 	@RequestMapping("/isFriend")
 	public String isFriend(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject json = getJsonFromMessage(message);
@@ -134,7 +138,7 @@ public class FriendController extends BaseController{
 					// 保存操作日志信息
 					String subject = user.getAccount()+"判断跟"+toUser.getAccount()+"是否是朋友";
 					this.operateLogService.saveOperateLog(user, request, new Date(), subject, "isFriend", 1, 0);
-					printWriter(message, response);
+					printWriter(message, response, start);
 					return null;
 				}	
 					
@@ -144,7 +148,7 @@ public class FriendController extends BaseController{
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -155,21 +159,22 @@ public class FriendController extends BaseController{
 	@RequestMapping("/friendsPaging")
 	public String friendsPaging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(friendService.friendsAlreadyPaging(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -180,21 +185,22 @@ public class FriendController extends BaseController{
 	@RequestMapping("/friendsNotyetPaging")
 	public String friendsNotyetPaging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(friendService.friendsNotyetPaging(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -206,20 +212,21 @@ public class FriendController extends BaseController{
 	@RequestMapping("/friends")
 	public String friends(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(friendService.friends(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -230,21 +237,22 @@ public class FriendController extends BaseController{
 	@RequestMapping("/requestPaging")
 	public String requestPaging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(friendService.requestPaging(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -255,21 +263,22 @@ public class FriendController extends BaseController{
 	@RequestMapping("/responsePaging")
 	public String responsePaging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(friendService.responsePaging(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -280,21 +289,22 @@ public class FriendController extends BaseController{
 	@RequestMapping("/matchContact")
 	public String matchContact(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(friendService.matchContact(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -305,21 +315,22 @@ public class FriendController extends BaseController{
 	@RequestMapping("/topic")
 	public String topic(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(friendService.matchContact(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 }

@@ -32,21 +32,22 @@ public class FanController extends BaseController{
 	@RequestMapping("/cancel")
 	public String cancel(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"toUserId": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.put("isSuccess", fanService.cancel(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	/**
@@ -56,21 +57,22 @@ public class FanController extends BaseController{
 	@RequestMapping("/add")
 	public String add(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(fanService.addFan(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -81,21 +83,22 @@ public class FanController extends BaseController{
 	@RequestMapping("/isFan")
 	public String isFan(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(fanService.isFan(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}    
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -106,21 +109,22 @@ public class FanController extends BaseController{
 	@RequestMapping("/myAttentionPaging")
 	public String myAttentionPaging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(fanService.getMyAttentionsLimit(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -131,21 +135,22 @@ public class FanController extends BaseController{
 	@RequestMapping("/toAttentionPaging")
 	public String toAttentionPaging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(fanService.getToAttentionsLimit(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -156,21 +161,22 @@ public class FanController extends BaseController{
 	@RequestMapping("/myFansPaging")
 	public String myFansPaging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(fanService.getMyFansLimit(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -181,21 +187,22 @@ public class FanController extends BaseController{
 	@RequestMapping("/toFansPaging")
 	public String toFansPaging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(fanService.getToFansLimit(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 }

@@ -65,7 +65,7 @@ public class UserController extends BaseController{
 	@RequestMapping("/login")
 	public String login(HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		Map<String, Object> message = new HashMap<String, Object>();
-		
+		long start = System.currentTimeMillis();
 		boolean isSuccess = false;
 		try {
 			checkParams(message, request);
@@ -92,7 +92,7 @@ public class UserController extends BaseController{
 							}
 							
 							message.put("responseCode", EnumUtil.ResponseCode.您的账号登录失败太多次.value);
-							printWriter(message, response);
+							printWriter(message, response, start);
 							return null;
 						}
 					}
@@ -187,14 +187,14 @@ public class UserController extends BaseController{
 					message.put("responseCode", EnumUtil.ResponseCode.账号或密码不匹配.value);
 				}
 			}
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -246,20 +246,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/searchUserByUserIdOrAccount")
 	public String searchUserByUserIdOrAccount(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.searchUserByUserIdOrAccount(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -288,9 +289,10 @@ public class UserController extends BaseController{
 			removeMultSession(ConstantsUtil.USER_SESSION);
 		}*/
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try{
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject json = getJsonFromMessage(message);
@@ -312,14 +314,14 @@ public class UserController extends BaseController{
 			UserBean opearteUser = userService.findById(aid);
 			//保存操作日志
 			this.operateLogService.saveOperateLog(opearteUser, request, null, user.getAccount()+"注册成功", "register", 1, 0);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -330,9 +332,10 @@ public class UserController extends BaseController{
 	@RequestMapping("/completeRegister")
 	public String completeRegister(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			if (this.userService.updateCheckRegisterCode(JsonUtil.getStringValue(getJsonFromMessage(message), "registerCode")))
@@ -344,7 +347,7 @@ public class UserController extends BaseController{
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 		
 	}
@@ -355,9 +358,10 @@ public class UserController extends BaseController{
 	@RequestMapping("/againSendRegisterEmail")
 	public String againSendRegisterEmail(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {	
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject json = getJsonFromMessage(message);
@@ -376,12 +380,12 @@ public class UserController extends BaseController{
 					message.put("isSuccess", true);
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件已发送成功.value));
 					message.put("responseCode", EnumUtil.ResponseCode.邮件已发送成功.value);
-					printWriter(message, response);
+					printWriter(message, response, start);
 					return null;
 			}else{
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.不是未注册状态邮箱不能发注册码.value));
 				message.put("responseCode", EnumUtil.ResponseCode.不是未注册状态邮箱不能发注册码.value);
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}	
 		} catch (Exception e) {
@@ -389,7 +393,7 @@ public class UserController extends BaseController{
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件发送失败.value));
 		message.put("responseCode", EnumUtil.ResponseCode.邮件发送失败.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -400,9 +404,10 @@ public class UserController extends BaseController{
 	@RequestMapping("/findPassword")
 	public String findPassword(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {	
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject json = getJsonFromMessage(message);
@@ -418,7 +423,7 @@ public class UserController extends BaseController{
 				message.put("responseCode", EnumUtil.ResponseCode.未知的找回密码类型.value);
 			}
 			
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 			//this.operateLogService.saveOperateLog(user, request, null, user.getAccount()+"寻找密码", "findPassword", resIsSuccess? 1 : 0, 0);
 		} catch (Exception e) {
@@ -426,7 +431,7 @@ public class UserController extends BaseController{
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件发送失败.value));
 		message.put("responseCode", EnumUtil.ResponseCode.邮件发送失败.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -438,6 +443,7 @@ public class UserController extends BaseController{
 	public String logout(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
 		HttpSession session = request.getSession();
+		long start = System.currentTimeMillis();
 		//判断是否有在线的用户，那就先取消该用户的session
 		if(session.getAttribute(USER_INFO_KEY) != null) {
 			UserBean user = (UserBean) session.getAttribute(USER_INFO_KEY);
@@ -448,7 +454,7 @@ public class UserController extends BaseController{
 				message.put("responseCode", EnumUtil.ResponseCode.注销成功.value);
 				message.put("isSuccess", true);
 				SessionManagerUtil.getInstance().removeSession(user.getId());
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -460,7 +466,7 @@ public class UserController extends BaseController{
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -505,21 +511,22 @@ public class UserController extends BaseController{
 	@RequestMapping("/getHeadBase64StrById")
 	public String getHeadBase64StrById(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.put("message", userService.getHeadBase64StrById(getJsonFromMessage(message), getUserFromMessage(message), request));
 			message.put("isSuccess", true);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件发送失败.value));
 		message.put("responseCode", EnumUtil.ResponseCode.邮件发送失败.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -530,22 +537,23 @@ public class UserController extends BaseController{
 	@RequestMapping("/getHeadPath")
 	public String getHeadPath(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			String picSize = JsonUtil.getStringValue(getJsonFromMessage(message), "picSize", "30x30");
 			message.put("message", userHandler.getUserPicPath(getUserFromMessage(message).getId(), picSize));
 			message.put("isSuccess", true);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -557,9 +565,10 @@ public class UserController extends BaseController{
 	@RequestMapping("/uploadHeadBase64Str")
 	public String uploadHeadBase64Str(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			UserBean user = getUserFromMessage(message);
@@ -569,7 +578,7 @@ public class UserController extends BaseController{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -580,6 +589,7 @@ public class UserController extends BaseController{
 	@RequestMapping("/getAllUsers")
 	public String getAllUsers(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long startTime = System.currentTimeMillis();
 		String page = request.getParameter("page");
 		String start = request.getParameter("start");
 		String limit = request.getParameter("limit");
@@ -595,7 +605,7 @@ public class UserController extends BaseController{
 		if(user == null){
 			message.put("isSuccess", false);
 			message.put("resmessage", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先登录.value));
-			printWriter(message, response);
+			printWriter(message, response, startTime);
 			return null;
 		}
 		
@@ -625,7 +635,7 @@ public class UserController extends BaseController{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		printWriter(message, response);
+		printWriter(message, response, startTime);
 		return null;
 	}
 	
@@ -642,13 +652,13 @@ public class UserController extends BaseController{
 		message.put("yaxis", "人数"); //Y轴名称
 		message.put("maximum", getMaximum(ls)); //年龄段人数最多的数字
 		message.put("data", ls);
-		
+		long start = System.currentTimeMillis();
 		try {
 			this.operateLogService.saveOperateLog(getUserFromMessage(message), request, null, "统计所有用户的年龄", "getAllUsers", 1, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -660,12 +670,13 @@ public class UserController extends BaseController{
 	public String statisticsUserAgeRang(HttpServletRequest request, HttpServletResponse response){
 		List<Map<String, Object>> ls = new ArrayList<Map<String, Object>>();		
 		ls = userService.statisticsUserAgeRang();
-		Map<String, Object> message = new HashMap<String, Object>();		
+		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		message.put("xaxis", "统计所有用户的年龄"); //X轴名称
 		message.put("yaxis", "人数"); //Y轴名称
 		message.put("maximum", getMaximum(ls)); //Y轴人数最多的数字
 		message.put("data", ls);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -678,11 +689,12 @@ public class UserController extends BaseController{
 		List<Map<String, Object>> ls = new ArrayList<Map<String, Object>>();		
 		ls = userService.statisticsUserRegisterByYear();	
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		message.put("xaxis", "统计所有用户的注册时间的年份"); //X轴名称
 		message.put("yaxis", "人数"); //Y轴名称
 		message.put("maximum", getMaximum(ls)); //Y轴人数最多的数字
 		message.put("data", ls);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -695,11 +707,12 @@ public class UserController extends BaseController{
 		List<Map<String, Object>> ls = new ArrayList<Map<String, Object>>();		
 		ls = userService.statisticsUserRegisterByMonth();
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		message.put("xaxis", "统计所有用户的注册时间的月份"); //X轴名称
 		message.put("yaxis", "人数"); //Y轴名称
 		message.put("maximum", getMaximum(ls)); //Y轴人数最多的数字
 		message.put("data", ls);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -711,12 +724,13 @@ public class UserController extends BaseController{
 	public String statisticsUserRegisterByNearMonth(HttpServletRequest request, HttpServletResponse response){
 		List<Map<String, Object>> ls = new ArrayList<Map<String, Object>>();		
 		ls = userService.statisticsUserRegisterByNearMonth();
-		Map<String, Object> message = new HashMap<String, Object>();	
+		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		message.put("xaxis", "统计所有用户的最近一个月的注册人数"); //X轴名称
 		message.put("yaxis", "人数"); //Y轴名称
 		message.put("maximum", getMaximum(ls)); //Y轴人数最多的数字
 		message.put("data", ls);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -728,12 +742,13 @@ public class UserController extends BaseController{
 	public String statisticsUserRegisterByNearWeek(HttpServletRequest request, HttpServletResponse response){
 		List<Map<String, Object>> ls = new ArrayList<Map<String, Object>>();		
 		ls = userService.statisticsUserRegisterByNearWeek();
-		Map<String, Object> message = new HashMap<String, Object>();		
+		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		message.put("xaxis", "统计所有用户的最近一周的注册人数"); //X轴名称
 		message.put("yaxis", "人数"); //Y轴名称
 		message.put("maximum", getMaximum(ls)); //Y轴人数最多的数字
 		message.put("data", ls);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -772,20 +787,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/getPhoneRegisterCode")
 	public String getPhoneRegisterCode(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.getPhoneRegisterCode(getJsonFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -796,20 +812,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/getPhoneLoginCode")
 	public String getPhoneLoginCode(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.getPhoneLoginCode(getJsonFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -820,30 +837,31 @@ public class UserController extends BaseController{
 	@RequestMapping("/registerByPhone")
 	public String registerByPhone(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			UserBean user = userService.registerByPhone(getJsonFromMessage(message), request);
 			if(user == null){
 				message.put("message", "用户不存在或者参数不正确");
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}else{
 				if(user.getStatus() == 4 ){
 					message.put("message", "用户已经被注销,有疑问请联系客服");
-					printWriter(message, response);
+					printWriter(message, response, start);
 					return null;
 				}else if(user.getStatus() == 0){
 					message.put("message", "请先登录邮箱完成注册...");
-					printWriter(message, response);
+					printWriter(message, response, start);
 					return null;
 				}else{
 					message.put("userinfo", userHandler.getUserInfo(user, true));
 					message.put("isSuccess", true);
 					message.put("message", "登录成功，正在为您跳转...");
-					printWriter(message, response);
+					printWriter(message, response, start);
 					return null;
 				}
 			}
@@ -852,7 +870,7 @@ public class UserController extends BaseController{
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -863,20 +881,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/registerByPhoneNoValidate")
 	public String registerByPhoneNoValidate(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.registerByPhoneNoValidate(getJsonFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	/**
@@ -886,9 +905,10 @@ public class UserController extends BaseController{
 	@RequestMapping("/loginByPhone")
 	public String loginByPhone(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			UserBean user = userService.loginByPhone(getJsonFromMessage(message), request);
@@ -924,14 +944,14 @@ public class UserController extends BaseController{
 					message.put("responseCode", EnumUtil.ResponseCode.非正常登录状态.value);
 				}
 			}
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -942,20 +962,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/checkAccount")
 	public String checkAccount(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.checkAccount(getJsonFromMessage(message), request, getUserFromMessage(message)));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -967,9 +988,10 @@ public class UserController extends BaseController{
 	@RequestMapping("/bingWechat")
 	public String bingWechat(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject json = getJsonFromMessage(message);
@@ -979,7 +1001,7 @@ public class UserController extends BaseController{
 			if(StringUtil.isNull(FromUserName) || StringUtil.isNull(account) || StringUtil.isNull(password)){
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.某些参数为空.value));
 				message.put("responseCode", EnumUtil.ResponseCode.某些参数为空.value);
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			
@@ -1001,12 +1023,12 @@ public class UserController extends BaseController{
 				// 保存用户绑定日志信息
 				String subject = user.getAccount()+"绑定账号微信账号"+ FromUserName +"成功";
 				this.operateLogService.saveOperateLog(user, request, new Date(), subject, "bingWechat", 1, 0);
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}else{
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.账号或密码不匹配.value));
 				message.put("responseCode", EnumUtil.ResponseCode.账号或密码不匹配.value);
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 		} catch (Exception e) {
@@ -1014,7 +1036,7 @@ public class UserController extends BaseController{
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -1025,20 +1047,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/getUserInfoData")
 	public String getUserInfoData(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.getUserInfoData(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -1049,20 +1072,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/updateUserBase")
 	public String updateUserBase(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.updateUserBase(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -1073,20 +1097,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/updatePassword")
 	public String updatePassword(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.updatePassword(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -1097,18 +1122,19 @@ public class UserController extends BaseController{
 	@RequestMapping("/scan/login")
 	public String scanLogin(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			checkParams(message, request);
 			message.put("isSuccess", false);
 			message.putAll(userService.scanLogin(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -1119,18 +1145,19 @@ public class UserController extends BaseController{
 	@RequestMapping("/scan/cancel")
 	public String CancelScanLogin(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			checkParams(message, request);
 			message.put("isSuccess", false);
 			message.putAll(userService.cancelScanLogin(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -1141,20 +1168,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/websearch")
 	public String websearch(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.webSearch(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -1165,20 +1193,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/admin/updateUser")
 	public String adminUpdateUserBase(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.adminUpdateUserBase(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -1189,20 +1218,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/admin/resetPassword")
 	public String adminResetPassword(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.adminResetPassword(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -1213,20 +1243,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/deleteUser")
 	public String deleteUser(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.deleteUser(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -1237,20 +1268,21 @@ public class UserController extends BaseController{
 	@RequestMapping("/addUser")
 	public String addUser(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.addUser(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	/*@RequestMapping("/aaa")

@@ -49,22 +49,23 @@ public class SignInController extends BaseController{
 		//更新积分
 		//更新操作日志
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			int id = JsonUtil.getIntValue(getJsonFromMessage(message), "id", getUserFromMessage(message).getId());
 			boolean isSave = signInService.saveSignIn(getJsonFromMessage(message), userService.findById(id), request);
 			message.put("isSuccess", isSave);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -76,9 +77,10 @@ public class SignInController extends BaseController{
 	@RequestMapping("/currentDateIsSignIn")
 	public String currentDateIsSignIn(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.put("isSuccess", true);
@@ -92,7 +94,7 @@ public class SignInController extends BaseController{
 				// 保存操作日志信息
 				String subject = user.getAccount()+"判断当天是否签到";
 				this.operateLogService.saveOperateLog(user, request, new Date(), subject, "currentDateIsSignIn", 1, 0);
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 		} catch (Exception e) {
@@ -101,7 +103,7 @@ public class SignInController extends BaseController{
 		message.put("isSuccess", true);
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -112,23 +114,24 @@ public class SignInController extends BaseController{
 	@RequestMapping("/paging")
 	public String paging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			List<Map<String, Object>> result= signInService.getSignInByLimit(getJsonFromMessage(message), getUserFromMessage(message), request);
 			System.out.println("获得签到的数量：" +result.size());
 			message.put("isSuccess", true);
 			message.put("message", result);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 }

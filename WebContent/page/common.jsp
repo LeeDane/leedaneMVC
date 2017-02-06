@@ -41,6 +41,7 @@
 	<script src="<%=basePath %>page/other/bootstrap-3.3.0/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="other/layui/layui.js"></script>
 	<script type="text/javascript" src="other/layui/lay/dest/layui.all.js"></script>
+	<script src="js/base.js"></script>
 	<style type="text/css">
 		::-webkit-scrollbar {
 			  width: 5px;
@@ -98,6 +99,19 @@
 		.hand{
 			cursor: pointer;
 		}
+		.cut-text{
+			display: block;
+			white-space: nowrap; 
+			overflow: hidden; 
+			text-overflow: ellipsis;
+		}
+		.color-red{
+			color: red;
+		}
+		
+		.color-blue{
+			color: #428bca;
+		}
 	</style>
 </head>
 <input type="hidden" value="<%=basePath%>" id="basePath"/>
@@ -142,6 +156,18 @@
                 </ul>
             </li>
         </ul>
+        <form class="navbar-form navbar-left common-search" role="search">
+        	<div class="input-group">
+                    <input type="text" id="common-search-text" class="form-control">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary btn-default" type="button" onclick="searchCommon(this);">Go!</button>
+                    </span>
+             </div>
+            <!-- <div class="form-group">
+                <input type="text" id="common-search-text" class="form-control" placeholder="Search">
+            </div>
+            <button type="button" class="btn btn-primary btn-default" onclick="searchCommon(this);">搜索</button> -->
+        </form>
     </div>
     </div>
 </nav>
@@ -213,6 +239,19 @@
 			height = window.innerHeight;
 		
 		$(".left-sider-bg").height(height);
+	}
+	
+	/**
+	* 搜索
+	*/
+	function searchCommon(obj){
+		var searchText = $(obj).closest("form").find("#common-search-text").val();
+		if(isEmpty(searchText)){
+			layer.msg("请输入您要搜索的内容！");
+			$(obj).closest("form").find("#common-search-text").focus();
+			return;
+		}
+		window.open('<%=basePath %>page/search.jsp?q='+searchText+'&t='+Math.random(), '_blank');
 	}
 </script>
 </html>

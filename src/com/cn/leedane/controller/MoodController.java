@@ -51,22 +51,23 @@ public class MoodController extends BaseController{
 	@RequestMapping("/send")
 	public String send(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject jsonObject = getJsonFromMessage(message);
 			int status = JsonUtil.getIntValue(jsonObject, "status", ConstantsUtil.STATUS_NORMAL);
 			message.putAll(moodService.updateMoodStatus(jsonObject, status, request, getUserFromMessage(message)));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -80,11 +81,11 @@ public class MoodController extends BaseController{
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(moodService.saveMood(getJsonFromMessage(message), getUserFromMessage(message), ConstantsUtil.STATUS_DRAFT, request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -93,7 +94,7 @@ public class MoodController extends BaseController{
 		System.out.println("发表心情总计耗时：" +(end - start) +"毫秒");
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -107,7 +108,7 @@ public class MoodController extends BaseController{
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			
@@ -115,7 +116,7 @@ public class MoodController extends BaseController{
 			int status = JsonUtil.getIntValue(jsObject, "status", ConstantsUtil.STATUS_NORMAL);
 			
 			message.putAll(moodService.sendWord(jsObject, getUserFromMessage(message), status, request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -124,7 +125,7 @@ public class MoodController extends BaseController{
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
 		long end = System.currentTimeMillis();
 		System.out.println("发表文字心情总计耗时：" +(end - start) +"毫秒");
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -138,11 +139,11 @@ public class MoodController extends BaseController{
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(moodService.sendWordAndLink(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -151,7 +152,7 @@ public class MoodController extends BaseController{
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
 		long end = System.currentTimeMillis();
 		System.out.println("发表文字心情总计耗时：" +(end - start) +"毫秒");
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -162,20 +163,21 @@ public class MoodController extends BaseController{
 	@RequestMapping("/delete")
 	public String delete(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(moodService.deleteMood(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -186,20 +188,21 @@ public class MoodController extends BaseController{
 	@RequestMapping("/getPagingMood")
 	public String getPagingMood(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(moodService.getMoodByLimit(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -216,9 +219,10 @@ public class MoodController extends BaseController{
 	@RequestMapping("/uploadBase64Str")
 	public String uploadBase64Str(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject json = getJsonFromMessage(message);
@@ -234,14 +238,14 @@ public class MoodController extends BaseController{
 			}else{
 				message.put("isSuccess", temporaryBase64Service.saveBase64Str(json, user, request));
 			}
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -256,11 +260,11 @@ public class MoodController extends BaseController{
 		Map<String, Object> message = new HashMap<String, Object>();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(moodService.saveDividedMood(getJsonFromMessage(message), getUserFromMessage(message), ConstantsUtil.STATUS_NORMAL, request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -269,7 +273,7 @@ public class MoodController extends BaseController{
 		System.out.println("发表心情总计耗时：" +(end - start) +"毫秒");
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -281,19 +285,20 @@ public class MoodController extends BaseController{
 	@RequestMapping("/deleteUploadBase64Str")
 	public String deleteUploadBase64Str(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -305,21 +310,22 @@ public class MoodController extends BaseController{
 	@RequestMapping("/downloadBase64Str")
 	public String downloadBase64Str(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.put("isSuccess", true);
 			message.put("message", filePathService.downloadBase64Str(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -354,21 +360,22 @@ public class MoodController extends BaseController{
 	@RequestMapping("/getCountByUser")
 	public String getCountByUser(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.put("message", moodService.getCountByUser(getJsonFromMessage(message), getUserFromMessage(message), request));
 			message.put("isSuccess", true);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	/**
@@ -379,20 +386,21 @@ public class MoodController extends BaseController{
 	@RequestMapping("/detail")
 	public void detail(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return;
 			}
 			message.putAll(moodService.detail(getJsonFromMessage(message), getUserFromMessage(message), request, "120x120"));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 	}
 	/**
 	 * 获取心情的图片
@@ -402,20 +410,21 @@ public class MoodController extends BaseController{
 	@RequestMapping("/detailImgs")
 	public String detailImgs(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(moodService.detailImgs(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -426,20 +435,21 @@ public class MoodController extends BaseController{
 	@RequestMapping("/topic")
 	public String topic(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(moodService.getTopicByLimit(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 }

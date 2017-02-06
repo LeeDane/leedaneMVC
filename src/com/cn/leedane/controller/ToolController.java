@@ -49,9 +49,10 @@ public class ToolController extends BaseController{
 	@RequestMapping("/fanyi")
 	public String fanyi(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			String content = JsonUtil.getStringValue(getJsonFromMessage(message), "content");
@@ -59,14 +60,14 @@ public class ToolController extends BaseController{
 			msg = StringUtil.getYoudaoFanyiContent(msg);
 			message.put("isSuccess", true);
 			message.put("message", msg);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -77,10 +78,11 @@ public class ToolController extends BaseController{
 	@RequestMapping("/sendEmail")
 	public String sendEmail(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			//{"id":1, "to_user_id": 2}
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject json = getJsonFromMessage(message);
@@ -90,7 +92,7 @@ public class ToolController extends BaseController{
 			if(StringUtil.isNull(toUserId) || StringUtil.isNull(content) || StringUtil.isNull(object)){
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.参数不存在或为空.value));
 				message.put("responseCode", EnumUtil.ResponseCode.参数不存在或为空.value);
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			
@@ -98,13 +100,13 @@ public class ToolController extends BaseController{
 			if(toUser == null){
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.该用户不存在.value));
 				message.put("responseCode", EnumUtil.ResponseCode.该用户不存在.value);
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			if(StringUtil.isNull(toUser.getEmail())){
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.对方还没有绑定电子邮箱.value));
 				message.put("responseCode", EnumUtil.ResponseCode.对方还没有绑定电子邮箱.value);
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			
@@ -132,14 +134,14 @@ public class ToolController extends BaseController{
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件发送失败.value)+",失败原因是："+e.toString());
 				message.put("responseCode", EnumUtil.ResponseCode.邮件发送失败.value);
 			}
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -150,22 +152,23 @@ public class ToolController extends BaseController{
 	@RequestMapping("/sendMessage")
 	public String sendMessage(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			//type: 1为通知，2为邮件，3为私信，4为短信
 			message.put("isSuccess", false);
 			message.putAll(userService.sendMessage(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -176,22 +179,23 @@ public class ToolController extends BaseController{
 	@RequestMapping("/getQiNiuToken")
 	public String getQiNiuToken(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		message.put("isSuccess", false);
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.put("isSuccess", true);
 			message.put("message", getToken());
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -207,6 +211,7 @@ public class ToolController extends BaseController{
 		message.put("isSuccess", false);
 		InputStream is = null;
 		ByteArrayOutputStream out = null;
+		long start = System.currentTimeMillis();
 		try {			
 			URL url = new URL(imgUrl);
 			URLConnection uc = url.openConnection(); 
@@ -218,7 +223,7 @@ public class ToolController extends BaseController{
 			}
 			message.put("isSuccess", true);
 			message.put("message", ConstantsUtil.BASE64_JPG_IMAGE_HEAD + new String(Base64Util.encode(out.toByteArray())));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -238,7 +243,7 @@ public class ToolController extends BaseController{
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	

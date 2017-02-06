@@ -27,7 +27,6 @@
 	<title><%=account %>的记账</title>
 	<link rel="stylesheet" href="other/layui/css/layui.css">
 	
-	<script src="js/base.js"></script>
 	<style type="text/css">
 		body{
 			background-color: #f5f5f5 !important;

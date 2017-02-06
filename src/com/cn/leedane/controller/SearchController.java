@@ -19,12 +19,14 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cn.leedane.lucene.solr.BlogSolrHandler;
 import com.cn.leedane.lucene.solr.MoodSolrHandler;
@@ -60,12 +62,14 @@ public class SearchController extends BaseController{
 	/**
 	 * 执行搜索
 	 */
-	@RequestMapping("/execute")
+	@RequestMapping(value="/get", method=RequestMethod.POST)
 	public String execute(HttpServletRequest request, HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject jsonObject = getJsonFromMessage(message);
@@ -75,7 +79,7 @@ public class SearchController extends BaseController{
 			//String platform = JsonUtil.getStringValue(jsonObject, "platform", "web");//平台名称
 			if(StringUtil.isNull(keyword)){
 				message.put("message", "请检索关键字为空");
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			List<Map<String, Object>> responses = new ArrayList<Map<String, Object>>();
@@ -162,14 +166,14 @@ public class SearchController extends BaseController{
 			//MoodSolrHandler.getInstance().addBeans(moods);
 			message.put("data", rs);
 			message.put("isSuccess", true);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 			message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
 		}
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -180,20 +184,21 @@ public class SearchController extends BaseController{
 	@RequestMapping("/user")
 	public String user(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.search(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -204,20 +209,21 @@ public class SearchController extends BaseController{
 	@RequestMapping("/mood")
 	public String mood(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(moodService.search(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -228,20 +234,21 @@ public class SearchController extends BaseController{
 	@RequestMapping("/blog")
 	public String blog(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(blogService.search(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}     
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -317,6 +324,7 @@ public class SearchController extends BaseController{
 		    //query.setSort("price", ORDER.asc);
 		    query.setStart(start);
 		    query.setRows(getSearchRows(tempId));
+		    query.setSort("registerTime", ORDER.desc);
 		    // 以下给两个字段开启了高亮
 		    query.addHighlightField("account"); 
 		    query.addHighlightField("personalIntroduction"); 

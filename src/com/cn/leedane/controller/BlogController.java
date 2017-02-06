@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,13 +28,11 @@ import com.cn.leedane.rabbitmq.SendMessage;
 import com.cn.leedane.rabbitmq.send.AddReadSend;
 import com.cn.leedane.rabbitmq.send.ISend;
 import com.cn.leedane.service.BlogService;
-import com.cn.leedane.utils.CollectionUtil;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.JsoupUtil;
-import com.cn.leedane.utils.LuceneUtil;
 import com.cn.leedane.utils.OptionUtil;
 import com.cn.leedane.utils.StringUtil;
 
@@ -66,9 +63,10 @@ public class BlogController extends BaseController{
 	@RequestMapping("/releaseBlog")
 	public String releaseBlog(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try{
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject json = getJsonFromMessage(message);
@@ -158,14 +156,14 @@ public class BlogController extends BaseController{
 			}
 			
 			message.putAll(blogService.addBlog(blog, user));   
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -176,20 +174,21 @@ public class BlogController extends BaseController{
 	@RequestMapping("/deleteBlog")
 	public String deleteBlog(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(blogService.deleteById(getJsonFromMessage(message), request, getUserFromMessage(message)));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -200,6 +199,7 @@ public class BlogController extends BaseController{
 	@RequestMapping("/paging")
 	public String paging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try{
 			checkParams(message, request);
 			
@@ -239,7 +239,7 @@ public class BlogController extends BaseController{
 			}else{
 				message.put("isSuccess", false);
 				message.put("message", "目前暂不支持的操作方法");
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			
@@ -250,14 +250,14 @@ public class BlogController extends BaseController{
 			}
 			message.put("isSuccess", true);
 			message.put("message", r);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -268,18 +268,19 @@ public class BlogController extends BaseController{
 	@RequestMapping("/getContent")
 	public String getContent(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try{
 			checkParams(message, request);
 			String blog_id = request.getParameter("blog_id");
 			String device_width = request.getParameter("device_width");
 			if(StringUtil.isNull(blog_id)) {
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			int blogId = StringUtil.changeObjectToInt(blog_id);
 			
 			if(blogId < 1){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			//int blog_id = 1;
@@ -413,20 +414,21 @@ public class BlogController extends BaseController{
 	@RequestMapping("/getInfo")
 	public String getInfo(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(blogService.getInfo(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -438,17 +440,18 @@ public class BlogController extends BaseController{
 	@RequestMapping("/getOneBlog")
 	public String getOneBlog(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try{
 			checkParams(message, request);			
 			message.putAll(blogService.getOneBlog(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -459,18 +462,19 @@ public class BlogController extends BaseController{
 	@RequestMapping("/getHotestBlogs")
 	public String getHotestBlogs(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			List<Map<String, Object>> ls = this.blogService.getHotestBlogs(5);
 			message.put("isSuccess", true);
 			message.put("message", ls);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -481,18 +485,19 @@ public class BlogController extends BaseController{
 	@RequestMapping("/getNewestBlogs")
 	public String getNewestBlogs(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			List<Map<String, Object>> ls = this.blogService.getNewestBlogs(5);
 			message.put("isSuccess", true);
 			message.put("message", ls);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -503,18 +508,19 @@ public class BlogController extends BaseController{
 	@RequestMapping("/getRecommendBlogs")
 	public String getRecommendBlogs(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			List<Map<String, Object>> ls = this.blogService.getHotestBlogs(5);
 			message.put("isSuccess", true);
 			message.put("message", ls);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -525,9 +531,10 @@ public class BlogController extends BaseController{
 	@RequestMapping("/getCarouselImgs")
 	public String getCarouselImgs(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try{
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			JSONObject json = getJsonFromMessage(message);
@@ -550,20 +557,20 @@ public class BlogController extends BaseController{
 			}else{
 				message.put("isSuccess", false);
 				message.put("message", "目前暂不支持的操作方法");
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			
 			message.put("isSuccess", true);
 			message.put("message", r);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -574,27 +581,29 @@ public class BlogController extends BaseController{
 	@RequestMapping("/addTag")
 	public String addTag(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(blogService.addTag(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
 	@RequestMapping("/managerBlog")
 	public String managerBlog(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
-		printWriter(message, response);
+		long start = System.currentTimeMillis();
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -605,20 +614,21 @@ public class BlogController extends BaseController{
 	@RequestMapping("/draftList")
 	public String draftList(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(blogService.draftList(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -629,20 +639,21 @@ public class BlogController extends BaseController{
 	@RequestMapping("/edit")
 	public String edit(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(blogService.edit(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -653,20 +664,21 @@ public class BlogController extends BaseController{
 	@RequestMapping("/noCheckPaging")
 	public String noCheckPaging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(blogService.noCheckPaging(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -677,20 +689,21 @@ public class BlogController extends BaseController{
 	@RequestMapping("/check")
 	public String check(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(blogService.check(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 }

@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -37,12 +36,46 @@ public class BaseController {
 	 * 目的：解决复杂的文本中含有特殊的字符导致struts2的json
 	 * 		解析失败，给客户端返回500的bug
 	 */
+	//请使用printWriter(Map<String, Object> message, HttpServletResponse response, long start)
 	protected void printWriter(Map<String, Object> message, HttpServletResponse response){
 		if(message.containsKey("json"))
 			message.remove("json");
 		
 		if(message.containsKey("user"))
 			message.remove("user");
+		
+		JSONObject jsonObject = JSONObject.fromObject(message);
+		response.setCharacterEncoding("utf-8");
+		System.out.println("服务器返回:"+jsonObject.toString());
+		PrintWriter writer = null;
+		try {
+			writer = response.getWriter();
+			writer.append(jsonObject.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
+			if(writer != null)
+				writer.close();
+		}
+		
+	}
+	
+	/**
+	 * 通过原先servlet方式输出json对象。
+	 * 目的：解决复杂的文本中含有特殊的字符导致struts2的json
+	 * 		解析失败，给客户端返回500的bug
+	 */
+	protected void printWriter(Map<String, Object> message, HttpServletResponse response, long start){
+		if(message.containsKey("json"))
+			message.remove("json");
+		
+		if(message.containsKey("user"))
+			message.remove("user");
+		
+		if(start > 0){
+			long end = System.currentTimeMillis();
+			message.put("consumeTime", (end - start) +"ms");
+		}
 		
 		JSONObject jsonObject = JSONObject.fromObject(message);
 		response.setCharacterEncoding("utf-8");

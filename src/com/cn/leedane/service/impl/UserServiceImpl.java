@@ -802,7 +802,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 		
 		
 		List<Map<String, Object>> rs = userMapper.executeSQL("select id, account, personal_introduction, date_format(birth_day,'%Y-%c-%d') birth_day, mobile_phone phone, sex, email, qq, date_format(register_time,'%Y-%m-%d %H:%i:%s') create_time from "+DataTableType.用户.value+" where status=? and account like '%"+searchKey+"%' order by create_time desc limit 25", ConstantsUtil.STATUS_NORMAL);
-		if(rs != null && rs.size() > 0){
+		if(CollectionUtil.isNotEmpty(rs)){
 			int id = 0;
 			for(int i = 0; i < rs.size(); i++){
 				id = StringUtil.changeObjectToInt(rs.get(i).get("id"));

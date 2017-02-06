@@ -35,8 +35,6 @@
 	<title><%=account %>的个人中心</title>
 	<link rel="stylesheet" href="other/layui/css/layui.css">
 	<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_733gvu39kn265hfr.css">
-	
-	<script src="js/base.js"></script>
 	<style type="text/css">
 		.clearFloat{
 			clear: both;

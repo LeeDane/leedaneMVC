@@ -27,16 +27,17 @@ public class RedisController extends BaseController{
 	@RequestMapping("/delete")
 	public String delete(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			String key = getJsonFromMessage(message).getString("key");
 			if(StringUtil.isNull(key)){
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.缺少参数.value));
 				message.put("responseCode", EnumUtil.ResponseCode.缺少参数.value);
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			RedisUtil redisUtil = RedisUtil.getInstance();
@@ -47,14 +48,14 @@ public class RedisController extends BaseController{
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作失败.value));
 				message.put("responseCode", EnumUtil.ResponseCode.操作失败.value);
 			}
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -65,6 +66,7 @@ public class RedisController extends BaseController{
 	@RequestMapping("/clearAll")
 	public String clearAll(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			RedisUtil redisUtil = RedisUtil.getInstance();
 			boolean result = redisUtil.clearAll();
@@ -74,14 +76,14 @@ public class RedisController extends BaseController{
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作失败.value));
 				message.put("responseCode", EnumUtil.ResponseCode.操作失败.value);
 			}
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 }

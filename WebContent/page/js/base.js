@@ -179,3 +179,24 @@ function formatDateTime(time){
 function fix(num, length) {
 	 return ('' + num).length < length ? ((new Array(length + 1)).join('0') + num).slice(-length) : '' + num;
 }
+
+
+/**
+ * 获取url地址中的参数的方法
+ * @param url url地址
+ * @param sProp  参数的名称
+ * @returns
+ */
+function getURLParam(url, sProp) {
+	if(!url)
+		url = window.location.href; //取得当前的饿地址栏地址信息
+	
+	// 正则字符串
+	var re = new RegExp("[&,?]" + sProp + "=([^\\&]*)", "i");
+	// 执行正则匹配
+	var a = re.exec(url);
+	if (a == null) {
+		return "";
+	}
+	return a[1];
+}

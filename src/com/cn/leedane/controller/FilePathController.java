@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cn.leedane.handler.UserHandler;
 import com.cn.leedane.model.FilePathBean;
-import com.cn.leedane.model.MoodBean;
-import com.cn.leedane.model.TimeLineBean;
 import com.cn.leedane.model.UploadBean;
 import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.FilePathService;
@@ -31,9 +26,7 @@ import com.cn.leedane.service.UploadService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EnumUtil;
-import com.cn.leedane.utils.FilterUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
-import com.cn.leedane.utils.EnumUtil.NotificationType;
 import com.cn.leedane.utils.EnumUtil.ResponseCode;
 import com.cn.leedane.utils.FileUtil;
 import com.cn.leedane.utils.JsonUtil;
@@ -60,23 +53,24 @@ public class FilePathController extends BaseController{
 	@RequestMapping("/getUserImagePaging")
 	public String getUserImagePaging(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			List<Map<String, Object>> result= filePathService.getUserImageByLimit(getJsonFromMessage(message), getUserFromMessage(message), request);
 			System.out.println("获得文件路径的数量：" +result.size());
 			message.put("isSuccess", true);
 			message.put("message", result);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -89,9 +83,10 @@ public class FilePathController extends BaseController{
     public String mergePortFile(HttpServletRequest request, HttpServletResponse response) {
     	long startTime = System.currentTimeMillis();
     	Map<String, Object> message = new HashMap<String, Object>();
+    	long start = System.currentTimeMillis();
         try {
         	if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
         	JSONObject json = getJsonFromMessage(message);
@@ -109,7 +104,7 @@ public class FilePathController extends BaseController{
 				if(StringUtil.isNull(version) || StringUtil.isNull(desc)){
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.某些参数为空.value));
 					message.put("responseCode", EnumUtil.ResponseCode.某些参数为空.value);
-					printWriter(message, response);
+					printWriter(message, response, start);
 					return null;
 				}
 			}
@@ -140,7 +135,7 @@ public class FilePathController extends BaseController{
             	FileOutputStream out = new FileOutputStream(sourceFile);
             	for(Map<String, Object> map: list){
             		if(!FileUtil.readFile(StringUtil.changeNotNull(map.get("path")), out)){
-            			printWriter(message, response);
+            			printWriter(message, response, start);
             			return null;
             		}
             	}
@@ -151,12 +146,12 @@ public class FilePathController extends BaseController{
             	}
             	message.put("isSuccess", filePathService.saveSourceAndEachFile(sourcePath.toString(), user, tableUuid, tableName, order, version, desc));
             	
-            	printWriter(message, response);
+            	printWriter(message, response, start);
         		return null;
             }else{
             	message.put("message", ResponseCode.没有操作实例.value);
             	message.put("responseCode", EnumUtil.getResponseValue(ResponseCode.没有操作实例.value));
-            	printWriter(message, response);
+            	printWriter(message, response, start);
         		return null;
             }
         } catch (Exception e) {
@@ -166,7 +161,7 @@ public class FilePathController extends BaseController{
         System.out.println("合并文件总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
     }
     
@@ -178,9 +173,10 @@ public class FilePathController extends BaseController{
     public String deletePortFile(HttpServletRequest request, HttpServletResponse response) {
     	long startTime = System.currentTimeMillis();
     	Map<String, Object> message = new HashMap<String, Object>();
+    	long start = System.currentTimeMillis();
         try {
         	if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
         	JSONObject json = getJsonFromMessage(message);
@@ -206,12 +202,12 @@ public class FilePathController extends BaseController{
         			upload.setSerialNumber(StringUtil.changeObjectToInt(map.get("serial_number")));
         			upload.setPath(String.valueOf(map.get("path")));
         			if(!uploadService.cancel(upload, user, request)){
-        				printWriter(message, response);
+        				printWriter(message, response, start);
         				return null;
         			}
             	}
             	message.put("isSuccess", true);
-            	printWriter(message, response);
+            	printWriter(message, response, start);
         		return null;
             }else{
             	System.out.println("删除的文件的数量为0");
@@ -224,7 +220,7 @@ public class FilePathController extends BaseController{
         System.out.println("删除断点片段文件总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
     }
     
@@ -236,13 +232,14 @@ public class FilePathController extends BaseController{
     public String paging(HttpServletRequest request, HttpServletResponse response) {
     	long startTime = System.currentTimeMillis();
     	Map<String, Object> message = new HashMap<String, Object>();
+    	long start = System.currentTimeMillis();
     	try{
     		if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(filePathService.getUploadFileByLimit(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -251,7 +248,7 @@ public class FilePathController extends BaseController{
         System.out.println("分页获取上传的文件总计耗时："+ (endTime - startTime) +"毫秒");
         message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
     }
 	
@@ -262,20 +259,21 @@ public class FilePathController extends BaseController{
 	@RequestMapping("/uploadUserHeadImageLink")
 	public String uploadUserHeadImageLink(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			message.putAll(userService.uploadUserHeadImageLink(getJsonFromMessage(message), getUserFromMessage(message), request));
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 

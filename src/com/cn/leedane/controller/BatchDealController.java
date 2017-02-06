@@ -55,6 +55,7 @@ public class BatchDealController extends BaseController{
 			}
 		}*/
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		for(int i = 1504;i > 0; i--){
 			List<BlogBean> blogs = blogService.getBlogBeans("select id, digest from "+DataTableType.博客.value+" where id=?", i);
 			if(!blogs.isEmpty() && blogs.size() >0){
@@ -73,7 +74,7 @@ public class BatchDealController extends BaseController{
 			}
 			System.out.println("i="+i);
 		}
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 	
@@ -85,6 +86,7 @@ public class BatchDealController extends BaseController{
 	@RequestMapping("/upload10")
 	public String upload10(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			List<Map<String, Object>> paths = filePathService.executeSQL("select * from "+DataTableType.文件.value+" where is_upload_qiniu = 0 and table_name <> '"+DataTableType.心情.value+"' order by id desc limit 10");
 			if(paths != null && paths.size() > 0){	
@@ -102,7 +104,7 @@ public class BatchDealController extends BaseController{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 }

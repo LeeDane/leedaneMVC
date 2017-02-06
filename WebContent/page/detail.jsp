@@ -29,7 +29,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>文章详情</title>
 	<link rel="stylesheet" href="other/layui/css/layui.css">
-	<script src="js/base.js"></script>
 	<style type="text/css">
 		
 		.container{

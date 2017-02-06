@@ -114,16 +114,17 @@ public class DownloadController extends BaseController{
 	@RequestMapping("/getLocalBase64Image")
 	public String getLocalBase64Image(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try{
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			String filename = getJsonFromMessage(message).getString("filename");
 			if(StringUtil.isNull(filename)){
 				message.put("isSuccess", false);
 				message.put("message", "文件名称为空");
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			
@@ -132,14 +133,14 @@ public class DownloadController extends BaseController{
 			filename = ConstantsUtil.DEFAULT_SAVE_FILE_FOLDER + "file//" + filename;
 			message.put("message", Base64ImageUtil.convertImageToBase64(filename, suffixs));
 			message.put("isSuccess", true);
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 }

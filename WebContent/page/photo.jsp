@@ -25,7 +25,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title><%=account %>的相册</title>
 	<link rel="stylesheet" href="other/layui/css/layui.css">
-	<script src="js/base.js"></script>
 	<style type="text/css">
 		body{
 			background-color: #f5f5f5 !important;

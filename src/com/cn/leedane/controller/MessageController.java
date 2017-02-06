@@ -27,9 +27,10 @@ public class MessageController extends BaseController{
 	@RequestMapping("/send")
 	public String send(HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		try {
 			if(!checkParams(message, request)){
-				printWriter(message, response);
+				printWriter(message, response, start);
 				return null;
 			}
 			/*UserBean user = (UserBean) getSession().get(ConstantsUtil.USER_SESSION);
@@ -49,14 +50,14 @@ public class MessageController extends BaseController{
 			sender.sendMsg();
 			message.put("isSuccess", true);
 			message.put("message", "发送消息成功");*/
-			printWriter(message, response);
+			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 		
 	}
@@ -91,9 +92,10 @@ public class MessageController extends BaseController{
 			message.put("message", "请先登录");
 		}*/
 		Map<String, Object> message = new HashMap<String, Object>();
+		long start = System.currentTimeMillis();
 		message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 		message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
-		printWriter(message, response);
+		printWriter(message, response, start);
 		return null;
 	}
 }
