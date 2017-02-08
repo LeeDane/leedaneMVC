@@ -4,6 +4,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import net.sf.json.JSONObject;
 
 import com.cn.leedane.model.IDBean;
@@ -15,6 +17,7 @@ import com.cn.leedane.model.UserBean;
  * 2016年7月12日 上午11:31:09
  * Version 1.0
  */
+@Transactional("txManager")
 public interface ChatBgService <T extends IDBean>{
 	
 	

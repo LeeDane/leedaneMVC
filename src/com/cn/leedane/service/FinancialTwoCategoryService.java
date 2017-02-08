@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import net.sf.json.JSONObject;
 
 import com.cn.leedane.model.FinancialTwoLevelCategoryBean;
@@ -17,6 +19,7 @@ import com.cn.leedane.model.UserBean;
  * 2016年12月8日 下午9:28:06
  * Version 1.0
  */
+@Transactional("txManager")
 public interface FinancialTwoCategoryService<T extends IDBean>{
 	
 	/**

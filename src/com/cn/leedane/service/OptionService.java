@@ -1,4 +1,6 @@
 package com.cn.leedane.service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cn.leedane.model.IDBean;
 /**
  * 选项配置的Service类
@@ -6,6 +8,7 @@ import com.cn.leedane.model.IDBean;
  * 2016年7月12日 上午11:34:18
  * Version 1.0
  */
+@Transactional("txManager")
 public interface OptionService<T extends IDBean>{
 
 	

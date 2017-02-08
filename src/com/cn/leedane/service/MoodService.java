@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
-import com.cn.leedane.model.BlogBean;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cn.leedane.model.IDBean;
 import com.cn.leedane.model.MoodBean;
 import com.cn.leedane.model.UserBean;
@@ -17,6 +18,7 @@ import com.cn.leedane.model.UserBean;
  * 2016年7月12日 上午11:33:50
  * Version 1.0
  */
+@Transactional("txManager")
 public interface MoodService <T extends IDBean>{
 	/**
 	 * 保存心情（草稿状态）

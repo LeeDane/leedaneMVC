@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import net.sf.json.JSONObject;
 
 import com.cn.leedane.model.FinancialBean;
@@ -18,6 +20,7 @@ import com.cn.leedane.model.UserBean;
  * 2016年7月22日 上午8:31:34
  * Version 1.0
  */
+@Transactional("txManager")
 public interface FinancialService<T extends IDBean>{
 	
 	/**
