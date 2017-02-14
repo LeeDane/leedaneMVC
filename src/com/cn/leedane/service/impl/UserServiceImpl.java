@@ -33,6 +33,7 @@ import com.cn.leedane.handler.NotificationHandler;
 import com.cn.leedane.handler.SignInHandler;
 import com.cn.leedane.handler.TransmitHandler;
 import com.cn.leedane.handler.UserHandler;
+import com.cn.leedane.lucene.solr.UserSolrHandler;
 import com.cn.leedane.mapper.FilePathMapper;
 import com.cn.leedane.mapper.UserMapper;
 import com.cn.leedane.message.ISendNotification;
@@ -160,6 +161,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 		}else{
 			boolean isSave = userMapper.save(user) > 0;
 			if(isSave){
+				UserSolrHandler.getInstance().addBean(user);
 				saveRegisterScore(user);
 				message.put("isSuccess", true);
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先验证邮箱.value));
@@ -215,7 +217,10 @@ public class UserServiceImpl implements UserService<UserBean> {
 			UserBean user = userMapper.checkRegisterCode(registerCode);
 			 if(user != null){
 				 user.setStatus(ConstantsUtil.STATUS_NORMAL);
-				 return updateUserState(user);
+				 boolean result = updateUserState(user);
+				 if(result)
+					 UserSolrHandler.getInstance().updateBean(user);
+				 return result;
 			 }else
 				 return false;
 		}
@@ -772,6 +777,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 		boolean result = userMapper.save(user) > 0;
 		if(result){
 			saveRegisterScore(user);
+			UserSolrHandler.getInstance().addBean(user);
 			message.put("isSuccess", result);
 			message.put("message", "恭喜您注册成功,请登录");
 			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
@@ -955,6 +961,8 @@ public class UserServiceImpl implements UserService<UserBean> {
 		
 		boolean result = userMapper.update(user) > 0;
 		if(result){
+			
+			UserSolrHandler.getInstance().updateBean(user);
 			message.put("isSuccess", result);
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作成功.value));
 			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
@@ -1015,6 +1023,8 @@ public class UserServiceImpl implements UserService<UserBean> {
 			if(status != ConstantsUtil.STATUS_NORMAL){
 				SessionManagerUtil.getInstance().removeSession(updateUserBean.getId());
 			}
+			
+			UserSolrHandler.getInstance().updateBean(updateUserBean);
 			//通知相关用户
 			new Thread(new Runnable() {
 				
@@ -1364,6 +1374,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.用户注销成功.value));
 			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
 			message.put("isSuccess", true);
+			UserSolrHandler.getInstance().deleteBean(String.valueOf(toUserId));
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.删除失败.value));
 			message.put("responseCode", EnumUtil.ResponseCode.删除失败.value);
@@ -1515,6 +1526,7 @@ public class UserServiceImpl implements UserService<UserBean> {
 		addUserBean.setStatus(ConstantsUtil.STATUS_NORMAL);
 		boolean result = userMapper.insert(addUserBean) > 0;
 		if(result){
+			UserSolrHandler.getInstance().addBean(addUserBean);
 			message.put("isSuccess", result);
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.添加成功.value));
 			message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);

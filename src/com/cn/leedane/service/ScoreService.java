@@ -42,4 +42,24 @@ public interface ScoreService<T extends IDBean>{
 	 */
 	public Map<String, Object> getLimit(JSONObject jo, UserBean user, HttpServletRequest request);
 	
+	/**
+	 * 获取当前用户的总积分
+	 * @param jo
+	 * @param user
+	 * @param request
+	 * @return
+	 */
+	public Map<String, Object> getTotalScore(JSONObject jo, UserBean user, HttpServletRequest request);
+	
+	/**
+	 * 减少分数
+	 * @param reduceScore
+	 * @param desc
+	 * @param tableName
+	 * @param tableId
+	 * @param user
+	 * @return
+	 */
+	public Map<String, Object> reduceScore(int reduceScore, String desc, String tableName, int tableId, UserBean user);
+	
 }

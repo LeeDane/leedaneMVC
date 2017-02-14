@@ -91,7 +91,7 @@ public class ChatBgController extends BaseController{
 				printWriter(message, response, start);
 				return null;
 			}
-			message.putAll(chatBgService.verifyChatBg(getJsonFromMessage(message), getUserFromMessage(message), request));
+			message.putAll(chatBgService.addChatBg(getJsonFromMessage(message), getUserFromMessage(message), request));
 			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {

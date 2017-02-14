@@ -19,7 +19,7 @@ import com.cn.leedane.utils.StringUtil;
  */
 public class RedisConfig {
 	
-	private static Map<String, Object> properties;
+	public static Map<String, Object> properties;
 	
 	static{
 		/*SystemCache systemCache = (SystemCache)SpringUtils.getBean("systemCache");

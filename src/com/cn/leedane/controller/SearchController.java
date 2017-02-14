@@ -28,18 +28,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import sun.security.util.Length;
+
+import com.cn.leedane.handler.FanHandler;
+import com.cn.leedane.handler.FriendHandler;
+import com.cn.leedane.handler.MoodHandler;
 import com.cn.leedane.lucene.solr.BlogSolrHandler;
 import com.cn.leedane.lucene.solr.MoodSolrHandler;
 import com.cn.leedane.lucene.solr.UserSolrHandler;
 import com.cn.leedane.model.BlogBean;
 import com.cn.leedane.model.MoodBean;
+import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.BlogService;
 import com.cn.leedane.service.MoodService;
+import com.cn.leedane.utils.CollectionUtil;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.DateUtil;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.StringUtil;
+import com.cn.leedane.utils.EnumUtil.DataTableType;
 
 /**
  * 搜索相关的controller处理类
@@ -59,6 +67,15 @@ public class SearchController extends BaseController{
 	@Autowired
 	private BlogService<BlogBean> blogService;
 	
+	@Autowired
+	private MoodHandler moodHandler;
+	
+	@Autowired
+	private FanHandler fanHandler;
+	
+	@Autowired
+	private FriendHandler friendHandler;
+	
 	/**
 	 * 执行搜索
 	 */
@@ -68,10 +85,8 @@ public class SearchController extends BaseController{
 		Map<String, Object> message = new HashMap<String, Object>();
 		long start = System.currentTimeMillis();
 		try {
-			if(!checkParams(message, request)){
-				printWriter(message, response, start);
-				return null;
-			}
+			checkParams(message, request);
+			UserBean user = getUserFromMessage(message);
 			JSONObject jsonObject = getJsonFromMessage(message);
 			//查询的类型，目前支持0、全部，1、博客（正文和标题），2、说说(正文)，3、用户(姓名，中文名，邮件，手机号码，证件号码)
 			int type = JsonUtil.getIntValue(jsonObject, "type", 0);
@@ -117,12 +132,12 @@ public class SearchController extends BaseController{
 				}
 			}
 			
-			List<Map<String, List<Map<String, Object>>>> rs = new ArrayList<Map<String,List<Map<String,Object>>>>();
+			Map<String, List<Map<String, Object>>> docsMap = new HashMap<String, List<Map<String,Object>>>();
+			boolean platformApp = JsonUtil.getBooleanValue(jsonObject, "platformApp"); //搜索关键字
 			for(Map<String, Object> response1: responses){
 				int tempId = StringUtil.changeObjectToInt(response1.get("tempId"));
 				QueryResponse response2 = (QueryResponse) response1.get("queryResponse");
 				SolrDocumentList documentList= response2.getResults();
-				Map<String, List<Map<String, Object>>> docsMap = new HashMap<String, List<Map<String,Object>>>();
 				List<Map<String, Object>> ds = new ArrayList<Map<String,Object>>();
 				 
 		        for (SolrDocument solrDocument : documentList){
@@ -139,6 +154,23 @@ public class SearchController extends BaseController{
 		            for(Entry<String, Object> m: solrDocument.entrySet()){
 		            	map.put(m.getKey(), m.getValue());
 		            }
+		            
+		            if(tempId == ConstantsUtil.SEARCH_TYPE_USER){
+		            	int userId = StringUtil.changeObjectToInt(solrDocument.getFieldValue("id"));
+		            	map.putAll(userHandler.getBaseUserInfo(userId));
+		            	if(platformApp && user != null && userId != user.getId()){
+		            		map.put("isFan", fanHandler.inAttention(user.getId(), userId));
+        					map.put("isFriend", friendHandler.inFriend(user.getId(), userId));
+		            	}
+		            }else if(tempId == ConstantsUtil.SEARCH_TYPE_MOOD){
+		            	map.putAll(userHandler.getBaseUserInfo(StringUtil.changeObjectToInt(solrDocument.getFieldValue("createUserId"))));
+		            	if(StringUtil.changeObjectToBoolean(solrDocument.getFieldValue("hasImg"))){
+		            		String uuid = StringUtil.changeNotNull(solrDocument.getFieldValue("uuid"));
+		            		map.put("imgs", moodHandler.getMoodImg(DataTableType.心情.value, uuid, ConstantsUtil.DEFAULT_PIC_SIZE));
+		            	}
+		            }else if(tempId == ConstantsUtil.SEARCH_TYPE_BLOG){
+		            	map.put("account", userHandler.getUserName(StringUtil.changeObjectToInt(solrDocument.getFieldValue("createUserId"))));
+		            }
 		        	 //对web平台处理高亮
 					/*if("web".equalsIgnoreCase(platform) && !response2.getHighlighting().isEmpty()){
 						Map<String, Map<String, List<String>>>  highlightings = response2.getHighlighting();
@@ -151,7 +183,6 @@ public class SearchController extends BaseController{
 		            ds.add(map);
 		        }
 		        docsMap.put(String.valueOf(tempId), ds);
-		        rs.add(docsMap);
 				//搜索得到的结果数
 			    System.out.println("Find:" + documentList.getNumFound());
 			}
@@ -159,12 +190,18 @@ public class SearchController extends BaseController{
 			
 			//UserBean userBean = userService.findById(1);
 			//UserSolrHandler.getInstance().addBean(userBean);
+			//List<UserBean> userBeans = userService.getAllUsers(1);
+			//UserSolrHandler.getInstance().addBeans(userBeans);
+			
+			//List<UserBean> userBeans4 = userService.getAllUsers(4);
+			//UserSolrHandler.getInstance().addBeans(userBeans4);
+			
 			//List<BlogBean> blogs = blogService.getBlogBeans("select * from t_blog where status=?", ConstantsUtil.STATUS_NORMAL);
 			//BlogSolrHandler.getInstance().addBeans(blogs);
 			
 			//List<MoodBean> moods = moodService.getMoodBeans("select * from t_mood where status=?", ConstantsUtil.STATUS_NORMAL);
 			//MoodSolrHandler.getInstance().addBeans(moods);
-			message.put("data", rs);
+			message.put("message", docsMap);
 			message.put("isSuccess", true);
 			printWriter(message, response, start);
 			return null;
@@ -259,30 +296,30 @@ public class SearchController extends BaseController{
 	 * @param tempId
 	 * @return
 	 */
-	/*private String[] getSearchFields(int tempId){
+	private String[] getSearchFields(int tempId){
 		String[] array = null;
 		switch (tempId) {
 		case ConstantsUtil.SEARCH_TYPE_BLOG:
 			array = new String[2];
-			array[0] = "CONTENT";
-			array[1] = "TITLE";
+			array[0] = "content";
+			array[1] = "title";
 			break;
 		case ConstantsUtil.SEARCH_TYPE_MOOD:
 			array = new String[1];
-			array[0] = "CONTENT";
+			array[0] = "content";
 			break;
 		case ConstantsUtil.SEARCH_TYPE_USER:
 			array = new String[6];
-			array[0] = "ACCOUNT";
-			array[1] = "CHINANAME";
-			array[2] = "EMAIL";
-			array[3] = "QQ";
-			array[4] = "PERSONALINTRODUCTION";
-			array[5] = "NATIVEPLACE";
+			array[0] = "account";
+			array[1] = "chinaName";
+			array[2] = "email";
+			array[3] = "qq";
+			array[4] = "personalIntroduction";
+			array[5] = "nativePlace";
 			break;
 		}
 		return array;
-	}*/
+	}
 	
 	/**
 	 * 获取指定类型搜索的数量
@@ -319,27 +356,53 @@ public class SearchController extends BaseController{
 		@Override
 		public Map<String, Object> call() throws Exception {
 			SolrQuery query = new SolrQuery();
-		    query.setQuery("*"+keyword+"*"); //模糊查询
+		    
 		    //query.setFields(getSearchFields(tempId));
 		    //query.setSort("price", ORDER.asc);
 		    query.setStart(start);
 		    query.setRows(getSearchRows(tempId));
-		    query.setSort("registerTime", ORDER.desc);
+		    
 		    // 以下给两个字段开启了高亮
-		    query.addHighlightField("account"); 
-		    query.addHighlightField("personalIntroduction"); 
+		    //query.addHighlightField("account"); 
+		    //query.addHighlightField("personalIntroduction"); 
 		    // 以下两个方法主要是在高亮的关键字前后加上html代码 
-		    query.setHighlightSimplePre("<font color='red'>"); 
-		    query.setHighlightSimplePost("</front>");
+		    //query.setHighlightSimplePre("<font color='red'>"); 
+		    //query.setHighlightSimplePost("</front>");
 		    query.set("wt", "xml");
 		    query.set("indent", "true");
 		    Map<String, Object> map = new HashMap<String, Object>();
 		    map.put("tempId", tempId);
+		    StringBuffer sqlBuffer = new StringBuffer();
+		    String[] searchFields = getSearchFields(tempId);
+		    
+		    for(int i = 0; searchFields.length > 0 && i <searchFields.length; i++){
+		    	if(i == 0){
+		    		sqlBuffer.append("(");
+		    	}
+		    	sqlBuffer.append(searchFields[i]);
+		    	sqlBuffer.append(":");
+		    	sqlBuffer.append(keyword);
+		    	
+		    	if(i == searchFields.length -1){
+		    		sqlBuffer.append(")");
+		    	}else{
+		    		sqlBuffer.append(" OR ");
+		    	}
+		    }
+		    //设置只获取状态是正常的数据
+		    sqlBuffer.append(" AND status:");
+	    	sqlBuffer.append(ConstantsUtil.STATUS_NORMAL +"");
 		    if(tempId == ConstantsUtil.SEARCH_TYPE_BLOG){
+		    	query.setQuery(sqlBuffer.toString()); //模糊查询
+		    	query.setSort("createTime", ORDER.desc);
 		    	map.put("queryResponse", BlogSolrHandler.getInstance().query(query));
 		    }else if(tempId == ConstantsUtil.SEARCH_TYPE_MOOD){
+		    	query.setQuery(sqlBuffer.toString()); //模糊查询
+		    	query.setSort("createTime", ORDER.desc);
 		    	map.put("queryResponse", MoodSolrHandler.getInstance().query(query));
 		    }else if(tempId == ConstantsUtil.SEARCH_TYPE_USER){
+		    	query.setQuery(sqlBuffer.toString()); //模糊查询
+		    	query.setSort("registerTime", ORDER.desc);
 		    	map.put("queryResponse", UserSolrHandler.getInstance().query(query));
 		    }
 		    return map;

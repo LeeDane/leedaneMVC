@@ -59,4 +59,22 @@ public abstract class BaseSolrHandler <T extends IDBean>{
 	 */
 	protected abstract boolean deleteBeans(List<String> ids);
 	
+	/**
+	 * 更新一个对象
+	 * @param object
+	 * @return
+	 * @throws IOException
+	 * @throws SolrServerException
+	 */
+	protected abstract boolean updateBean(T bean);
+	
+	/**
+	 * 更新多个对象
+	 * @param beans
+	 * @return
+	 * @throws IOException
+	 * @throws SolrServerException
+	 */
+	protected abstract boolean updateBeans(List<T> beans);
+	
 }

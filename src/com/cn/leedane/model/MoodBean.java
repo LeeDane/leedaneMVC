@@ -19,6 +19,7 @@ public class MoodBean extends RecordTimeBean{
 	/**
 	 * 非必须，uuid,唯一(如在图像的时候一定必须，因为它是关联filepath表的唯一凭证)
 	 */
+	@Field
 	private String uuid;
 	
 	/**

@@ -1,19 +1,24 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
+<%@page import="java.util.UUID"%>
 <%@page import="com.cn.leedane.controller.UserController"%>
 <%
 	Object obj = session.getAttribute(UserController.USER_INFO_KEY);
+	UserBean userBean = null;
+	String account = "";
+	int userId = 0;
 	boolean isLogin = obj != null;
-	int loginUserId = 0;
-	boolean isAdmin = false;
-	if(isLogin){
-		UserBean user = (UserBean)obj;
-		loginUserId = user.getId();
-		isAdmin = user.isAdmin();
-	}
 	
 	String bp = request.getScheme()+"://"+request.getServerName()
-			+":"+request.getServerPort()+request.getContextPath()+"/"; 
+			+":"+request.getServerPort()+request.getContextPath()+"/";
+	
+	if(isLogin){
+		userBean = (UserBean)obj;
+		account = userBean.getAccount();
+		userId = userBean.getId();
+	}else{
+		response.sendRedirect(bp +"page/login.jsp?ref="+CommonUtil.getFullPath(request)+"&t="+UUID.randomUUID().toString());
+	}
 %>
 <!DOCTYPE html>
 <html>
@@ -23,91 +28,157 @@
 	<title>聊天广场</title>
 	<link rel="stylesheet" href="other/layui/css/layui.css">
 	<script src="js/base.js"></script>
-	<script type="text/javascript" src="<%=bp %>page/js/comet4j.js"></script>
 	<style type="text/css">
 		#main-container{
 			margin-top: 60px;
 		}
 		
 		#content{
-			height: 400px;
-			background-color: blue;
-			margin-bottom: 30px;
+			height: 300px;
+			/* background-color: #F5F5F5; */
+			margin-bottom: 10px;
 			overflow-y: scroll; 
 		}
 		#send{
-			height: 30px; 
-			position: fixed;
+			height: auto; 
 			bottom: 0;
-			background-color: red;
+		}
+		.chat-user-name{
+			font-size: 14px;
+			font-family: "Pingfang SC",STHeiti,"Lantinghei SC","Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",SimSun,sans-serif;
+		}
+		.chat-create-time{
+			font-size: 14px;
+			font-family: "Pingfang SC",STHeiti,"Lantinghei SC","Open Sans",Arial,"Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",SimSun,sans-serif;
+		}
+		.chat-list-row{
+			border: 1px solid #F5F5F5;
+		}
+		
+		.one{
+			background-color: #BF0449 !important;
+		}
+		
+		.two{
+			background-color: #F2B705 !important;
+		}
+		.third{
+			background-color: #D98E04 !important;
 		}
 	</style>
 </head>
-<body onload="init();">
+<body>
 <%@ include file="common.jsp" %>
 <script src="<%=basePath %>page/js/chart-square.js"></script>
 <script type="text/javascript" src="<%=basePath %>page/other/jquery.md5.js"></script>
+<script type="text/javascript" charset="utf-8" src="<%=basePath %>page/other/ueditor1_4_3_3-utf8-jsp/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="<%=basePath %>page/other/ueditor1_4_3_3-utf8-jsp/ueditor.all.min.js"> </script>
+<!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+<!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+<script type="text/javascript" charset="utf-8" src="<%=basePath %>page/other/ueditor1_4_3_3-utf8-jsp/lang/zh-cn/zh-cn.js"></script>
 <div class="main clearFloat">
 	<div class="container" id="main-container">
 	   <div class="row">
 			<div class="col-lg-3">
-				eee
+				<div class="row">
+					<div class="panel panel-info">
+					    <div class="panel-heading">
+					    	<% if(isLogin){ %>
+					    		<%=account %>
+					    		&nbsp;&nbsp;当前积分：<span id="score"></span>
+					    	<%}else{ %>
+					        	<button class="btn btn-default panel-title" type="button" onclick="sendMsg();">去登录</button>
+					        <%} %>
+					    </div>
+					    <div class="panel-body">
+					        <div class="row">
+					        	<div class="col-lg-12">
+					        		欢迎签名：我是leedane，我来了！
+					        		<button type="button" class="btn btn-default btn-xs">
+									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
+									</button>
+					        	</div>
+					        </div>
+					    </div>
+					</div>
+				</div>
+				<div class="row" id="active-users">
+					<a href="#" class="list-group-item active">今日活跃用户排名</a>
+				</div>
 			</div>
 			<div class="col-lg-6">
-				<div class="row" id="content">
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					<p>jjjjj</p>
-					fgmg
-				</div>
-				<div class="row" id="send">
-					rrrrrr
+			
+				<div class="panel panel-default">
+					<div class="panel-body" id="content">
+						<div class="row chat-list-row">
+					   		<div class="col-lg-2" style="text-align: center;margin-top: 10px;">
+								<img width="60" height="60" class="img-circle hand" alt="" src=""  onclick="showSingleImg(this);"/>
+							</div>
+							<div class="col-lg-10">
+								<div class="row" style="font-family: '微软雅黑'; font-size: 15px; margin-top: 10px;">
+									<div class="col-lg-12">
+										<span class="chat-user-name"><a href="JavaScript:void(0);" onclick="linkToMy(1)">leedane</a></span>   
+										<span class="chat-create-time">&nbsp;&nbsp;2017-01-01 00:00</span>
+									</div>
+								</div>
+								<div class="row" style="font-family: '微软雅黑'; font-size: 17px;margin-top: 5px;">
+									<div class="col-lg-12">文/清澈的蓝挽一缕月光照亮夜晚的轩窗微凉的风摇曳丝丝岸柳似少女般漫妙轻舒弄影( 文章阅读网：www.sanwen.net)飘舞在迷人的曉风琬月下凝眸远望是江南的一帘秋水长天*轻移莲步採一朵清新的茉莉花</div>
+								</div>
+							</div>
+						</div>
+						<div class="row chat-list-row">
+					   		<div class="col-lg-2" style="text-align: center;margin-top: 10px;">
+								<img width="60" height="60" class="img-circle hand" alt="" src=""  onclick="showSingleImg(this);"/>
+							</div>
+							<div class="col-lg-10">
+								<div class="row" style="font-family: '微软雅黑'; font-size: 15px; margin-top: 10px;">
+									<div class="col-lg-12">
+										<span class="chat-user-name"><a href="JavaScript:void(0);" onclick="linkToMy(1)">leedane</a></span>   
+										<span class="chat-create-time">&nbsp;&nbsp;2017-01-01 00:00</span>
+									</div>
+								</div>
+								<div class="row" style="font-family: '微软雅黑'; font-size: 17px;margin-top: 5px;">
+									<div class="col-lg-12">文/清澈的蓝挽一缕月光照亮夜晚的轩窗微凉的风摇曳丝丝岸柳似少女般漫妙轻舒弄影( 文章阅读网：www.sanwen.net)飘舞在迷人的曉风琬月下凝眸远望是江南的一帘秋水长天*轻移莲步採一朵清新的茉莉花</div>
+								</div>
+							</div>
+						</div>
+						<div class="row chat-list-row">
+					   		<div class="col-lg-2" style="text-align: center;margin-top: 10px;">
+								<img width="60" height="60" class="img-circle hand" alt="" src=""  onclick="showSingleImg(this);"/>
+							</div>
+							<div class="col-lg-10">
+								<div class="row" style="font-family: '微软雅黑'; font-size: 15px; margin-top: 10px;">
+									<div class="col-lg-12">
+										<span class="chat-user-name"><a href="JavaScript:void(0);" onclick="linkToMy(1)">leedane</a></span>   
+										<span class="chat-create-time">&nbsp;&nbsp;2017-01-01 00:00</span>
+									</div>
+								</div>
+								<div class="row" style="font-family: '微软雅黑'; font-size: 17px;margin-top: 5px;">
+									<div class="col-lg-12">文/清澈的蓝挽一缕月光照亮夜晚的轩窗微凉的风摇曳丝丝岸柳似少女般漫妙轻舒弄影( 文章阅读网：www.sanwen.net)飘舞在迷人的曉风琬月下凝眸远望是江南的一帘秋水长天*轻移莲步採一朵清新的茉莉花</div>
+								</div>
+							</div>
+						</div>
+						
+					</div>
+					<div class="panel-footer">
+						<div class="row" id="send">
+							<div class="col-lg-12">
+								<div class="row">
+									<div class="col-lg-12">
+										<script id="editor" type="text/plain" style="width:100%;" onkeypress="if (event.keyCode == 13) sendMsg(this);"></script>
+									</div>
+								</div>
+								<div class="row" style="margin-top: 8px;">
+									<div class="col-lg-12">
+										<button class="btn btn-default" type="button" onclick="sendMsg();">发送</button>
+										<button class="btn btn-default" type="button" <%if(!isLogin){ %> disabled="disabled" <%} %> onclick="sendPlayScreen();">发送弹屏(扣一分积分)</button>
+										<button class="btn btn-default" type="button" onclick="clearMsg();">清屏</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					
+					</div>
 				</div>
 			</div>
 			<div class="col-lg-3"> 
@@ -119,86 +190,255 @@
 </body>
 <script type="text/javascript">
 	var isLogin = <%=isLogin %>; //是否已经登录
-	var loginUserId = <%=loginUserId %>; //获取登录用户Id
-	var isAdmin = <%=isAdmin %>; //是否是管理员
-	var connId = ""; //当前页面的连接ID
-   	$(function () {	  
-	  $(".navbar-nav .nav-main-li").each(function(){
-			$(this).removeClass("active");
-		});
-	  
-	  var height = $(document).height();
-	  console.log("llll"+ height);
-      
-  	});
-  
-  	function init(){
-      JS.Engine.on({  
-    	  scan_login : function(data){
-    		 	data = eval('(' + data + ')');
-    			if(data.isSuccess){
-    				
-    			}
-      			alert("返回的数据是："+data);
-          }  
-      });  
-      JS.Engine.start('/leedaneMVC/conn?channel=chat_room'); 
-      JS.Engine.on('start',function(cid){
-    	connId = cid;
-      	console.log("长链接连接"+cid);
-      });
-      JS.Engine.on('stop',function(cause, cid, url, engine){//页面刷新执行
-      	console.log("长链接已经断连接"+cid);
-      	connId = cid;
-      	//移除id
-      	$.ajax({
-				type : "post",
-				data : "cid=" + cid+"&channel=chat_room",
-				url : "<%=basePath %>destroyedComet4jServlet",
-				async: false,
-				//dataType : "json",
-				timeout:2000,
-				cache : false,
-				beforeSend : function() {
-				},
-				success : function(data) {
-					console.log("移除id"+cid);
-				},
-				error : function() {
+	var userName = '<%=account %>'; //登录用户的名称
+	var userId = <%=userId %> + "UNION" + Math.random(); //用户ID
+	//实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+    //var ue = UE.getEditor('editor');
+	
+    var ue = UE.getEditor('editor', {
+        "initialFrameHeight": "100",
+        autoHeightEnabled: false,
+        elementPathEnabled : false,
+        maximumWords: 10,
+        wordCount: true,
+        toolbars: [[
+	              'fullscreen', 'source', '|', 'undo', 'redo', '|',
+	              'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', '|',
+	              'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+	              'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+	              'indent', '|',
+	              'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', '|',
+	              'link', 'unlink', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+	              'simpleupload', 'insertimage', 'emotion', 'scrawl', 'attachment', 'insertcode', '|',
+	              'horizontal', '|',
+	              'drafts'/* , 'help' 帮助 */
+	          ]],
+        enterTag: "&nbsp;"
+    });
+    
+    $(function(){
+    	//验证浏览器是否支持WebSocket协议
+        if(!window.WebSocket){
+        	layer.alert('WebSockeet not supported by this browser!', {
+        		  skin: 'layui-layer-molv' //样式类名
+        		  ,closeBtn: 0
+       		}, function(){
+       			window.open("about:blank","_self").close();
+       		});
+        }else{
+        	$("#content").empty();
+        	initWebSocket(true);
+        }
+    	
+        var height = $("#content").height(); //页面总高度
+        
+        $("#content").scroll(function (e) {
+    		e = e || window.event;
+    	    if (e.wheelDelta) {  //判断浏览器IE，谷歌滑轮事件             
+    	        if (e.wheelDelta > 0) { //当滑轮向上滚动时
+    	            return;
+    	        }
+    	    } else if (e.detail) {  //Firefox滑轮事件
+    	        if (e.detail> 0) { //当滑轮向上滚动时
+    	            return;
+    	        }
+    	    }
+    	     
+    	    var divContentHeight = $("#content")[0].scrollHeight; //页面总高度 
+    	    var scrollT = $("#content").scrollTop(); //滚动条top 
+    	    console.log("差---->" +(divContentHeight-scrollT) + ", scrollT=" + scrollT +", pageH="+ divContentHeight);
+    	    if(divContentHeight - scrollT < 100 + height){
+    	    	
+    	    }
+    	}); 
+        
+        getActiveUsers();
+        //定时10分钟去查询活跃用户
+        setInterval("getActiveUsers()","30000");
+        //获取登录用户积分
+        if(isLogin)
+        	getScore();
+    });
+    var ws;
+    
+    /**
+     *	获取积分
+     */
+     function getScore(){
+     	$.ajax({
+ 			type : "post",
+ 			dataType: 'json',  
+ 			url : getBasePath() +"leedane/score/getTotalScore.action",
+ 			beforeSend:function(){
+ 			},
+ 			success : function(data) {
+ 				if(data.isSuccess){
+ 					$("#score").html(data.message);
+ 				}else{
+ 					layer.msg(data.message);
+ 				}
+ 			},
+ 			error : function() {
+ 				layer.msg("网络请求失败");
+ 			}
+ 		});
+     }
+    
+    /**
+    *	查询活跃用户
+    */
+    function getActiveUsers(){
+    	$.ajax({
+			type : "post",
+			dataType: 'json',  
+			url : getBasePath() +"leedane/chat/square/getActiveUser.action",
+			beforeSend:function(){
+			},
+			success : function(data) {
+				//layer.msg(data.message);
+				$("#active-users").find(".active-users-item").remove();
+				if(data.isSuccess){
+					var message = data.message;
+					if(message.length > 0){
+						var colorClass = "";
+						for(var i = 0; i < message.length; i++){
+							if(i == 0){
+								colorClass = "one";
+							}else if(i == 1){
+								colorClass = "two";
+							}else if(i == 2){
+								colorClass = "third";
+							}else{
+								colorClass = "";
+							}
+							var userPicPath = "";
+							if(isNotEmpty(message[i].user_pic_path)){
+								userPicPath = message[i].user_pic_path;
+							}
+							$("#active-users").append('<a href="javascript:void(0);" class="list-group-item active-users-item" onclick="linkToMy('+ message[i].create_user_id+');"><img width="30" height="30" class="img-circle hand" alt="" src="'+ userPicPath +'"  onclick="showSingleImg(this);"/>&nbsp;&nbsp; '+ message[i].account+'<span class="badge '+ colorClass +'">'+ message[i].count +'</span></a>');
+						}
+					}
 				}
+			},
+			error : function() {
+				layer.msg("网络请求失败");
+			}
 		});
-      });
-	}
-	  
-	//回车执行登录
-	document.onkeydown=function(event){
-	    var e = event || window.event || arguments.callee.caller.arguments[0];
-	    if(e && e.keyCode==13){ // enter 键
-	    	doLogin();
-	   }
-	}
-	 
-	//页面关闭和刷新执行方法
-	window.onbeforeunload = onbeforeunload_handler;
-	function onbeforeunload_handler() {//页面关闭执行
-		if(connId != ""){
-			$.ajax({
-				type : "post",
-				data : "cid=" + connId +"&channel=chat_room",
-				url : "<%=basePath %>destroyedComet4jServlet",
-				async: false,
-				//dataType : "json",
-				timeout:2000,
-				cache : false,
-				beforeSend : function() {
-				},
-				success : function(data) {
-					console.log("移除id"+cId);
-				},
-				error : function() {
-				}
-			});
-		}
-	}
+    }
+    
+    /**
+    *	显示
+    */
+    function initWebSocket(first){
+    	ws = new WebSocket("ws://127.0.0.1:8080/leedaneMVC/websocket?account="+encodeURI(encodeURI(userId)));
+    	//监听消息
+    	ws.onmessage = function(event){
+    		log(event.data);
+    	}
+     
+    	//关闭WebSocket
+    	ws.onclose = function(event){
+    		initWebSocket(false);
+    	}
+    	//打开WebSocket
+    	ws.onopen = function(event){
+    		if(first){
+    			ws.send(getSendJson(userId, "大家好，我是"+userName, true));
+    		}
+    	}
+    	ws.onerror = function(event){
+    		//alert(1);
+    	}
+    }
+    
+    /**
+    *	构建发送的json数据
+    */
+    function getSendJson(userId, content, welcome){
+    	if(welcome){
+    		var json = {id: userId, content: content, type: "welcome"};
+    	}else{
+    		var json = {id: userId, content: content};
+    	}
+    	
+    	return JSON.stringify(json);
+    }
+    var log = function(s){
+    	/* if(document.readyState !== "complete"){
+    		log.buffer.pust(s);
+    	}else{ */
+    		var json = eval('(' + s + ')'); 
+    		var container = $("#content");
+    		container.append(buildEachRow(json));
+    		var height = container.height(); //页面总高度
+    		var divContentHeight = container[0].scrollHeight; //页面总高度 
+     	    var scrollT = container.scrollTop(); //滚动条top
+     	    
+     	    //对于滑动不远的数据，直接滚动回最新的地方
+     	    var offset = divContentHeight - scrollT - height;
+     	    if(offset < 400){
+     	    	$("#content").scrollTop(divContentHeight - height);
+     	    }
+     	//}
+     	   
+    }
+    
+    /**
+    *	发送信息
+    */
+    function sendMsg(){
+    	//校验内容
+      	var content = ue.getContent();
+      	if(isEmpty(content)){
+      		layer.msg("内容不能为空");
+      		ue.focus();
+      		return;
+      	}
+    	ws.send(getSendJson(userId, content));
+    	//清空编辑器的内容
+    	ue.setContent("");
+    }
+    
+    /**
+    *	清屏
+    */
+    function clearMsg(){
+    	//询问框
+    	layer.confirm('确定清空聊天列表？', {
+    	  btn: ['确定','点错了'] //按钮
+    	}, function(){
+    	  $("#content").empty();
+    	  layer.msg('已清空 ', {icon: 1, time: 800});
+    	}, function(){
+    	  
+    	});
+    }
+    
+    function buildEachRow(chat){
+    	var html = '<div class="row chat-list-row">'+
+				   		'<div class="col-lg-2" style="text-align: center;margin-top: 10px;">';
+				   		if(isNotEmpty(chat.user_pic_path)){
+				   			html += '<img width="60" height="60" class="img-rounded hand" alt="" src="'+ chat.user_pic_path + '"  onclick="showSingleImg(this);"/>';
+				   		}else{
+				   			html += '<img width="60" height="60" class="img-rounded" alt="" src=""/>';
+				   		}
+							
+				html += '</div>'+
+						'<div class="col-lg-10">'+
+							'<div class="row" style="font-family: \'微软雅黑\'; font-size: 15px; margin-top: 10px;">'+
+								'<div class="col-lg-12">'+
+									'<span class="chat-user-name"><a href="JavaScript:void(0);" onclick="linkToMy('+ chat.id +')">'+ chat.account +'</a></span>'+
+									'<span class="chat-create-time">&nbsp;&nbsp;'+ chat.time +'</span>'+
+								'</div>'+
+							'</div>'+
+							'<div class="row" style="font-family: \'微软雅黑\'; font-size: 17px;margin-top: 5px;">'+
+								'<div class="col-lg-12">'+ chat.content +'</div>'+
+							'</div>'+
+						'</div>'+
+					'</div>';
+    	
+    	return html;
+    }
 	</script>
 </html>

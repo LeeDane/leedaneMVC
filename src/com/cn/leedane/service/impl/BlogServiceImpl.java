@@ -22,6 +22,7 @@ import com.cn.leedane.handler.NotificationHandler;
 import com.cn.leedane.handler.TransmitHandler;
 import com.cn.leedane.handler.UserHandler;
 import com.cn.leedane.handler.ZanHandler;
+import com.cn.leedane.lucene.solr.BlogSolrHandler;
 import com.cn.leedane.mapper.BlogMapper;
 import com.cn.leedane.model.BlogBean;
 import com.cn.leedane.model.OperateLogBean;
@@ -106,6 +107,7 @@ public class BlogServiceImpl extends AdminRoleCheckService implements BlogServic
 			result = blogMapper.save(blog);
 		}
 		if(result > 0){
+			BlogSolrHandler.getInstance().addBean(blog);
 			message.put("isSuccess",true);
 			message.put("message","文章发布成功");
 		}else{
@@ -273,6 +275,7 @@ public class BlogServiceImpl extends AdminRoleCheckService implements BlogServic
 		
 		boolean result = this.blogMapper.deleteById(BlogBean.class, id) > 0;
 		if(result){
+			BlogSolrHandler.getInstance().deleteBean(String.valueOf(id));
 			message.put("isSuccess", true);
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作成功.value));
 			message.put("responseCode", EnumUtil.ResponseCode.操作成功.value);
@@ -379,8 +382,10 @@ public class BlogServiceImpl extends AdminRoleCheckService implements BlogServic
 		if(result){
 			if(cut){
 				message.put("message", "添加成功，标签数量超过3个，已自动删掉第一个");
-			}else
+			}else{
+				BlogSolrHandler.getInstance().updateBean(blogBean);
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.标签添加成功.value));
+			}
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.数据库保存失败.value));
 			message.put("responseCode", EnumUtil.ResponseCode.数据库保存失败.value);
@@ -497,7 +502,7 @@ public class BlogServiceImpl extends AdminRoleCheckService implements BlogServic
 		message.put("message", r);
 		message.put("isSuccess", true);
 		message.put("responseCode", EnumUtil.ResponseCode.请求返回成功码.value);
-
+		//BlogSolrHandler.getInstance().updateBean(blogBean);
 		//保存操作日志
 		operateLogService.saveOperateLog(user, request, null, StringUtil.getStringBufferStr(user.getAccount(),"获取编辑博客Id为：", blogId, StringUtil.getSuccessOrNoStr(r.size() == 1)).toString(), "edit()", ConstantsUtil.STATUS_NORMAL, 0);
 		

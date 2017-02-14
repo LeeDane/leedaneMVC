@@ -30,3 +30,4 @@
 /appVersion/getNewest.action
 /blog/getOneBlog.action
 /comment/paging.action
+/search/get.action

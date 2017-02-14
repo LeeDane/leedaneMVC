@@ -138,7 +138,7 @@ public class FanHandler {
 			redisUtil.zadd(attentionIDKey, scoreMembers);
 		}
 		
-		return redisUtil.getLimit(1, attentionIDKey, start, end);
+		return redisUtil.getLimit(true, attentionIDKey, start, end);
 	}
 	
 	/**
@@ -256,7 +256,7 @@ public class FanHandler {
 			redisUtil.zadd(fanIDKey, scoreMembers);
 		}
 		
-		return redisUtil.getLimit(1, fanIDKey, start, end);
+		return redisUtil.getLimit(true, fanIDKey, start, end);
 	}
 	
 	/**

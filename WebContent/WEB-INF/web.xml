@@ -29,6 +29,16 @@
      <listener-class>com.cn.leedane.comet4j.Comet4jServer</listener-class>
    </listener>
    
+   	<servlet>
+   		<servlet-name>websocket</servlet-name>  
+		<servlet-class>com.cn.leedane.chat_room.ChatWebsocketServlet</servlet-class>  
+		<load-on-startup>1</load-on-startup>  
+	</servlet>  
+	<servlet-mapping>    
+	        <servlet-name>websocket</servlet-name>    
+	        <url-pattern>/websocket</url-pattern>    
+	</servlet-mapping>
+   
     <servlet>  
              <description>销毁操作页面key</description>  
              <display-name>destroyedComet4jServlet</display-name>  

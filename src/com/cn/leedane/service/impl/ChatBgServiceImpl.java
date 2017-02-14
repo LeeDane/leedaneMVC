@@ -199,7 +199,7 @@ public class ChatBgServiceImpl implements ChatBgService<ChatBgBean> {
 
 
 	@Override
-	public Map<String, Object> verifyChatBg(JSONObject jo, UserBean user,
+	public Map<String, Object> addChatBg(JSONObject jo, UserBean user,
 			HttpServletRequest request) {
 		logger.info("ChatBgServiceImpl-->verifyChatBg():jo="+jo.toString());
 		Map<String, Object> message = new HashMap<String, Object>();

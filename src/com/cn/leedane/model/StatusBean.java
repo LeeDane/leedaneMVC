@@ -1,5 +1,7 @@
 package com.cn.leedane.model;
 
+import org.apache.solr.client.solrj.beans.Field;
+
 import com.alibaba.fastjson.annotation.JSONField;
 
 
@@ -17,6 +19,7 @@ public abstract class StatusBean extends IDBean{
 	 */
 	//@Column(columnDefinition="SMALLINT default 1", length=2, nullable=true)  //设置默认值是1，表示正常
 	@JSONField(name="create_user_id")
+	@Field
 	protected int status; 
 
 	

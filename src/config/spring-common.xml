@@ -69,6 +69,7 @@
             <tx:method name="update*" propagation="REQUIRED" />
             <tx:method name="remove*" propagation="REQUIRED" />
             <tx:method name="del*" propagation="REQUIRED" />
+            <tx:method name="reduce*" propagation="REQUIRED" />
             <tx:method name="import*" propagation="REQUIRED" />
             
                <!-- 指定当前方法以非事务方式执行操作，如果当前存在事务，就把当前事务挂起，等我以非事务的状态运行完，再继续原来的事务。 

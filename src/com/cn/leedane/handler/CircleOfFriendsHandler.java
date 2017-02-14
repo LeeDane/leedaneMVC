@@ -100,7 +100,7 @@ public class CircleOfFriendsHandler {
 	private void deleteTimeLine(int toUserId, int createUserId, String tableName, int tableId){
 		String timeLineKey = getTimeLineKey(toUserId);
 		if(redisUtil.hasKey(timeLineKey)){
-			Set<String> set = redisUtil.getLimit(2, timeLineKey, 0, -1);
+			Set<String> set = redisUtil.getLimit(false, timeLineKey, 0, -1);
 			if(set !=null && set.size() >0){
 				if(set.contains(NO_TIME_LINE)){
 					set.remove(NO_TIME_LINE);
@@ -140,7 +140,7 @@ public class CircleOfFriendsHandler {
 		long count = 1;
 		String timeLineKey = getTimeLineKey(toUserId);
 		if(redisUtil.hasKey(timeLineKey)){
-			Set<String> set = redisUtil.getLimit(2, timeLineKey, 0, -1);
+			Set<String> set = redisUtil.getLimit(false, timeLineKey, 0, -1);
 			if(set !=null && set.size() >0){
 				if(set.contains(NO_TIME_LINE)){
 					set.remove(NO_TIME_LINE);
@@ -177,7 +177,7 @@ public class CircleOfFriendsHandler {
 		String timeLineKey = getTimeLineKey(toUserId);
 		Set<String> set;
 		if(redisUtil.hasKey(timeLineKey)){
-			set = redisUtil.getLimit(1, timeLineKey, start, end);
+			set = redisUtil.getLimit(true, timeLineKey, start, end);
 			if(set != null){
 				if(set.contains(NO_TIME_LINE)){
 					set.remove(NO_TIME_LINE);

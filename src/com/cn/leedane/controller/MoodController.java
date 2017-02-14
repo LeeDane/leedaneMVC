@@ -116,6 +116,7 @@ public class MoodController extends BaseController{
 			int status = JsonUtil.getIntValue(jsObject, "status", ConstantsUtil.STATUS_NORMAL);
 			
 			message.putAll(moodService.sendWord(jsObject, getUserFromMessage(message), status, request));
+			
 			printWriter(message, response, start);
 			return null;
 		} catch (Exception e) {

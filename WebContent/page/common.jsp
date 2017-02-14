@@ -116,7 +116,7 @@
 </head>
 <input type="hidden" value="<%=basePath%>" id="basePath"/>
 <% if(!noHeader){ %>
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="">
     <div class=" ">
     <div class="navbar-header">
         <span class="side-open glyphicon glyphicon-align-justify"></span>
@@ -158,7 +158,7 @@
         </ul>
         <form class="navbar-form navbar-left common-search" role="search">
         	<div class="input-group">
-                    <input type="text" id="common-search-text" class="form-control">
+                    <input type="text" id="common-search-text" class="form-control" onkeypress="if (event.keyCode == 13) searchCommon(this);">
                     <span class="input-group-btn">
                         <button class="btn btn-primary btn-default" type="button" onclick="searchCommon(this);">Go!</button>
                     </span>

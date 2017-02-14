@@ -73,7 +73,7 @@ function getInfo(bid){
 				if(typeof(keywords) != 'undefined' && keywords.length > 0){
 					$("#keywords").find("a").remove();
 					for(var i = 0; i < keywords.length; i++){
-						$("#keywords").append('<a href="https://www.baidu.com/baidu?word='+ keywords[i] +'&ie=utf-8&tn=98012088_2_dg&ch=9" target="_blank" class="marginRight">'+ keywords[i] +'</a>');
+						$("#keywords").append('<a href="'+ getBasePath() +'page/search.jsp?q='+ keywords[i] +'&t='+ Math.random() +'" target="_self" class="marginRight">'+ keywords[i] +'</a>');
 					}
 				}
 				var tag = blog.tag;

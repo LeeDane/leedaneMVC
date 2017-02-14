@@ -2,6 +2,8 @@ package com.cn.leedane.model;
 
 import java.util.Date;
 
+import org.apache.solr.client.solrj.beans.Field;
+
 import com.alibaba.fastjson.annotation.JSONField;
 import com.cn.leedane.mybatis.table.annotation.Column;
 
@@ -20,6 +22,7 @@ public abstract class RecordTimeBean extends StatusBean{
 	 * 创建时间
 	 */
 	@Column("create_time")
+	@Field
 	protected Date createTime;
 	
 	/**
@@ -29,6 +32,7 @@ public abstract class RecordTimeBean extends StatusBean{
 	private UserBean createUser;*/
 	
 	@Column("create_user_id")
+	@Field
 	protected int createUserId;
 	
 	/**

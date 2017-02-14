@@ -536,18 +536,18 @@ public class RedisUtil{
 	}
 	/**
 	 * 查询指定大小的数据
-	 * @param type 1表示从大到小，其他表示小到大
+	 * @param desc true从大到小，false表示小到大
 	 * @param key
 	 * @param start 闭区间，开始位置的索引
 	 * @param end  闭区间，结束位置的索引
 	 * @return
 	 */
-	public Set<String> getLimit(int type, String key, long start, long end){
+	public Set<String> getLimit(boolean desc, String key, long start, long end){
 		Set<String> set = new HashSet<String>();
 		Jedis jedis = getJedis();
 		try {
 			if(jedis != null){
-				if(type == 1)
+				if(desc)
 					set = jedis.zrevrange(key, start, end);
 				else
 					set = jedis.zrange(key, start, end);
@@ -625,6 +625,26 @@ public class RedisUtil{
 		try {
 			if(jedis != null){
 				jedis.flushAll();
+				result = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			RedisUtil.returnResource(jedis);
+		}
+		return result;
+	}
+	
+	/**
+	 * 设置键的失效时间
+	 * @return
+	 */
+	public boolean setex(String key, int seconds, String value){
+		boolean result = false;
+		Jedis jedis = getJedis();
+		try {
+			if(jedis != null){
+				jedis.setex(key, seconds, value);
 				result = true;
 			}
 		} catch (Exception e) {

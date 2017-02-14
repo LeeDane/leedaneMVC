@@ -122,7 +122,7 @@ public static MoodSolrHandler handler;
 	}
 	
 	@Override
-	protected boolean deleteBean(String id){
+	public boolean deleteBean(String id){
 		try {
 			server.deleteById(id);
 			//对索引进行优化
@@ -136,7 +136,7 @@ public static MoodSolrHandler handler;
 	}
 
 	@Override
-	protected boolean deleteBeans(List<String> ids){
+	public boolean deleteBeans(List<String> ids){
 		try {
 			server.deleteById(ids);
 			//对索引进行优化
@@ -147,5 +147,15 @@ public static MoodSolrHandler handler;
 			e.printStackTrace();
 		}  
 		return false;
+	}
+	
+	@Override
+	public boolean updateBean(MoodBean bean) {
+		return addBean(bean);
+	}
+
+	@Override
+	public boolean updateBeans(List<MoodBean> beans) {
+		return addBeans(beans);
 	}
 }

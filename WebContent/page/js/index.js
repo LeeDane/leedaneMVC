@@ -330,15 +330,6 @@ function showImg(index){
 	  });
 }
 
-//跳转到全文阅读
-function goToReadFull(id){
-	//layer.msg("文章ID为："+id);
-	if(isEmpty(id)){
-		layer.msg("该博客不存在，请联系管理员核实");
-		return;
-	}
-	window.open(getBasePath() +"page/detail.jsp?bid="+id, "_blank");
-}
 
 /**
  * 关注

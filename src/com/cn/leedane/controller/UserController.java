@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cn.leedane.cache.SystemCache;
 import com.cn.leedane.enums.LoginType;
 import com.cn.leedane.handler.WechatHandler;
+import com.cn.leedane.lucene.solr.UserSolrHandler;
 import com.cn.leedane.model.FriendBean;
 import com.cn.leedane.model.OperateLogBean;
 import com.cn.leedane.model.UserBean;
@@ -31,6 +32,7 @@ import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.EnumUtil.DataTableType;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.MD5Util;
+import com.cn.leedane.utils.OptionUtil;
 import com.cn.leedane.utils.SessionManagerUtil;
 import com.cn.leedane.utils.SpringUtil;
 import com.cn.leedane.utils.StringUtil;
@@ -53,9 +55,6 @@ public class UserController extends BaseController{
 	// 操作日志
 	@Autowired
 	protected OperateLogService<OperateLogBean> operateLogService;
-	
-	@Autowired
-	private SystemCache systemCache;
 	
 	/**
 	 * 登录
@@ -305,15 +304,8 @@ public class UserController extends BaseController{
 			user.setRegisterCode(StringUtil.produceRegisterCode(DateUtil.DateToString(registerTime, "YYYYMMDDHHmmss"),
 					JsonUtil.getStringValue(json, "account")));
 			message = userService.saveUser(user);
-			systemCache = (SystemCache) SpringUtil.getBean("systemCache");
-			String adminId = (String) systemCache.getCache("admin-id");
-			int aid = 1;
-			if(!StringUtil.isNull(adminId)){
-				aid = Integer.parseInt(adminId);
-			}
-			UserBean opearteUser = userService.findById(aid);
 			//保存操作日志
-			this.operateLogService.saveOperateLog(opearteUser, request, null, user.getAccount()+"注册成功", "register", 1, 0);
+			this.operateLogService.saveOperateLog(OptionUtil.adminUser, request, null, user.getAccount()+"注册成功", "register", 1, 0);
 			printWriter(message, response, start);
 			return null;
 		}catch(Exception e){
@@ -374,9 +366,12 @@ public class UserController extends BaseController{
 						user.getAccount());
 				user.setRegisterCode(newRegisterCode);
 				boolean isUpdate = userService.update(user);
-					if(isUpdate)
+					if(isUpdate){
 						//发送邮件
 						userService.sendEmail(user);
+						UserSolrHandler.getInstance().updateBean(user);
+					}
+						
 					message.put("isSuccess", true);
 					message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.邮件已发送成功.value));
 					message.put("responseCode", EnumUtil.ResponseCode.邮件已发送成功.value);
@@ -595,13 +590,7 @@ public class UserController extends BaseController{
 		String limit = request.getParameter("limit");
 		String sort = "";
 		sort = request.getParameter("sort");
-		String adminId = (String) systemCache.getCache("admin-id");
-		int aid = 1;
-		if(!StringUtil.isNull(adminId)){
-			aid = Integer.parseInt(adminId);
-		}
-		UserBean user = userService.findById(aid);
-		
+		UserBean user = OptionUtil.adminUser;
 		if(user == null){
 			message.put("isSuccess", false);
 			message.put("resmessage", EnumUtil.getResponseValue(EnumUtil.ResponseCode.请先登录.value));
@@ -858,6 +847,7 @@ public class UserController extends BaseController{
 					printWriter(message, response, start);
 					return null;
 				}else{
+					UserSolrHandler.getInstance().addBean(user);
 					message.put("userinfo", userHandler.getUserInfo(user, true));
 					message.put("isSuccess", true);
 					message.put("message", "登录成功，正在为您跳转...");
@@ -883,10 +873,8 @@ public class UserController extends BaseController{
 		Map<String, Object> message = new HashMap<String, Object>();
 		long start = System.currentTimeMillis();
 		try {
-			if(!checkParams(message, request)){
-				printWriter(message, response, start);
-				return null;
-			}
+			checkParams(message, request);
+			
 			message.putAll(userService.registerByPhoneNoValidate(getJsonFromMessage(message), request));
 			printWriter(message, response, start);
 			return null;
@@ -1016,6 +1004,7 @@ public class UserController extends BaseController{
 				
 				wechatHandler.addCache(FromUserName, cacheBean);
 				
+				UserSolrHandler.getInstance().updateBean(user);
 				message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.操作成功.value));
 				message.put("responseCode", EnumUtil.ResponseCode.操作成功.value);
 				message.put("isSuccess", true);

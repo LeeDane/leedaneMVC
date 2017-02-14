@@ -421,36 +421,6 @@ function editUserinfo(params){
 }
 
 /**
- * 展示图片的链接
- * @param index  当前心情的索引
- * @param imgIndex 当前心情图片的索引
- */
-function showImg(index, imgIndex){
-	var mood = moods[index];
-	var json = {
-			  "title": "相册标题", //相册标题
-			  "id": 0, //相册id
-			  "start": imgIndex //初始显示的图片序号，默认0
-			};
-	var datas = new Array();
-	var photos = mood.imgs.split(";");
-	for(var i = 0; i < photos.length; i++){
-		var each = {};
-		var path = photos[i];
-		each.src = path;//原图地址
-		each.alt = path;//缩略图地址
-		datas.push(each);
-	}
-	
-	json.data = datas;
-	
-	layer.photos({
-	    photos: json
-	    ,shift: 1 //0-6的选择，指定弹出图片动画类型，默认随机
-	  });
-}
-
-/**
  * 跳转到心情详细阅读
  * @param id
  */

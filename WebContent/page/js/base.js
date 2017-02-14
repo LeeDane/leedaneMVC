@@ -80,6 +80,35 @@ function showSingleImg(obj){
 	
 }
 
+/**
+ * 展示图片的链接
+ * @param index  当前心情的索引
+ * @param imgIndex 当前心情图片的索引
+ */
+function showImg(index, imgIndex){
+	var mood = moods[index];
+	var json = {
+			  "title": "相册标题", //相册标题
+			  "id": 0, //相册id
+			  "start": imgIndex //初始显示的图片序号，默认0
+			};
+	var datas = new Array();
+	var photos = mood.imgs.split(";");
+	for(var i = 0; i < photos.length; i++){
+		var each = {};
+		var path = photos[i];
+		each.src = path;//原图地址
+		each.alt = path;//缩略图地址
+		datas.push(each);
+	}
+	
+	json.data = datas;
+	
+	layer.photos({
+	    photos: json
+	    ,shift: 1 //0-6的选择，指定弹出图片动画类型，默认随机
+	  });
+}
 
 /**
  * 将form的serializeArray数组转化成json对象
@@ -107,6 +136,27 @@ function linkToMy(id){
 	}
 	window.open(getBasePath() +"page/my.jsp?uid="+id, "_self");
 }
+
+/**
+ * 跳转到搜索
+ */
+function linkToSearch(searchKey){
+	window.open(getBasePath() + 'page/search.jsp?q='+searchKey+'&t='+Math.random(), '_blank');
+}
+
+/**
+ * 跳转到全文阅读
+ * @param id
+ */
+function goToReadFull(id){
+	//layer.msg("文章ID为："+id);
+	if(isEmpty(id)){
+		layer.msg("该博客不存在，请联系管理员核实");
+		return;
+	}
+	window.open(getBasePath() +"page/detail.jsp?bid="+id, "_blank");
+}
+
 
 /**
  * 添加cookie

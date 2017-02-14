@@ -46,5 +46,5 @@ public interface ChatBgService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
-	public Map<String, Object> verifyChatBg(JSONObject jo, UserBean user, HttpServletRequest request);
+	public Map<String, Object> addChatBg(JSONObject jo, UserBean user, HttpServletRequest request);
 }

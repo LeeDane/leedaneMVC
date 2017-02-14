@@ -122,7 +122,7 @@ public class UserSolrHandler extends BaseSolrHandler<UserBean> {
 	 */
 	@Override
 	public QueryResponse query(SolrQuery query) throws SolrServerException{
-		System.out.println(query.toString());
+		System.out.println(query.toString()); 
 		/*HttpClient client = server.getHttpClient();
 		
 		// 实例化HTTP方法  
@@ -158,7 +158,7 @@ public class UserSolrHandler extends BaseSolrHandler<UserBean> {
 	}
 
 	@Override
-	protected boolean deleteBean(String id){
+	public boolean deleteBean(String id){
 		try {
 			server.deleteById(id);
 			//对索引进行优化
@@ -172,7 +172,7 @@ public class UserSolrHandler extends BaseSolrHandler<UserBean> {
 	}
 
 	@Override
-	protected boolean deleteBeans(List<String> ids){
+	public boolean deleteBeans(List<String> ids){
 		try {
 			server.deleteById(ids);
 			//对索引进行优化
@@ -185,5 +185,13 @@ public class UserSolrHandler extends BaseSolrHandler<UserBean> {
 		return false;
 	}
 	
-	
+	@Override
+	public boolean updateBean(UserBean bean) {
+		return addBean(bean);
+	}
+
+	@Override
+	public boolean updateBeans(List<UserBean> beans) {
+		return addBeans(beans);
+	}
 }

@@ -35,6 +35,7 @@ import com.cn.leedane.handler.NotificationHandler;
 import com.cn.leedane.handler.TransmitHandler;
 import com.cn.leedane.handler.UserHandler;
 import com.cn.leedane.handler.ZanHandler;
+import com.cn.leedane.lucene.solr.MoodSolrHandler;
 import com.cn.leedane.mapper.FilePathMapper;
 import com.cn.leedane.mapper.MoodMapper;
 import com.cn.leedane.model.BlogBean;
@@ -176,6 +177,8 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		        message.put("isSuccess", true);
 	        }
 	        
+	        MoodSolrHandler.getInstance().addBean(moodBean);
+	        
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 			message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
@@ -205,6 +208,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			message.put("responseCode", EnumUtil.ResponseCode.没有操作权限.value);
 			return message;
 		}
+		oldMoodBean.setStatus(status);
 		try {
 			//moodMapper.executeSQL("update "+DataTableType.心情.value+" set status = ? where id = ? ", status, mid);
 			result = moodMapper.updateSql(EnumUtil.getBeanClass(EnumUtil.getTableCNName(DataTableType.心情.value)), " set status = ? where id = ? ", status, mid) > 0;
@@ -220,6 +224,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		}
 		if(result){
 			message.put("isSuccess", result);
+			MoodSolrHandler.getInstance().updateBean(oldMoodBean);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
 			message.put("responseCode", EnumUtil.ResponseCode.服务器处理异常.value);
@@ -271,6 +276,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			moodHandler.delete(mid, DataTableType.心情.value, tableUuid);
 			//同时删除朋友圈的数据
 			circleOfFriendsHandler.deleteMyAndFansTimeLine(user, EnumUtil.DataTableType.心情.value, mid);
+			MoodSolrHandler.getInstance().deleteBean(String.valueOf(mid));
 			message.put("isSuccess", result);
 		}else{
 			message.put("message", EnumUtil.getResponseValue(EnumUtil.ResponseCode.服务器处理异常.value));
@@ -413,6 +419,7 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 
         if(result){
 			message.put("isSuccess", result);
+			MoodSolrHandler.getInstance().addBean(moodBean);
 			//通过观察者的模式发送消息通知
 			/*Watched watched = new ConcreteWatched();       
 	        Watcher watcher = new ConcreteWatcher();
@@ -536,6 +543,8 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 		
 		boolean result = moodMapper.save(moodBean) > 0;
 		if(result){
+			MoodSolrHandler.getInstance().addBean(moodBean);
+			
 			/*//通过观察者的模式发送消息通知
 			Watched watched = new ConcreteWatched();       
 	        Watcher watcher = new ConcreteWatcher();
@@ -653,6 +662,8 @@ public class MoodServiceImpl implements MoodService<MoodBean> {
 			
 			result = moodMapper.save(moodBean) > 0;
 			if(result){
+				MoodSolrHandler.getInstance().addBean(moodBean);
+				
 				TimeLineBean timeLineBean = new TimeLineBean();
 				timeLineBean.setContent(moodBean.getContent());
 				timeLineBean.setCreateTime(DateUtil.DateToString(new Date()));
