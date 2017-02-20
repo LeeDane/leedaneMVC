@@ -11,8 +11,9 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.SortingParams;
 
-import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.redis.config.RedisConfig;
+import com.cn.leedane.utils.JsonUtil;
+import com.cn.leedane.utils.StringUtil;
 
 /**
  * redis的操作类
@@ -614,6 +615,52 @@ public class RedisUtil{
 	
 	
 	/********************************* 公共*****************************/
+	
+	/**
+	 * 获取所有的key
+	 * @param pattern 为空将获取*
+	 * @return
+	 */
+	public Set<String> keys(String pattern){
+		Set<String> keys = new HashSet<String>();
+		Jedis jedis = getJedis();
+		try {
+			if(jedis != null){
+				if(StringUtil.isNull(pattern))
+					pattern = "*";
+				keys = jedis.keys(pattern);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			RedisUtil.returnResource(jedis);
+		}
+		return keys;
+	}
+	
+	/**
+	 * 过期键值
+	 * @param key
+	 * @param value
+	 * @param seconds
+	 * @return
+	 */
+	public boolean expire(String key, String value, int seconds){
+		boolean result = false;
+		Jedis jedis = getJedis();
+		try {
+			if(jedis != null){
+				jedis.set(key, StringUtil.isNull(value) ? "0000": value);
+				jedis.expire(key, seconds);
+				result = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			RedisUtil.returnResource(jedis);
+		}
+		return result;
+	}
 
 	/**
 	 * 清除所有的缓存

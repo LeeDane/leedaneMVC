@@ -3,6 +3,7 @@
 <%@page import="com.cn.leedane.model.UserBean"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
+<%@page import="java.util.UUID"%>
 <%@page import="com.cn.leedane.controller.UserController"%>
 <%
 	Object o = session.getAttribute(UserController.USER_INFO_KEY);
@@ -24,6 +25,8 @@
 	if(StringUtil.isNotNull(noHeaderStr)){
 		noHeader = StringUtil.changeObjectToBoolean(noHeaderStr);
 	}
+	
+	String loginUrl = basePath +"page/login.jsp?ref="+CommonUtil.getFullPath(request)+"&t="+UUID.randomUUID().toString();
 %>
 <!DOCTYPE html>
 <html>
@@ -239,6 +242,17 @@
 			height = window.innerHeight;
 		
 		$(".left-sider-bg").height(height);
+	}
+	
+	/**
+	*	统一去登录操作函数
+	*/
+	function goToLogin(url){
+		if(isEmpty(url)){
+			window.open('<%=loginUrl %>', "_self");
+		}else{
+			window.open(url, "_self");
+		}
 	}
 	
 	/**

@@ -78,6 +78,9 @@
 			<property name="userHandler" ref="userHandler"></property>
 	</bean>
 	
+	<bean id="chatSquareHandler" class="com.cn.leedane.handler.ChatSquareHandler">
+	</bean>
+	
 	<!-- <bean id="myEhcache" class="com.cn.leedane.Utils.MyEhcache">
      	<property name="cache" ref="cache"></property>
      </bean> -->

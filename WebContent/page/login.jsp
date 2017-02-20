@@ -75,6 +75,19 @@
 		.form-signin .checkbox {
 		  margin-bottom: 10px;
 		}
+		
+		.form-signin-heading-small{
+			font-size: 18px !important;
+			cursor: pointer;
+			color: blue;
+		}
+		
+		.form-signin-heading-small:hover{
+			font-size: 18px !important;
+			cursor: pointer;
+			color: red;
+		}
+		
 		.form-signin .checkbox {
 		  font-weight: normal;
 		}
@@ -115,9 +128,9 @@
   
 
   <body onload="init();">
-    <div class="container">
+    <div class="container" id="login-container">
 	      <form class="form-signin" role="form">
-	        <h2 class="form-signin-heading">登录</h2>
+	        <h2 class="form-signin-heading">登录<span class="form-signin-heading-small">注册</span></h2>
 	        <div id="errorMessage">
 		    <% if(StringUtil.isNotNull(errorMessage)){ %>
 		        <div class="alert alert-warning alert-dismissible" role="alert">
@@ -126,7 +139,7 @@
 				</div>
 			<%} %>
 			</div>
-	        <input type="text" id="account" class="form-control" placeholder="Email address" autofocus>
+	        <input type="text" id="account" class="form-control" placeholder="account" autofocus>
 	        <input type="password" id="password" class="form-control" style="margin-top: 10px;" placeholder="Password" data-placement="bottom">
 	        <div class="checkbox">
 	          <label>
@@ -134,10 +147,23 @@
 	          </label>
 	        </div>
 	        <button type="button" class="btn btn-info" id="show-login-qr-code-btn">二维码登录</button>
-	        <button class="btn btn-lg btn-primary btn-block login-btn" type="button">Sign in</button>
+	        <button class="btn btn-lg btn-primary btn-block login-btn" type="button" onclick="doLogin();">Sign in</button>
 	      </form>
 
     </div> <!-- /container -->
+    
+    <div class="container" id="register-container" style="display: none;">
+	      <form class="form-signin" role="form">
+	        <h2 class="form-signin-heading">注册<span class="form-signin-heading-small">登录</span></h2>
+	        <div id="registerErrorMessage">
+			</div>
+	        <input type="text" id="rg-account" class="form-control" placeholder="account" autofocus>
+	        <input type="password" id="rg-password" class="form-control" style="margin-top: 10px;" placeholder="Password" data-placement="bottom">
+	        <input type="password" id="rg-confirmPassword" class="form-control" style="margin-top: 10px;" placeholder="ConfirmPassord" data-placement="bottom">
+	        <input type="number" id="rg-phone" class="form-control" placeholder="phone">
+	        <button class="btn btn-lg btn-primary btn-block" type="button" onclick="doRegister();">Sign up</button>
+	      </form>
+    </div>
     
     <!-- 模态框发布心情列表 -->
 <div class="modal fade" id="load-qr-code" tabindex="-1" role="dialog" aria-labelledby="LoadQrCodeModalLabel" aria-hidden="true">
@@ -172,14 +198,21 @@
   </body>
   <script type="text/javascript">
   var connId = ""; //当前页面的连接ID
-  $(function () {	  
-      $(".login-btn").on("click", function(){
-    	  doLogin();
-      });
-      
+  $(function () {
       $("#show-login-qr-code-btn").on("click", function(){
     	  loadQRCode();
     	  $("#load-qr-code").modal("show");
+      });
+      
+      $(".form-signin-heading-small").on("click", function(){
+    	  var tx = $(this).text();
+    	  if(tx == "登录"){
+    		  $("#login-container").show();
+    		  $("#register-container").hide();
+    	  }else{
+    		  $("#register-container").show();
+    		  $("#login-container").hide();
+    	  }
       });
       
   });
@@ -217,6 +250,71 @@
 									  '<strong>警告!</strong>'+ data.message +
 									'</div>';
 					$("#errorMessage").html(errorHtml);
+				}
+			},
+			error : function() {
+				layer.close(loadi);
+				layer.msg("网络请求失败");
+			}
+		});
+  }
+  
+  function doRegister(){
+	  var account = $("#rg-account").val();
+	  if(isEmpty(account)){
+		  layer.msg("请输入账号");
+		  $("#rg-account").focus();
+		  return;
+	  }
+	  
+	  var password = $("#rg-password").val();
+	  if(isEmpty(password)){
+		  layer.msg("请输入密码");
+		  $("#rg-password").focus();
+		  return;
+	  }
+	  
+	  var confirmPassword = $("#rg-confirmPassword").val();
+	  if(isEmpty(confirmPassword)){
+		  layer.msg("请输入确认密码");
+		  $("#rg-confirmPassword").focus();
+		  return;
+	  }
+	  
+	  if(password != confirmPassword){
+		  layer.msg("两次输入的密码不匹配");
+		  $("#rg-confirmPassword").focus();
+		  return;
+	  }
+	  
+	  var mobilePhone = $("#rg-phone").val();
+	  if(isEmpty(mobilePhone) || mobilePhone.length != 11){
+		  layer.msg("请输入正确的手机号码");
+		  $("#rg-phone").focus();
+		  return;
+	  }
+	  
+	  var params = {mobilePhone: mobilePhone, account: account, confirmPassword: $.md5(confirmPassword), password: $.md5(password), t: Math.random()};
+	  var loadi = layer.load('努力加载中…'); //需关闭加载层时，执行layer.close(loadi)即可
+	  $.ajax({
+			type : "post",
+			data : params,
+			url : "<%=basePath %>leedane/user/registerByPhoneNoValidate.action",
+			dataType: 'json',
+			withCredentials:true,
+			beforeSend:function(request){
+			},
+			success : function(data) {
+				layer.close(loadi);
+				if(data.isSuccess){
+					layer.msg(data.message);
+					window.location.href="<%= ref%>";
+				}else{
+					var errorHtml ='<div class="alert alert-warning alert-dismissible" role="alert">'+
+									  '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>'+
+									  '<strong>警告!</strong>'+ data.message +
+									'</div>';
+					$("#registerErrorMessage").html(errorHtml);
 				}
 			},
 			error : function() {
