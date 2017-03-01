@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.sf.json.JSONObject;
@@ -27,6 +28,8 @@ public interface FinancialTwoCategoryService<T extends IDBean>{
 	 * @param userId
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<FinancialTwoLevelCategoryBean> getAllDefault(int userId);
 	
 	/**
@@ -34,6 +37,8 @@ public interface FinancialTwoCategoryService<T extends IDBean>{
 	 * @param userId
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getAll(JSONObject json, UserBean user, HttpServletRequest request);
 
 	/**
@@ -50,5 +55,7 @@ public interface FinancialTwoCategoryService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getOneAndTwoCategorys(JSONObject json, UserBean user, HttpServletRequest request);
 }

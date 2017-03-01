@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.sf.json.JSONObject;
@@ -27,12 +28,16 @@ public interface AppVersionService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getNewest(JSONObject jo, UserBean user, HttpServletRequest request);
 	
 	/**
 	 * 获取数据库中上传的最新版本
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> getNewestVersion();
 
 	/**
@@ -42,5 +47,7 @@ public interface AppVersionService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> paging(JSONObject json, UserBean user, HttpServletRequest request);	
 }

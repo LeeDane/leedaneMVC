@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.sf.json.JSONObject;
@@ -44,25 +45,42 @@ public interface BlogService <T extends IDBean>{
 	 * @param conditions 条件的字符串
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> searchBlog(String conditions);
 	
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String,Object> getIndexBlog(int start,int end,String showType);
+	
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<BlogBean> managerAllBlog();	
 	/**
 	 * 获得全部的博客总数
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getTotalNum();
 	
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getZanNum(int Bid);//获得赞的总数
 	
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getCommentNum(int Bid);//获得评论的总数
 	
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getSearchBlogTotalNum(String conditions,String conditionsType);  //按照条件和条件的类型搜索符合条件的博客的数量
 	//public List<BlogBean> SearchBlog(int start,int end ,String conditions,String conditionsType); //按照条件和条件的类型分页搜索符合条件的博客
 	
-	
 	public void addReadNum(BlogBean blog);//此处不必有返回值
+	
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getReadNum(int Bid);//根据博客Id获得该博客的阅读次数
 	
 	/**
@@ -70,6 +88,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param start,@param end
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<BlogBean> getLatestBlog(int start , int end);
 	
 	/**
@@ -78,6 +98,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param num  需要获取的博客条数
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> getLatestBlogById(int lastBlogId,int num);
 	
 	/**
@@ -85,6 +107,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param size 条数
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> getHotestBlogs(int size);
 	
 	/**
@@ -92,6 +116,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param size  条数,默认是5条
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> getNewestBlogs(int size);
 	
 	/**
@@ -99,6 +125,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param size  条数,默认是5条
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> getRecommendBlogs(int size);
 	
 	/**
@@ -126,6 +154,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> search(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	/**
@@ -135,6 +165,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> shakeSearch(JSONObject jo, UserBean user, HttpServletRequest request);
 	/**
 	 * 添加标签
@@ -151,6 +183,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param params
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<BlogBean> getBlogBeans(String sql, Object ...params);
 
 	/**
@@ -160,6 +194,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getInfo(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	/**
@@ -169,6 +205,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> draftList(JSONObject json, UserBean user, HttpServletRequest request);
 
 	/**
@@ -187,6 +225,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> noCheckPaging(JSONObject json, UserBean user,HttpServletRequest request);
 
 	/**
@@ -205,6 +245,8 @@ public interface BlogService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getOneBlog(JSONObject jo, UserBean user, HttpServletRequest request);
 
 }

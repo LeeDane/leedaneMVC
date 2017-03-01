@@ -68,7 +68,7 @@ public class FinancialServiceImpl implements FinancialService<FinancialBean>{
 			if(checkExists(imei, financialBean.getLocalId(), financialBean.getAdditionTime())){
 				message.put("message", "您已添加过该记账记录，请勿重复操作！");
 				message.put("responseCode", EnumUtil.ResponseCode.添加的记录已经存在.value);
-				message.put("isSuccess", false);
+				message.put("isSuccess", true);
 				return message;
 			}
 			result = financialMapper.save(financialBean) > 0;

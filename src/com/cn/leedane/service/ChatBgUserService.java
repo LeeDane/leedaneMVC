@@ -1,5 +1,6 @@
 package com.cn.leedane.service;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cn.leedane.model.IDBean;
@@ -19,5 +20,7 @@ public interface ChatBgUserService <T extends IDBean>{
 	 * @param chatBgTableId
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public boolean exists(int userId, int chatBgTableId);
 }

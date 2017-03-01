@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cn.leedane.model.IDBean;
@@ -50,6 +51,8 @@ public interface UploadService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> getOneUpload(String tableUuid, String tableName, int order, UserBean user,
 			HttpServletRequest request);
 }
