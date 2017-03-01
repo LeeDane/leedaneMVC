@@ -31,3 +31,5 @@
 /blog/getOneBlog.action
 /comment/paging.action
 /search/get.action
+/api/users
+/api/users.action

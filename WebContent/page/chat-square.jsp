@@ -119,7 +119,7 @@
 				<div>系统当前时间为：2017-12-12 11：10：10</div>
 				<div class="panel panel-default">
 					<div class="panel-body" id="content">
-						<div class="row chat-list-row">
+						<!-- <div class="row chat-list-row">
 					   		<div class="col-lg-2" style="text-align: center;margin-top: 10px;">
 								<img width="60" height="60" class="img-circle hand" alt="" src=""  onclick="showSingleImg(this);"/>
 							</div>
@@ -138,7 +138,7 @@
 								<img width="60" height="60" class="img-circle hand" alt="" src=""  onclick="showSingleImg(this);"/>
 							</div>
 						</div>
-						<!-- <div class="row chat-list-row">
+						<div class="row chat-list-row">
 					   		<div class="col-lg-2" style="text-align: center;margin-top: 10px;">
 								<img width="60" height="60" class="img-circle hand" alt="" src=""  onclick="showSingleImg(this);"/>
 							</div>

@@ -45,7 +45,9 @@
 	</bean>
 	
 	
-	
+	<!-- 这个最好设置成singleton，所以在启动容器的时候，最好启动一个，启动新的容器之前最好把以前
+		的关闭了，不然会报org.apache.lucene.store.LockObtainFailedException: Lock obtain timed out: NativeFSLock
+		错 -->
 	<bean id="indexWriter" class="org.apache.lucene.index.IndexWriter" scope="singleton">
 		<constructor-arg name="d" ref="directory"/>
 		<constructor-arg name="conf" ref="indexWriterConfig"/>

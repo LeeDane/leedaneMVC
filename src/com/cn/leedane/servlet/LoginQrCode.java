@@ -10,13 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.comet4j.core.CometContext;
-import org.comet4j.core.CometEngine;
-
 import net.sf.json.JSONObject;
 
 import com.cn.leedane.comet4j.AppStore;
-import com.cn.leedane.comet4j.Comet4jServer;
 import com.cn.leedane.handler.ZXingCodeHandler;
 import com.cn.leedane.utils.EnumUtil;
 import com.cn.leedane.utils.StringUtil;
@@ -47,7 +43,7 @@ public class LoginQrCode extends HttpServlet{
 
 	
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	        
+		
 		String cid = request.getParameter("cid");//连接ID，必须 
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("isSuccess", false);
