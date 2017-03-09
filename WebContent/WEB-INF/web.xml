@@ -7,6 +7,7 @@
 	<welcome-file-list>
 		<welcome-file>index</welcome-file>
 	</welcome-file-list>
+	<!-- 优先级是content-param > listener > filter > servlet -->
 	
 	<!-- comet4j配置 -->
 	<listener>  
@@ -49,7 +50,7 @@
              <servlet-name>destroyedComet4jServlet</servlet-name>  
              <url-pattern>/destroyedComet4jServlet</url-pattern>  
     </servlet-mapping>
-
+	
 	<!-- 设置Spring容器加载所有的配置文件的路径 -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
@@ -79,7 +80,7 @@
 		<servlet-name>springMVC</servlet-name>
 		<!-- 此处可以可以配置成*.do，对应struts的后缀习惯 -->
 		<!-- <url-pattern>/</url-pattern> -->
-		<url-pattern>*.action</url-pattern>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>springMVC</servlet-name>

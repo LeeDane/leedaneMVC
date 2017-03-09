@@ -3,6 +3,7 @@ package com.cn.leedane.utils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * spring相关工具类
@@ -15,6 +16,9 @@ public class SpringUtil implements ApplicationContextAware {
 	private static ApplicationContext applicationContext;
 
 	public static Object getBean(String beanName) {	
+		if(applicationContext == null)
+			//对main方法使用的时候加载所有的spring配置文件
+			applicationContext = new ClassPathXmlApplicationContext("classpath*:config/spring-*.xml");
 		return applicationContext.getBean(beanName);
 	}
 

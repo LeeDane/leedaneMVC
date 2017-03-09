@@ -247,12 +247,12 @@ function buildMoodRow(index, mood, ifFlagNew, flagMonth){
 							html += '<span class="label '+ (mood.can_comment? 'label-default' : 'label-success') +'">'+ (mood.can_comment? '可以评论':'禁止评论') +'</span>'+
 							'<span class="label '+ (mood.can_transmit? 'label-default' : 'label-success') +'">'+ (mood.can_transmit? '可以转发':'禁止转发') +'</span>'+
 						'</div>'+
-					    '<div class="list-group-item-text">'+ changeNotNullString(mood.content) +
+					    '<div class="list-group-item-text" style="margin-top: 5px;">'+ changeNotNullString(mood.content) +
 					    '</div>';
 				if(isNotEmpty(mood.location)){
 					html += '<p class="location">位置：'+ changeNotNullString(mood.location) +'</p>';
 				}
-					html += '<div class="row">';
+					html += '<div class="row" style="margin-top: 5px;">';
 				if(isNotEmpty(mood.imgs)){
 					var imgs = mood.imgs.split(";");
 					for(var i = 0; i < imgs.length; i++){

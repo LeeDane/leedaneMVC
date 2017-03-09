@@ -250,3 +250,19 @@ function getURLParam(url, sProp) {
 	}
 	return a[1];
 }
+
+/**
+ * 获取随机整数(不包括0，包括number)
+ * @param number
+ */
+function getRandomNumber(number){
+	return Math.ceil(Math.random() * number);
+}
+
+/**
+ * 获取随机整数(包括0，不包括number)
+ * @param number
+ */
+function getRandomNumber1(number){
+	return Math.floor(Math.random() * number);
+}

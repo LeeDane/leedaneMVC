@@ -95,16 +95,27 @@ public class LoginInterceptor implements HandlerInterceptor{
 		String maintenanceOrigin = systemCache.getCache("maintenance-period") == null ? null : (String)systemCache.getCache("maintenance-period");
 		if(!StringUtil.isNull(maintenanceOrigin)){
 			String maintenance = maintenanceOrigin.replaceAll("AM", "").replaceAll("PM", "");
-			String[] dates = maintenance.split("-");
-			int begin = 0, end = 0;
-			if(dates.length ==2){
-				begin = Integer.parseInt(dates[0]);
-				end = Integer.parseInt(dates[1]);
-	
+			if(StringUtil.isNotNull(maintenance)){
+				String[] dates = maintenance.split("-");
+				//获取当前的小时
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
 				int hour = c.get(Calendar.HOUR_OF_DAY);
-				if(begin <= hour || end >= hour){//在系统维护的时间内
+				
+				boolean isMaintain = false; //是否维护
+				if(dates.length ==2){
+					int begin = StringUtil.changeObjectToInt((dates[0]));
+					int end = StringUtil.changeObjectToInt((dates[1]));
+					
+					if(begin <= hour && hour <= end){//在系统维护的时间内
+						isMaintain = true;
+					}
+				}else{
+					if(StringUtil.changeObjectToInt(maintenance) == hour){//在系统维护的时间内
+						isMaintain = true;
+					}
+				}
+				if(isMaintain){
 					message.put("isSuccess", false);
 					message.put("message", "抱歉，每天"+maintenanceOrigin+"是系统维护时间");
 					message.put("isAccount", true);
@@ -112,7 +123,6 @@ public class LoginInterceptor implements HandlerInterceptor{
 					return LoginInterceptor.MUST_FILTER;
 				}
 			}
-			
 		}
 		
 		//先判断session中是否有该用户的信息
@@ -124,7 +134,7 @@ public class LoginInterceptor implements HandlerInterceptor{
 		
 		//session中缓存的用户
 		if(user != null){
-			return LoginInterceptor.NO_FILTER;
+			return NO_FILTER;
 		}else{
 			//该链接是过滤掉的链接
 			String actionPath = request.getRequestURI();

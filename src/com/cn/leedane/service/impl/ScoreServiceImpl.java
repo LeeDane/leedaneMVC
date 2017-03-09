@@ -44,7 +44,7 @@ public class ScoreServiceImpl implements ScoreService<ScoreBean>{
 
 	@Override
 	public int getTotalScore(int userId) {
-		return SqlUtil.getTotalByList(scoreMapper.getTotalByUser(DataTableType.积分.value, userId));
+		return SqlUtil.getTotalByList(scoreMapper.executeSQL("select sum(t.score) ct from t_score t where create_user_id=?", userId));
 	}
 
 	@Override
@@ -117,8 +117,9 @@ public class ScoreServiceImpl implements ScoreService<ScoreBean>{
 		logger.info("ScoreServiceImpl-->reduceScore():user=" +user.getAccount()); 		
 		
 		Map<String, Object> message = new HashMap<String, Object>();
+		int sc = getTotalScore(user.getId());
 		ScoreBean scoreBean = new ScoreBean();
-		scoreBean.setTotalScore(getTotalScore(user.getId()) - reduceScore);
+		scoreBean.setTotalScore(sc - reduceScore);
 		scoreBean.setScore(-reduceScore);
 		scoreBean.setCreateTime(new Date());
 		scoreBean.setCreateUserId(user.getId());

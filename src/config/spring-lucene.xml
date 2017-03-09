@@ -17,7 +17,6 @@
 
     <context:component-scan base-package="com.cn.leedane.lucene"/>
    <util:constant id="LUCENE_VERSION" static-field="org.apache.lucene.util.Version.LUCENE_4_10_2"/>
-
 	<!-- set your lucene dirctory -->
 	<!-- use the SimpleFSLockFactory,数据文件存放位置设置 -->
 	<bean id="directory" class="org.apache.lucene.store.SimpleFSDirectory">
@@ -46,7 +45,9 @@
 	</bean>
 	
 	
-	
+	<!-- 这个最好设置成singleton，所以在启动容器的时候，最好启动一个，启动新的容器之前最好把以前
+		的关闭了，不然会报org.apache.lucene.store.LockObtainFailedException: Lock obtain timed out: NativeFSLock
+		错 -->
 	<bean id="indexWriter" class="org.apache.lucene.index.IndexWriter" scope="singleton">
 		<constructor-arg name="d" ref="directory"/>
 		<constructor-arg name="conf" ref="indexWriterConfig"/>

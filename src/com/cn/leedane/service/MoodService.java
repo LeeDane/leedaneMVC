@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cn.leedane.model.IDBean;
@@ -77,6 +78,8 @@ public interface MoodService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getMoodByLimit(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	
@@ -108,6 +111,8 @@ public interface MoodService <T extends IDBean>{
 	 * @return
 	 * @throws Exception
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getCountByUser(JSONObject jo, UserBean user, HttpServletRequest request);
 	
 	/**
@@ -120,6 +125,8 @@ public interface MoodService <T extends IDBean>{
 	 * @return
 	 * @throws Exception
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> detail(JSONObject jo, UserBean user,
 			HttpServletRequest request, String picSize) ;
 	/**
@@ -131,6 +138,8 @@ public interface MoodService <T extends IDBean>{
 	 * @return
 	 * @throws Exception
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> detailImgs(JSONObject jo, UserBean user,
 			HttpServletRequest request) ;
 
@@ -141,6 +150,8 @@ public interface MoodService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> search(JSONObject jo, UserBean user, HttpServletRequest request);
 	
 	
@@ -151,6 +162,8 @@ public interface MoodService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> shakeSearch(JSONObject jo, UserBean user, HttpServletRequest request);
 	/**
 	 * 执行SQL对应字段的List<Map<String,Object>
@@ -167,6 +180,8 @@ public interface MoodService <T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getTopicByLimit(JSONObject jo, UserBean user,HttpServletRequest request);
 
 	/**
@@ -175,5 +190,7 @@ public interface MoodService <T extends IDBean>{
 	 * @param params
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<MoodBean> getMoodBeans(String sql, Object ...params);
 }

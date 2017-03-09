@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -33,6 +34,8 @@ public interface ChatSquareService<ChatSquareBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getActiveUser(Date date, int top) ;
 
 
@@ -43,5 +46,7 @@ public interface ChatSquareService<ChatSquareBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getLimit(JSONObject jo, HttpServletRequest request);
 }

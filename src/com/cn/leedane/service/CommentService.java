@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.sf.json.JSONObject;
@@ -25,6 +26,8 @@ public interface CommentService<T extends IDBean>{
 	 * @param userId
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getTotalComments(int userId);
 	
 	/**
@@ -56,6 +59,8 @@ public interface CommentService<T extends IDBean>{
 	 * @return
 	 * @throws Exception
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> getCommentsByLimit(JSONObject jo, UserBean user, HttpServletRequest request) throws Exception;
 	
 	/**
@@ -68,6 +73,8 @@ public interface CommentService<T extends IDBean>{
 	 * @return
 	 * @throws Exception
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> getOneCommentItemsByLimit(JSONObject jo, UserBean user, HttpServletRequest request) throws Exception;
 
 	/**
@@ -79,6 +86,8 @@ public interface CommentService<T extends IDBean>{
 	 * @return
 	 * @throws Exception
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getCountByObject(JSONObject jo, UserBean user,
 			HttpServletRequest request) throws Exception;
 
@@ -90,6 +99,8 @@ public interface CommentService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getCountByUser(JSONObject jo, UserBean user,
 			HttpServletRequest request) throws Exception;
 
@@ -126,5 +137,7 @@ public interface CommentService<T extends IDBean>{
 	 * @param where where后面语句，参数需直接填写在字符串中
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getTotal(String tableName, String where);
 }

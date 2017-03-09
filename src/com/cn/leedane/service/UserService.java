@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.sf.json.JSONObject;
@@ -71,6 +72,8 @@ public interface UserService<T extends IDBean>{
 	 * @param password  用户的密码(密码将再次进行MD5加密)
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public UserBean loginUser(String condition , String password);
 	
 	/**
@@ -79,6 +82,8 @@ public interface UserService<T extends IDBean>{
 	 * @param password  用户的密码(密码不再进行MD5加密)
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public UserBean loginUserNoComputePSW(String condition , String password);
 	
 	
@@ -126,6 +131,8 @@ public interface UserService<T extends IDBean>{
 	 * @param value  对应type，分别是邮箱或者手机号码
 	 * @param findPswCode  找密码凭证
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void findPassword(String account,String type,String value,String findPswCode);
 	
 	/**
@@ -134,6 +141,8 @@ public interface UserService<T extends IDBean>{
 	 * @param params  多个参数，请注意顺序
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String,Object>> find4MoreUser(String conditions,Object ...params);
 	
 	/**
@@ -143,42 +152,56 @@ public interface UserService<T extends IDBean>{
 	 * @param where where控制语句，需要些where，有参数就直接写参数，不用以问号代替
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int total(String tableName, String field, String where);
 	
 	/**
 	 * 统计所有用户的年龄
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> statisticsUserAge();
 	
 	/**
 	 * 统计所有用户的年龄段
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> statisticsUserAgeRang();
 
 	/**
 	 * 统计所有用户的注册时间的年份
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> statisticsUserRegisterByYear();
 	
 	/**
 	 * 统计所有用户的注册时间的月份
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> statisticsUserRegisterByMonth();
 	
 	/**
 	 * 统计所有用户的最近一周的注册人数
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> statisticsUserRegisterByNearWeek();
 		
 	/**
 	 * 统计所有用户的最近一个月的注册人数
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> statisticsUserRegisterByNearMonth();
 	
 	/**
@@ -187,6 +210,8 @@ public interface UserService<T extends IDBean>{
 	 * @param noLoginCode
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public UserBean getUserByNoLoginCode(String account, String noLoginCode);
 
 	/**
@@ -197,6 +222,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public String getHeadBase64StrById(JSONObject jo, UserBean user,
 			HttpServletRequest request) throws Exception;
 	
@@ -208,6 +235,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public String getHeadFilePathStrById(JSONObject jo, UserBean user,
 			HttpServletRequest request) throws Exception;
 	/**
@@ -229,6 +258,8 @@ public interface UserService<T extends IDBean>{
 	 * @param user
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String,Object> checkAccount(JSONObject jo, HttpServletRequest request,
 			UserBean user);
 	
@@ -240,6 +271,8 @@ public interface UserService<T extends IDBean>{
 	 * @param user
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public boolean checkMobilePhone(JSONObject jo, HttpServletRequest request,
 			UserBean user);
 	
@@ -251,6 +284,8 @@ public interface UserService<T extends IDBean>{
 	 * @param user
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public boolean checkEmail(JSONObject jo, HttpServletRequest request,
 			UserBean user);
 
@@ -271,6 +306,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public UserBean loginByPhone(JSONObject jo, HttpServletRequest request);
 	/**
 	 * 获取手机注册的验证码
@@ -279,6 +316,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return 
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getPhoneRegisterCode(JSONObject jo,
 			HttpServletRequest request);
 	
@@ -289,6 +328,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return 
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getPhoneLoginCode(JSONObject jo,
 			HttpServletRequest request);
 	
@@ -304,6 +345,8 @@ public interface UserService<T extends IDBean>{
 	 * @param FromUserName
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public UserBean loginByWeChat(String FromUserName);
 
 	/**
@@ -317,6 +360,8 @@ public interface UserService<T extends IDBean>{
 	 * 获得系统全部的用户ID
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> getAllUserId();
 	
 	/**
@@ -324,6 +369,8 @@ public interface UserService<T extends IDBean>{
 	 * @param username
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public int getUserIdByName(String username);
 
 	/**
@@ -333,6 +380,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> getUserInfoData(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	/**
@@ -350,6 +399,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> search(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	/**
@@ -359,6 +410,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> webSearch(JSONObject jo, UserBean user, HttpServletRequest request);
 	
 	/**
@@ -368,6 +421,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> shakeSearch(JSONObject jo, UserBean user, HttpServletRequest request);
 
 	
@@ -412,6 +467,8 @@ public interface UserService<T extends IDBean>{
 	 * @param fromUserName
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public UserBean findUserBeanByWeixinName(String fromUserName);
 
 	/**
@@ -421,6 +478,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> searchUserByUserIdOrAccount(JSONObject jo, UserBean user, HttpServletRequest request);
 	
 	/**
@@ -428,6 +487,8 @@ public interface UserService<T extends IDBean>{
 	 * @param status
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<UserBean> getAllUsers(int status);
 
 	/**
@@ -437,6 +498,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> scanLogin(JSONObject json, UserBean user, HttpServletRequest request);
 	
 	/**
@@ -446,6 +509,8 @@ public interface UserService<T extends IDBean>{
 	 * @param request
 	 * @return
 	 */
+	//标记该方法不需要事务
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Map<String, Object> cancelScanLogin(JSONObject json, UserBean user, HttpServletRequest request);
 
 	/**
