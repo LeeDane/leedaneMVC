@@ -33,7 +33,7 @@ public class FilterUtil {
 		}
 		
 		//过滤掉emoji
-		content = EmojiUtil.filterEmoji(content);
+		//content = EmojiUtil.filterEmoji(content);
 		return false;
 	}
 }

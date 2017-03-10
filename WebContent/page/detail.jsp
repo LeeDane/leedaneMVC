@@ -99,7 +99,10 @@
 <body>
 <%@ include file="/page/common.jsp" %>
 <script src="<%=basePath %>page/js/detail.js"></script>
-
+<!-- <link href="http://cdn.staticfile.org/emoji/0.2.2/emoji.css" rel="stylesheet" type="text/css" />
+<script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/emoji/0.2.2/emoji.js"></script>
+jEmoji.unifiedToHTML(emojiText) -->
 </body>
 	<input type="hidden" name="blogId" value="<%=bid %>">
 	<div class="container">
