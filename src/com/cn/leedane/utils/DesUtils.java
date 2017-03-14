@@ -1,8 +1,10 @@
 package com.cn.leedane.utils;
 import java.security.Key;
 import java.security.Security;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.crypto.Cipher;
 
@@ -170,9 +172,9 @@ public class DesUtils {
 	   */
 	  public static void main(String[] args) {
 	    try {
-	      String test = "{name: \"leedane\", value: \"测试\", total: 123}";
-	      test = "http://leedanetf.tunnel.qydev.com/leedaneMVC/page/download.jsp?leedaneapp=OWEzMGRhZTI5NzlmZTQ3NjIzYzBkMDBjYzFiNjBhMjVlYWY5Y2QzOTU4MzQyMzZlNjdmZjk5MDZlNWNkNDcwMQ==";
-	      test = "c02d233e418bd5c3650de69ab9ec4f8ca9b70274835b08f66f542299104f3d58dd6f8366766a2f92";
+	      String test = UUID.randomUUID().toString() +DateUtil.DateToString(new Date());
+	      //test = "http://leedanetf.tunnel.qydev.com/leedaneMVC/page/download.jsp?leedaneapp=OWEzMGRhZTI5NzlmZTQ3NjIzYzBkMDBjYzFiNjBhMjVlYWY5Y2QzOTU4MzQyMzZlNjdmZjk5MDZlNWNkNDcwMQ==";
+	      //test = "c02d233e418bd5c3650de69ab9ec4f8ca9b70274835b08f66f542299104f3d58dd6f8366766a2f92";
 	      DesUtils des = new DesUtils();//自定义密钥   
 	      System.out.println("加密前的字符：" + test);
 	      System.out.println("加密后的字符：" + des.encrypt(test));

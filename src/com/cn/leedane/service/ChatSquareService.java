@@ -20,18 +20,16 @@ public interface ChatSquareService<ChatSquareBean>{
 
 	/**
 	 * 添加数据
-	 * @param jo
-	 * @param user
-	 * @param request
+	 * @param userId
+	 * @param message
 	 * @return
 	 */
 	public Map<String, Object> addChatSquare(int userId, String message) ;
 	
 	/**
 	 * 获取指定时间的活跃的用户
-	 * @param jo
-	 * @param user
-	 * @param request
+	 * @param date
+	 * @param top
 	 * @return
 	 */
 	//标记该方法不需要事务
@@ -42,7 +40,6 @@ public interface ChatSquareService<ChatSquareBean>{
 	/**
 	 * 获取聊天列表
 	 * @param jo
-	 * @param user
 	 * @param request
 	 * @return
 	 */

@@ -256,6 +256,13 @@
 	}
 	
 	/**
+	*	统一去首页操作函数
+	*/
+	function goToIndex(){
+		window.open(getBasePath() +"/page/index.jsp", "_self");
+	}
+	
+	/**
 	* 搜索
 	*/
 	function searchCommon(obj){

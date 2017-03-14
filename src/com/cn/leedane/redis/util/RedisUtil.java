@@ -1,5 +1,6 @@
 package com.cn.leedane.redis.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +22,7 @@ import com.cn.leedane.utils.StringUtil;
  * 2015年12月30日 下午3:36:04
  * Version 1.0
  */
-public class RedisUtil{
+public class RedisUtil implements Serializable{
 	
 	private static RedisUtil redisUtil;
 	
@@ -616,6 +617,48 @@ public class RedisUtil{
 	
 	/********************************* 公共*****************************/
 	
+	
+	/**
+	 * 添加serialize对象
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public String setSerialize(byte[] key, byte[] value){
+		String data = null;
+		Jedis jedis = getJedis();
+		try {
+			if(jedis != null){
+				data = jedis.set(key, value);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			RedisUtil.returnResource(jedis);
+		}
+		return data;
+	}
+	
+	/**
+	 * 获取序列号对象
+	 * @param pattern 为空将获取*
+	 * @return
+	 */
+	public byte[] getSerialize(String key){
+		byte[] value = null;
+		Jedis jedis = getJedis();
+		try {
+			if(jedis != null){
+				value = jedis.get(key.getBytes());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			RedisUtil.returnResource(jedis);
+		}
+		return value;
+	}
+	
 	/**
 	 * 获取所有的key
 	 * @param pattern 为空将获取*
@@ -650,9 +693,7 @@ public class RedisUtil{
 		Jedis jedis = getJedis();
 		try {
 			if(jedis != null){
-				jedis.set(key, StringUtil.isNull(value) ? "0000": value);
-				jedis.expire(key, seconds);
-				result = true;
+				result = jedis.expire(key, seconds) == 1;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

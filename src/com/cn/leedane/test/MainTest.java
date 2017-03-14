@@ -21,6 +21,7 @@ import com.cn.leedane.model.UserBean;
 import com.cn.leedane.redis.util.RedisUtil;
 import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.DateUtil;
+import com.cn.leedane.utils.HttpUtil;
 import com.cn.leedane.utils.SpringUtil;
 
 /**
@@ -77,11 +78,11 @@ public class MainTest {
 		/*UserService<UserBean> userService = (UserService<UserBean>) SpringUtil.getBean("userService");
 		UserBean user = userService.findById(1);
 		System.out.println(user.getAccount());*/
-		UserBean user = new UserBean();
+		/*UserBean user = new UserBean();
 		user.setAccount("dane");
 		
-		/*UserBean user1 = new UserBean();
-		user1.setAccount("dane");*/
+		UserBean user1 = new UserBean();
+		user1.setAccount("dane");
 		UserBean user1 = user;
 		
 		System.out.println(user.equals(user1));
@@ -92,8 +93,9 @@ public class MainTest {
 		Hashtable<String, Object> hashtable = new Hashtable<String, Object>();
 		hashtable.put("12", 12);
 		hashtable.put("hehe", "122");
-		System.out.println(hashtable.contains("12"));
+		System.out.println(hashtable.contains("12"));*/
 		
+		System.out.println(HttpUtil.sendPost("http://127.0.0.1:8080/leedaneMVC/leedane/api/users", "name=我&age=123"));
 	}
 	private static void testIntAndInteger() {
 		int i = 10;

@@ -33,3 +33,4 @@
 /search/get.action
 /api/users
 /api/users.action
+/chat/square/setting

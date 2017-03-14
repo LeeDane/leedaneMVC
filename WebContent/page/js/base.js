@@ -266,3 +266,20 @@ function getRandomNumber(number){
 function getRandomNumber1(number){
 	return Math.floor(Math.random() * number);
 }
+
+/**
+ * 检查用户浏览器是否是IE内核
+ * @returns {Boolean}
+ */
+function checkIE(){
+	userAgent=window.navigator.userAgent.toLowerCase();
+	if(userAgent.indexOf("firefox") >= 1){
+		
+	}else {
+	    var name=navigator.appName;
+	    if(name=="Microsoft Internet Explorer"){
+	    	return true;
+	    }
+	}
+	return false;
+}

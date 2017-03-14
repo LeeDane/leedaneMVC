@@ -19,6 +19,7 @@ import com.cn.leedane.model.UserBean;
 import com.cn.leedane.service.UserService;
 import com.cn.leedane.utils.ConstantsUtil;
 import com.cn.leedane.utils.EnumUtil;
+import com.cn.leedane.utils.HttpUtil;
 import com.cn.leedane.utils.JsonUtil;
 import com.cn.leedane.utils.SessionManagerUtil;
 import com.cn.leedane.utils.StringUtil;
@@ -120,7 +121,7 @@ public class BaseController {
 		return result;
 	}
 	
-	public boolean checkLogin(HttpServletRequest request, Map<String, Object> message){
+	public boolean checkLogin(HttpServletRequest request, Map<String, Object> message) throws Exception{
 		boolean result = false;
 		Object sessionUserInfo = request.getSession().getAttribute(UserController.USER_INFO_KEY);
 		
@@ -148,6 +149,10 @@ public class BaseController {
 		}else{
 			//校验用户信息
 			json = JSONObject.fromObject(params);
+		}
+		
+		if(json == null || json.isEmpty()){
+			json = HttpUtil.getJsonObjectFromInputStream(request);
 		}
 		
 		if(json != null){

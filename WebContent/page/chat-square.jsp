@@ -72,6 +72,68 @@
 			right: 0px;
 			z-index: 999;
 		}
+		.chat-right-body{
+			position:relative; 
+			font-family: '微软雅黑'; 
+			font-size: 17px;
+			margin-top: 5px;
+		}
+		.chat-right-content{
+			background:#F8C301;
+			border-radius: 4px; /* 圆角 */
+			display: inline-block;
+			width: auto;
+			padding: 0 5px 0px 5px;
+		}
+		
+		/* .chat-right-content *{
+			padding: 0;
+			margin: 0;
+		} */
+		
+		.chat-right-body .arrow {
+				position: absolute;
+				top: 6px;
+				right: 3px; /* 圆角的位置需要细心调试哦 */
+				width: 0;
+				height: 0;
+				font-size: 0;
+				border: solid 6px #fff;
+				border-color: #fff #fff #fff #F8C301;
+		}
+		
+		.chat-left-body{
+			position:relative; 
+			font-family: \'微软雅黑\'; 
+			font-size: 17px;
+			margin-top: 5px;
+		}
+		.chat-left-content{
+			background: red;
+			border-radius: 4px; /* 圆角 */
+			display: inline-block;
+			width: auto;
+			padding: 0 5px 0px 5px;
+		}
+		
+		.chat-left-body .arrow {
+			position:absolute;
+			top:6px;
+			right:0; /* 圆角的位置需要细心调试哦 */
+			left: 3px;
+			width:0;
+			height:0;
+			font-size:0;
+			border:solid 6px #fff;
+			border-color:#fff red #fff #fff;
+		}
+		.chat-tip-row{
+			color: #999;
+			text-align: center;
+			font-size: 10px;
+		    font-family: '微软雅黑';
+		    padding: 5px;
+		}
 	</style>
 </head>
 <body>
@@ -90,6 +152,7 @@
 				<div class="row">
 					<div class="panel panel-info">
 					    <div class="panel-heading">
+					    	您好：
 					    	<% if(isLogin){ %>
 					    		<%=account %>
 					    		&nbsp;&nbsp;当前积分：<span id="score"></span>
@@ -236,8 +299,19 @@
         	//sendMsg();
        }
     }
-    
+  
     $(function(){
+    	if(checkIE()){
+    		//询问框
+        	layer.confirm('系统检测到您的浏览器内核是IE，此功能不支持IE内核，是否浏览首页？', {
+        	  btn: ['首页','关闭'] //按钮
+        	}, function(){
+        		goToIndex();
+        	}, function(){
+        		window.open("about:blank","_self").close();
+        	});
+    		return;
+    	}
     	//验证浏览器是否支持WebSocket协议
         if(!window.WebSocket){
         	layer.alert('WebSockeet not supported by this browser!', {
@@ -267,7 +341,7 @@
         }
       //去掉默认的contextmenu事件，否则会和右键事件同时出现。
         document.oncontextmenu = function(e){
-            e.preventDefault();
+            e.defaultPrevented();
         };
         document.getElementById("content").onmouseup=function(oEvent) {
             if (!oEvent) oEvent=window.event;
@@ -432,11 +506,18 @@
     		var json = eval('(' + s + ')'); 
     		var container = $("#content");
     		
-    		if(isLogin && <%=userId %> == json.id){
-    			container.append(buildEachRightRow(json));
+    		var type = json['type'];
+    		if(isNotEmpty(type) && 'error' == type){
+    			container.append(buildTipRow(json));
     		}else{
-    			container.append(buildEachLeftRow(json));
+    			if(isLogin && <%=userId %> == json.id){
+        			container.append(buildEachRightRow(json));
+        		}else{
+        			container.append(buildEachLeftRow(json));
+        		}
     		}
+    		
+    		
     		
     		var height = container.height(); //页面总高度
     		var divContentHeight = container[0].scrollHeight; //页面总高度 
@@ -536,6 +617,15 @@
     }
     
     /**
+    *	构建提示信息
+    */
+    function buildTipRow(tipJson){
+    	var html = '<div class="row chat-list-row chat-tip-row">'+ tipJson.content+'</div>';
+    	
+    	return html;
+    }
+    
+    /**
      *	构建左侧的
      */
      function buildEachLeftRow(chat){
@@ -555,8 +645,9 @@
  									'<span class="chat-create-time">&nbsp;&nbsp;'+ chat.time +'</span>'+
  								'</div>'+
  							'</div>'+
- 							'<div class="row" style="font-family: \'微软雅黑\'; font-size: 17px;margin-top: 5px;">'+
- 								'<div class="col-lg-12">'+ chat.content +'</div>'+
+ 							'<div class="row chat-left-body">'+
+ 								'<div class="col-lg-12"><div class="chat-left-content">'+ chat.content +'</div></div>'+
+ 								'<div class="arrow"></div>'+
  							'</div>'+
  						'</div>'+
 	 					'<div class="col-lg-1" style="text-align: center;margin-top: 10px;">'+
@@ -580,8 +671,9 @@
   									'<span class="chat-user-name"><a href="JavaScript:void(0);" onclick="linkToMy('+ chat.id +')">&nbsp;&nbsp;'+ chat.account +'</a></span>'+
   								'</div>'+
   							'</div>'+
-  							'<div class="row" style="font-family: \'微软雅黑\'; font-size: 17px;margin-top: 5px;">'+
-  								'<div class="col-lg-12">'+ chat.content +'</div>'+
+  							'<div class="row chat-right-body">'+
+  								'<div class="col-lg-12"><div class="chat-right-content">'+ chat.content +'</div></div>'+
+  								'<div class="arrow"></div>'+
   							'</div>'+
   						'</div>'+
 	  					'<div class="col-lg-1" style="text-align: center;margin-top: 10px;">';

@@ -42,7 +42,7 @@ public class JsonUtil {
 		try{
 			in2 =new BufferedReader(new InputStreamReader(inS));		
 			while((value=in2.readLine())!=null){//一行一行读
-				value = URLDecoder.decode(value, "UTF-8");
+				value = URLDecoder.decode(value, "GBK");
 				System.out.println(value);
 				json = JSONObject.fromObject(value);
 			}

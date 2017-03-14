@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler;
 
 import com.cn.leedane.cache.SystemCache;
 import com.cn.leedane.handler.UserHandler;
@@ -72,19 +73,29 @@ public class LoginInterceptor implements HandlerInterceptor{
 			HttpServletResponse request, Object arg2, Exception arg3)
 			throws Exception {
 		//logger.info("LoginInterceptor:afterCompletion");
-		System.out.println("LoginInterceptor:afterCompletion");
+		//System.out.println("LoginInterceptor:afterCompletion");
 	}
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response,
 			Object arg2, ModelAndView arg3) throws Exception {
 		//logger.info("LoginInterceptor:postHandle");
-		System.out.println("LoginInterceptor:postHandle");
+		//System.out.println("LoginInterceptor:postHandle");
 	}
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object arg2) throws Exception {
+		//对静态文件js/css/html/jsp不做处理
+		//该链接是过滤掉的链接
+		String actionPath = request.getRequestURI();
+		if(actionPath.contains("/page/")){
+			return NO_FILTER;
+		}
+		
+		System.out.println("----->"+ actionPath);
+		
+		
 		logger.info("LoginInterceptor:preHandle");
 		request.setCharacterEncoding("utf-8");
 		//false将对请求进行拦截，没有下一步的操作，true会将请求提交给controller进行下一步的处理
@@ -136,8 +147,6 @@ public class LoginInterceptor implements HandlerInterceptor{
 		if(user != null){
 			return NO_FILTER;
 		}else{
-			//该链接是过滤掉的链接
-			String actionPath = request.getRequestURI();
 			System.out.println("请求的地址：" + actionPath);
 			@SuppressWarnings("unchecked")
 			List<String> filterUrls = systemCache.getCache("filterUrls") == null ? null : (List<String>)systemCache.getCache("filterUrls");
